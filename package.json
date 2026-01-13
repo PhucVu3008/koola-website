@@ -1,0 +1,31 @@
+{
+  "name": "@koola/root",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/api",
+    "build": "npm run build --workspace=apps/api",
+    "start": "npm run start --workspace=apps/api",
+    "dev:api": "cd apps/api && npm run dev",
+    "build:api": "cd apps/api && npm run build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:seed": "docker exec -i koola-postgres psql -U koola_user -d koola_db < seed.sql",
+    "setup": "chmod +x start-dev.sh && ./start-dev.sh"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

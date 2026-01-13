@@ -1,0 +1,82 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: koola-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: koola_db
+      POSTGRES_USER: koola_user
+      POSTGRES_PASSWORD: koola_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U koola_user -d koola_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API Backend
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: koola-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      HOST: 0.0.0.0
+      DATABASE_URL: postgresql://koola_user:koola_password@postgres:5432/koola_db
+      JWT_ACCESS_SECRET: dev-access-secret-change-in-production
+      JWT_REFRESH_SECRET: dev-refresh-secret-change-in-production
+      JWT_ACCESS_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+      CORS_ORIGIN: http://localhost:3000
+      RATE_LIMIT_MAX: 100
+      RATE_LIMIT_TIMEWINDOW: 60000
+      MAX_FILE_SIZE: 10485760
+      UPLOAD_DIR: /app/uploads
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./apps/api:/workspace/apps/api
+      - ./package.json:/workspace/package.json
+      - ./package-lock.json:/workspace/package-lock.json
+      - /workspace/node_modules
+      - api_uploads:/workspace/apps/api/uploads
+    command: sh -c "cd /workspace/apps/api && npx tsx watch src/index.ts"
+
+  # pgAdmin (optional - for database management)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: koola-pgadmin
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@koola.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  postgres_data:
+    driver: local
+  api_uploads:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  default:
+    name: koola-network
