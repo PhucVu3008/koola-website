@@ -7,6 +7,27 @@ import { errorHandler } from './middleware/errorHandler';
 import publicRoutes from './routes/public';
 import adminRoutes from './routes/admin';
 
+/**
+ * Application instance and initialization.
+ *
+ * This module wires core Fastify plugins needed by the API:
+ * - CORS (restrict to frontend origin)
+ * - JWT (admin authentication)
+ * - Multipart (file uploads)
+ * - Rate limit (basic abuse protection)
+ * - Route registration (public and admin)
+ * - Global error handler (standard error envelope)
+ *
+ * Notes:
+ * - The primary entrypoint used by production is {@link buildServer} in `server.ts`.
+ * - This file is kept for compatibility with tooling or alternate bootstraps.
+ *
+ * Environment variables (recommended):
+ * - `CORS_ORIGIN`
+ * - `JWT_ACCESS_SECRET`
+ * - `PORT`
+ */
+
 const app = Fastify({ logger: true });
 
 // Register plugins
@@ -19,6 +40,7 @@ export const initializeApp = async () => {
 
   // JWT
   await app.register(jwt, {
+    // IMPORTANT: do not use a static fallback secret in production.
     secret: process.env.JWT_ACCESS_SECRET || 'your-secret-key-change-this',
   });
 

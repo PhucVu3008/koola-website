@@ -7,7 +7,30 @@ import rateLimit from '@fastify/rate-limit';
 // Routes
 import publicRoutes from './routes/public';
 import adminRoutes from './routes/admin';
+import { errorHandler } from './middleware/errorHandler';
 
+/**
+ * Build and configure the Fastify server.
+ *
+ * Responsibilities:
+ * - Configure request logging and request IDs.
+ * - Register core plugins (CORS, JWT, multipart, rate limiting).
+ * - Register all public/admin routes.
+ * - Register the global error handler early to guarantee consistent errors.
+ *
+ * Important ordering note:
+ * - The error handler is set *before* registering routes/plugins to avoid
+ *   falling back to Fastify defaults for early failures (e.g. Zod parse errors).
+ *
+ * Environment variables (recommended):
+ * - `NODE_ENV`
+ * - `CORS_ORIGIN`
+ * - `JWT_ACCESS_SECRET`
+ * - `JWT_ACCESS_EXPIRES_IN`
+ * - `MAX_FILE_SIZE`
+ * - `RATE_LIMIT_MAX`
+ * - `RATE_LIMIT_TIMEWINDOW`
+ */
 export const buildServer = async () => {
   const server = Fastify({
     logger: {
@@ -15,6 +38,11 @@ export const buildServer = async () => {
     },
     disableRequestLogging: false,
     requestIdHeader: 'x-request-id',
+  });
+
+  // Register the error handler as early as possible so we don't fall back to Fastify's default.
+  server.setErrorHandler((error, request, reply) => {
+    return errorHandler(error as Error, request, reply);
   });
 
   // CORS
@@ -52,12 +80,6 @@ export const buildServer = async () => {
   // Register routes
   await server.register(publicRoutes, { prefix: '/v1' });
   await server.register(adminRoutes, { prefix: '/v1/admin' });
-
-  // Global error handler
-  server.setErrorHandler((error: Error, request, reply) => {
-    const { errorHandler } = require('./middleware/errorHandler');
-    return errorHandler(error, request, reply);
-  });
 
   return server;
 };

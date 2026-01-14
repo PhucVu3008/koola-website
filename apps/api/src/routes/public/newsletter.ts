@@ -7,6 +7,19 @@ import {
 } from '../../schemas';
 import * as SQL from '../../sql/queries';
 
+/**
+ * Public Newsletter routes.
+ *
+ * Mounted at: `/v1/newsletter`
+ *
+ * Endpoints:
+ * - `POST /subscribe`   -> create/update a newsletter subscriber
+ * - `POST /unsubscribe` -> unsubscribe by email
+ *
+ * Security:
+ * - Both endpoints are public and should be rate limited.
+ * - All SQL is parameterized.
+ */
 const newsletterRoutes: FastifyPluginAsync = async (server) => {
   // Subscribe to newsletter
   server.post<{ Body: NewsletterSubscribeInput }>('/subscribe', {

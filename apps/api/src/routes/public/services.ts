@@ -1,6 +1,19 @@
 import { FastifyPluginAsync } from 'fastify';
 import * as serviceController from '../../controllers/serviceController';
 
+/**
+ * Public Services routes.
+ *
+ * Mounted at: `/v1/services`
+ *
+ * Endpoints:
+ * - `GET /`      -> list services (see `serviceController.listServices`)
+ * - `GET /:slug` -> service detail bundle (see `serviceController.getServiceBySlug`)
+ *
+ * Validation:
+ * - Query/params validation is performed inside controllers via Zod schemas.
+ * - Errors are normalized by the global error handler.
+ */
 const servicesRoutes: FastifyPluginAsync = async (server) => {
   // List services
   server.get('/', {

@@ -1,13 +1,26 @@
 // ============ ADMIN POSTS QUERIES ============
 
-// TODO: Implement CRUD operations for posts
-// - CREATE_POST
-// - UPDATE_POST
-// - DELETE_POST
-// - UPSERT_POST_TAGS
-// - UPSERT_POST_CATEGORIES
-// - UPSERT_POST_RELATED
-
+/**
+ * CREATE_POST
+ *
+ * Insert a new blog post row.
+ *
+ * Parameters:
+ * - $1 locale
+ * - $2 title
+ * - $3 slug
+ * - $4 excerpt
+ * - $5 content_md
+ * - $6 hero_asset_id (nullable)
+ * - $7 og_asset_id (nullable)
+ * - $8 author_id (nullable)
+ * - $9 status (content_status)
+ * - $10 published_at (nullable timestamptz)
+ * - $11 seo_title (nullable)
+ * - $12 seo_description (nullable)
+ * - $13 canonical_url (nullable)
+ * - $14 created_by (user id)
+ */
 export const CREATE_POST = `
   INSERT INTO posts (
     locale, title, slug, excerpt, content_md,
@@ -19,6 +32,16 @@ export const CREATE_POST = `
   RETURNING id
 `;
 
+/**
+ * UPDATE_POST
+ *
+ * Update an existing post row.
+ *
+ * Parameters:
+ * - $1 id
+ * - $2..$13 updated fields
+ * - $14 updated_by
+ */
 export const UPDATE_POST = `
   UPDATE posts
   SET 
@@ -40,6 +63,14 @@ export const UPDATE_POST = `
   RETURNING id
 `;
 
+/**
+ * DELETE_POST
+ *
+ * Delete a post by id.
+ *
+ * Parameters:
+ * - $1 id
+ */
 export const DELETE_POST = `
   DELETE FROM posts WHERE id = $1
 `;

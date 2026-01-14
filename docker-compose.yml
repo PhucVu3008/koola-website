@@ -42,14 +42,18 @@ services:
       RATE_LIMIT_MAX: 100
       RATE_LIMIT_TIMEWINDOW: 60000
       MAX_FILE_SIZE: 10485760
-      UPLOAD_DIR: /app/uploads
+      UPLOAD_DIR: /workspace/apps/api/uploads
     ports:
       - "4000:4000"
     volumes:
-      - ./apps/api:/workspace/apps/api
-      - ./package.json:/workspace/package.json
-      - ./package-lock.json:/workspace/package-lock.json
-      - /workspace/node_modules
+      # Bind-mount the whole repo. This avoids file-vs-directory issues when a lockfile
+      # doesn't exist (or differs across package managers) and works consistently on macOS/Windows.
+      - ./:/workspace
+
+      # Keep dependencies inside a named volume for performance and to avoid host/node mismatch.
+      - api_node_modules:/workspace/node_modules
+
+      # Persist uploads across container restarts.
       - api_uploads:/workspace/apps/api/uploads
     command: sh -c "cd /workspace/apps/api && npx tsx watch src/index.ts"
 
@@ -61,7 +65,8 @@ services:
     depends_on:
       - postgres
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@koola.local
+      # pgAdmin validates this as a real email; .local is a reserved/special-use TLD and may be rejected.
+      PGADMIN_DEFAULT_EMAIL: admin@koola.com
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
@@ -73,6 +78,8 @@ volumes:
   postgres_data:
     driver: local
   api_uploads:
+    driver: local
+  api_node_modules:
     driver: local
   pgadmin_data:
     driver: local

@@ -1,5 +1,42 @@
 -- Seed data for KOOLA development
 
+-- =============================================
+-- DEV RESET (safe for local dev only)
+-- ---------------------------------------------
+-- This seed file is intended for development and local testing.
+-- It clears existing rows to provide deterministic IDs and allow
+-- re-running `seed.sql` multiple times without residual data.
+--
+-- If you need to preserve data, remove this block and rely on
+-- ON CONFLICT upserts instead.
+-- =============================================
+TRUNCATE TABLE
+  refresh_tokens,
+  user_roles,
+  users,
+  roles,
+  service_related_posts,
+  service_related,
+  service_faqs,
+  service_process_steps,
+  service_deliverables,
+  service_tags,
+  service_categories,
+  services,
+  post_related,
+  post_tags,
+  post_categories,
+  posts,
+  categories,
+  tags,
+  nav_items,
+  site_settings,
+  newsletter_subscribers,
+  leads,
+  job_applications,
+  job_posts
+RESTART IDENTITY CASCADE;
+
 -- Insert roles
 INSERT INTO roles (id, name) VALUES 
   (1, 'admin'),
@@ -7,9 +44,10 @@ INSERT INTO roles (id, name) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert admin user (password: admin123)
--- bcrypt hash for 'admin123': $2b$10$rKZqYLcDv0hXGWGh9M5v8O3MvXxF.qXJdx8QJ4J5qLZ2ZdZqYJ5qK
+-- NOTE: This hash was verified in-container with bcrypt (Node 20 + bcrypt).
+--       If you change the password, regenerate a bcrypt hash and update it here.
 INSERT INTO users (id, email, password_hash, full_name, is_active) VALUES 
-  (1, 'admin@koola.com', '$2b$10$rKZqYLcDv0hXGWGh9M5v8O3MvXxF.qXJdx8QJ4J5qLZ2ZdZqYJ5qK', 'Admin User', true)
+  (1, 'admin@koola.com', '$2b$10$rVKnWgM48616HebkrDXLeuGO6KdJmJn3S9mn4POOM9JsmHYrObU3a', 'Admin User', true)
 ON CONFLICT (email) DO NOTHING;
 
 -- Assign admin role

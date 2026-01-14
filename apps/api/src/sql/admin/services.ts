@@ -1,16 +1,26 @@
 // ============ ADMIN SERVICES QUERIES ============
 
-// TODO: Implement CRUD operations for services
-// - CREATE_SERVICE
-// - UPDATE_SERVICE
-// - DELETE_SERVICE
-// - UPSERT_SERVICE_DELIVERABLES
-// - UPSERT_SERVICE_PROCESS_STEPS
-// - UPSERT_SERVICE_FAQS
-// - UPSERT_SERVICE_RELATED
-// - UPSERT_SERVICE_TAGS
-// - UPSERT_SERVICE_CATEGORIES
-
+/**
+ * CREATE_SERVICE
+ *
+ * Insert a new service row.
+ *
+ * Parameters:
+ * - $1 locale
+ * - $2 title
+ * - $3 slug
+ * - $4 excerpt
+ * - $5 content_md
+ * - $6 hero_asset_id (nullable)
+ * - $7 og_asset_id (nullable)
+ * - $8 status (content_status)
+ * - $9 published_at (nullable timestamptz)
+ * - $10 seo_title (nullable)
+ * - $11 seo_description (nullable)
+ * - $12 canonical_url (nullable)
+ * - $13 sort_order
+ * - $14 created_by (user id)
+ */
 export const CREATE_SERVICE = `
   INSERT INTO services (
     locale, title, slug, excerpt, content_md,
@@ -22,6 +32,16 @@ export const CREATE_SERVICE = `
   RETURNING id
 `;
 
+/**
+ * UPDATE_SERVICE
+ *
+ * Update an existing service row.
+ *
+ * Parameters:
+ * - $1 id
+ * - $2..$13 updated fields
+ * - $14 updated_by
+ */
 export const UPDATE_SERVICE = `
   UPDATE services
   SET 
@@ -43,6 +63,14 @@ export const UPDATE_SERVICE = `
   RETURNING id
 `;
 
+/**
+ * DELETE_SERVICE
+ *
+ * Delete a service by id.
+ *
+ * Parameters:
+ * - $1 id
+ */
 export const DELETE_SERVICE = `
   DELETE FROM services WHERE id = $1
 `;

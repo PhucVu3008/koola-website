@@ -7,6 +7,19 @@ import {
 } from '../../schemas';
 import * as SQL from '../../sql/queries';
 
+/**
+ * Public Jobs routes.
+ *
+ * Mounted at: `/v1/jobs`
+ *
+ * Endpoints:
+ * - `GET /?locale=en&status=published` -> list jobs
+ * - `GET /:slug?locale=en` -> job detail
+ *
+ * Notes:
+ * - Query/params are validated with Zod.
+ * - Only published jobs are expected to be exposed by default.
+ */
 const jobsRoutes: FastifyPluginAsync = async (server) => {
   // List jobs
   server.get('/', async (request, reply) => {

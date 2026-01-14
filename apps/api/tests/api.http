@@ -1,0 +1,333 @@
+### REST Client variables
+@apiBaseUrl = http://localhost:4000
+@adminAccessToken =
+
+### Health check
+GET http://localhost:4000/health
+
+### List services (default)
+GET http://localhost:4000/v1/services
+
+### List services (validation: page must be positive)
+GET http://localhost:4000/v1/services?page=0
+
+### Get service detail
+GET http://localhost:4000/v1/services/ai-strategy?locale=en
+
+### Get service detail (NOT_FOUND)
+GET http://localhost:4000/v1/services/does-not-exist?locale=en
+
+### List posts
+GET http://localhost:4000/v1/posts?locale=en&page=1&pageSize=10
+
+### List posts (validation: pageSize too large)
+GET http://localhost:4000/v1/posts?pageSize=999
+
+### Get post detail
+GET http://localhost:4000/v1/posts/first-post?locale=en
+
+### Get post detail (NOT_FOUND)
+GET http://localhost:4000/v1/posts/does-not-exist?locale=en
+
+### Nav (header)
+GET http://localhost:4000/v1/nav?placement=header&locale=en
+
+### Nav (footer)
+GET http://localhost:4000/v1/nav?placement=footer&locale=en
+
+### Site settings
+GET http://localhost:4000/v1/site/settings?locale=en
+
+### Lead (contact form)
+POST http://localhost:4000/v1/leads
+Content-Type: application/json
+
+{
+  "full_name": "John Doe",
+  "email": "john@example.com",
+  "phone": "+1-555-123-4567",
+  "company": "Acme Inc",
+  "message": "Hello, I'd like to learn more.",
+  "source_path": "/contact",
+  "utm_source": "google",
+  "utm_medium": "cpc",
+  "utm_campaign": "brand"
+}
+
+### Newsletter subscribe
+POST http://localhost:4000/v1/newsletter/subscribe
+Content-Type: application/json
+
+{
+  "email": "newsletter@example.com",
+  "source_path": "/"
+}
+
+### Newsletter unsubscribe
+POST http://localhost:4000/v1/newsletter/unsubscribe
+Content-Type: application/json
+
+{
+  "email": "newsletter@example.com"
+}
+
+### Admin login
+POST http://localhost:4000/v1/admin/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@koola.com",
+  "password": "admin123"
+}
+
+### Admin refresh (requires refreshToken from login)
+POST http://localhost:4000/v1/admin/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzc2OTksImV4cCI6MTc2ODM3ODU5OX0.VzXCC_PHUo3YITZ9jJCerhdZ9EvZLmZD-ytT5Qb42Tk"
+}
+
+### Admin logout (requires refreshToken from login)
+POST http://localhost:4000/v1/admin/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzc2OTksImV4cCI6MTc2ODM3ODU5OX0.VzXCC_PHUo3YITZ9jJCerhdZ9EvZLmZD-ytT5Qb42Tk"
+}
+
+# ==============================
+# Admin Services CRUD (requires accessToken from login)
+# ==============================
+
+### Admin list services
+GET http://localhost:4000/v1/admin/services?locale=en&page=1&pageSize=20
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzc2OTksImV4cCI6MTc2ODM3ODU5OX0.VzXCC_PHUo3YITZ9jJCerhdZ9EvZLmZD-ytT5Qb42Tk
+
+### Admin get service bundle by id
+GET http://localhost:4000/v1/admin/services/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzc2OTksImV4cCI6MTc2ODM3ODU5OX0.VzXCC_PHUo3YITZ9jJCerhdZ9EvZLmZD-ytT5Qb42Tk
+
+### Admin create service
+POST http://localhost:4000/v1/admin/services
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzc2OTksImV4cCI6MTc2ODM3ODU5OX0.VzXCC_PHUo3YITZ9jJCerhdZ9EvZLmZD-ytT5Qb42Tk
+Content-Type: application/json
+
+{
+  "locale": "en",
+  "title": "New Admin Service",
+  "slug": "new-admin-service",
+  "excerpt": "Short excerpt",
+  "content_md": "# Service\n\nService content.",
+  "status": "draft",
+  "sort_order": 10,
+  "tags": [1],
+  "categories": [1],
+  "deliverables": [{"title": "Deliverable 1", "description": "Desc", "sort_order": 0}],
+  "process_steps": [{"title": "Step 1", "description": "Desc", "sort_order": 0}],
+  "faqs": [{"question": "Q1?", "answer": "A1", "sort_order": 0}],
+  "related_services": [1],
+  "related_posts": [1]
+}
+
+### Admin update service (PUT) - replace nested arrays when provided
+PUT http://localhost:4000/v1/admin/services/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzc2OTksImV4cCI6MTc2ODM3ODU5OX0.VzXCC_PHUo3YITZ9jJCerhdZ9EvZLmZD-ytT5Qb42Tk
+Content-Type: application/json
+
+{
+  "locale": "en",
+  "title": "Updated Admin Service",
+  "slug": "updated-admin-service",
+  "excerpt": "Updated excerpt",
+  "content_md": "# Updated\n\nUpdated content.",
+  "status": "draft",
+  "sort_order": 20,
+  "tags": [1],
+  "categories": [1],
+  "deliverables": [{"title": "Deliverable A", "description": "Desc", "sort_order": 0}],
+  "process_steps": [{"title": "Step A", "description": "Desc", "sort_order": 0}],
+  "faqs": [{"question": "QA?", "answer": "AA", "sort_order": 0}],
+  "related_services": [1],
+  "related_posts": [1]
+}
+
+### Admin delete service
+DELETE http://localhost:4000/v1/admin/services/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzc2OTksImV4cCI6MTc2ODM3ODU5OX0.VzXCC_PHUo3YITZ9jJCerhdZ9EvZLmZD-ytT5Qb42Tk
+
+# ==============================
+# Admin Posts CRUD (requires accessToken from login)
+# ==============================
+
+### Admin list posts
+GET http://localhost:4000/v1/admin/posts?locale=en&page=1&pageSize=20
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzkzNDksImV4cCI6MTc2ODM4MDI0OX0.vtVejVN9t_fXmLvKoyDTA5TQsPFiKhzwmJdQ1_1opm4
+
+### Admin get post bundle by id
+GET http://localhost:4000/v1/admin/posts/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzkzNDksImV4cCI6MTc2ODM4MDI0OX0.vtVejVN9t_fXmLvKoyDTA5TQsPFiKhzwmJdQ1_1opm4
+
+### Admin create post
+POST http://localhost:4000/v1/admin/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzkzNDksImV4cCI6MTc2ODM4MDI0OX0.vtVejVN9t_fXmLvKoyDTA5TQsPFiKhzwmJdQ1_1opm4
+Content-Type: application/json
+
+{
+  "locale": "en",
+  "title": "New Admin Post",
+  "slug": "new-admin-post",
+  "excerpt": "Short excerpt",
+  "content_md": "# Post\n\nPost content.",
+  "status": "draft",
+  "tags": [1],
+  "categories": [1],
+  "related_posts": [1]
+}
+
+### Admin update post (PUT)
+PUT http://localhost:4000/v1/admin/posts/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzkzNDksImV4cCI6MTc2ODM4MDI0OX0.vtVejVN9t_fXmLvKoyDTA5TQsPFiKhzwmJdQ1_1opm4
+Content-Type: application/json
+
+{
+  "locale": "en",
+  "title": "Updated Admin Post",
+  "slug": "updated-admin-post",
+  "excerpt": "Updated excerpt",
+  "content_md": "# Updated\n\nUpdated post content.",
+  "status": "draft",
+  "tags": [1],
+  "categories": [1],
+  "related_posts": [1]
+}
+
+### Admin delete post
+DELETE http://localhost:4000/v1/admin/posts/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzkzNDksImV4cCI6MTc2ODM4MDI0OX0.vtVejVN9t_fXmLvKoyDTA5TQsPFiKhzwmJdQ1_1opm4
+
+### =========================
+### ADMIN TAXONOMY (CATEGORIES & TAGS)
+### =========================
+
+### Admin list categories (post)
+GET {{apiBaseUrl}}/v1/admin/categories?locale=en&kind=post
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzk5MzgsImV4cCI6MTc2ODM4MDgzOH0.QFJtJOuXEFoJ-LwqhgQC9ih3guSeovSu-EZ5sLvUsP0
+
+### Admin create category (post)
+POST {{apiBaseUrl}}/v1/admin/categories
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzk5MzgsImV4cCI6MTc2ODM4MDgzOH0.QFJtJOuXEFoJ-LwqhgQC9ih3guSeovSu-EZ5sLvUsP0
+Content-Type: application/json
+
+{
+  "locale": "en",
+  "kind": "post",
+  "name": "Guides",
+  "slug": "guides",
+  "description": "How-to guides",
+  "sort_order": 10
+}
+
+### Admin update category (PUT)
+# NOTE: replace :id with the returned id
+PUT {{apiBaseUrl}}/v1/admin/categories/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzk5MzgsImV4cCI6MTc2ODM4MDgzOH0.QFJtJOuXEFoJ-LwqhgQC9ih3guSeovSu-EZ5sLvUsP0
+Content-Type: application/json
+
+{
+  "locale": "en",
+  "kind": "post",
+  "name": "Guides",
+  "slug": "guides",
+  "description": "Updated description",
+  "sort_order": 10
+}
+
+### Admin delete category
+# NOTE: replace :id
+DELETE {{apiBaseUrl}}/v1/admin/categories/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzk5MzgsImV4cCI6MTc2ODM4MDgzOH0.QFJtJOuXEFoJ-LwqhgQC9ih3guSeovSu-EZ5sLvUsP0
+
+### Admin list tags
+GET {{apiBaseUrl}}/v1/admin/tags?locale=en
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzk5MzgsImV4cCI6MTc2ODM4MDgzOH0.QFJtJOuXEFoJ-LwqhgQC9ih3guSeovSu-EZ5sLvUsP0
+
+### Admin create tag
+POST {{apiBaseUrl}}/v1/admin/tags
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzk5MzgsImV4cCI6MTc2ODM4MDgzOH0.QFJtJOuXEFoJ-LwqhgQC9ih3guSeovSu-EZ5sLvUsP0
+Content-Type: application/json
+
+{
+  "locale": "en",
+  "name": "AI",
+  "slug": "ai"
+}
+
+### Admin update tag (PUT)
+# NOTE: replace :id
+PUT {{apiBaseUrl}}/v1/admin/tags/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzk5MzgsImV4cCI6MTc2ODM4MDgzOH0.QFJtJOuXEFoJ-LwqhgQC9ih3guSeovSu-EZ5sLvUsP0
+Content-Type: application/json
+
+{
+  "locale": "en",
+  "name": "AI",
+  "slug": "ai"
+}
+
+### Admin delete tag
+# NOTE: replace :id
+DELETE {{apiBaseUrl}}/v1/admin/tags/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzNzk5MzgsImV4cCI6MTc2ODM4MDgzOH0.QFJtJOuXEFoJ-LwqhgQC9ih3guSeovSu-EZ5sLvUsP0
+
+### =========================
+### ADMIN LEADS MANAGEMENT
+### =========================
+
+### Admin list leads
+GET {{apiBaseUrl}}/v1/admin/leads?page=1&pageSize=20
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
+
+### Admin list leads (filter by status)
+GET {{apiBaseUrl}}/v1/admin/leads?status=new&page=1&pageSize=20
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
+
+### Admin list leads (search)
+GET {{apiBaseUrl}}/v1/admin/leads?q=john&page=1&pageSize=20
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
+
+### Admin patch lead status
+# NOTE: replace :id
+PATCH {{apiBaseUrl}}/v1/admin/leads/1/status
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
+Content-Type: application/json
+
+{
+  "status": "contacted"
+}
+
+### =========================
+### ADMIN NEWSLETTER SUBSCRIBERS
+### =========================
+
+### Admin list newsletter subscribers
+GET {{apiBaseUrl}}/v1/admin/newsletter-subscribers?page=1&pageSize=20
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
+
+### Admin list newsletter subscribers (filter by status)
+GET {{apiBaseUrl}}/v1/admin/newsletter-subscribers?status=subscribed&page=1&pageSize=20
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
+
+### Admin list newsletter subscribers (search)
+GET {{apiBaseUrl}}/v1/admin/newsletter-subscribers?q=newsletter&page=1&pageSize=20
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
+
+### Admin patch newsletter subscriber status
+# NOTE: replace :id
+PATCH {{apiBaseUrl}}/v1/admin/newsletter-subscribers/1/status
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
+Content-Type: application/json
+
+{
+  "status": "unsubscribed"
+}

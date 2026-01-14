@@ -2,6 +2,21 @@ import { z } from 'zod';
 
 // ============ POST SCHEMAS ============
 
+/**
+ * Querystring schema for listing posts.
+ *
+ * Used by: `GET /v1/posts`
+ *
+ * Pagination:
+ * - `page` starts at 1
+ * - `pageSize` is capped at 100
+ *
+ * Search:
+ * - `q` is a free-text search query (implementation depends on SQL)
+ *
+ * @example
+ * /v1/posts?locale=en&page=1&pageSize=10&sort=newest
+ */
 export const postListQuerySchema = z.object({
   locale: z.string().default('en'),
   category: z.string().optional(),
@@ -12,15 +27,29 @@ export const postListQuerySchema = z.object({
   sort: z.enum(['newest', 'oldest']).default('newest'),
 });
 
+/**
+ * Path params schema for post detail.
+ *
+ * Used by: `GET /v1/posts/:slug`
+ */
 export const postSlugParamsSchema = z.object({
   slug: z.string(),
 });
 
+/**
+ * Querystring schema for post detail.
+ *
+ * Used by: `GET /v1/posts/:slug`
+ */
 export const postSlugQuerySchema = z.object({
   locale: z.string().default('en'),
 });
 
 // Admin schemas
+
+/**
+ * Schema for creating a post from the admin panel.
+ */
 export const adminPostCreateSchema = z.object({
   locale: z.string().default('en'),
   title: z.string().min(1),
@@ -40,6 +69,11 @@ export const adminPostCreateSchema = z.object({
   related_posts: z.array(z.number()).optional(),
 });
 
+/**
+ * Schema for updating a post from the admin panel.
+ *
+ * All fields are optional to support PATCH-like semantics.
+ */
 export const adminPostUpdateSchema = adminPostCreateSchema.partial();
 
 export type PostListQuery = z.infer<typeof postListQuerySchema>;

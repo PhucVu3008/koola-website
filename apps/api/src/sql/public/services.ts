@@ -1,5 +1,26 @@
 // ============ SERVICES QUERIES ============
 
+/**
+ * LIST_SERVICES
+ *
+ * List published/draft services for a locale with optional taxonomy filters.
+ *
+ * Parameters:
+ * - $1 locale (text)
+ * - $2 status (content_status | null)
+ * - $3 tag slug (text | null)
+ * - $4 category slug (text | null)
+ * - $5 sort ('order' | 'newest')
+ * - $6 limit (int)
+ * - $7 offset (int)
+ *
+ * Sorting:
+ * - sort='order' => `services.sort_order` ASC
+ * - sort='newest' => `services.published_at` DESC
+ *
+ * Security:
+ * - Parameterized SQL only (no string interpolation).
+ */
 export const LIST_SERVICES = `
   SELECT 
     s.id, s.locale, s.title, s.slug, s.excerpt, s.hero_asset_id,
@@ -33,6 +54,17 @@ export const LIST_SERVICES = `
   LIMIT $6 OFFSET $7
 `;
 
+/**
+ * COUNT_SERVICES
+ *
+ * Count distinct services for pagination.
+ *
+ * Parameters:
+ * - $1 locale
+ * - $2 status (content_status | null)
+ * - $3 tag slug (text | null)
+ * - $4 category slug (text | null)
+ */
 export const COUNT_SERVICES = `
   SELECT COUNT(DISTINCT s.id) as total
   FROM services s
@@ -46,6 +78,15 @@ export const COUNT_SERVICES = `
     AND ($4::text IS NULL OR c.slug = $4)
 `;
 
+/**
+ * GET_SERVICE_BY_SLUG
+ *
+ * Fetch a single published service by `{ slug, locale }`.
+ *
+ * Parameters:
+ * - $1 slug
+ * - $2 locale
+ */
 export const GET_SERVICE_BY_SLUG = `
   SELECT 
     id, locale, title, slug, excerpt, content_md, 
@@ -56,6 +97,15 @@ export const GET_SERVICE_BY_SLUG = `
   WHERE slug = $1 AND locale = $2 AND status = 'published'
 `;
 
+/**
+ * GET_SERVICE_TAGS
+ *
+ * Fetch tags for a service.
+ *
+ * Parameters:
+ * - $1 service_id
+ * - $2 locale
+ */
 export const GET_SERVICE_TAGS = `
   SELECT t.id, t.name, t.slug
   FROM tags t
@@ -63,6 +113,15 @@ export const GET_SERVICE_TAGS = `
   WHERE st.service_id = $1 AND t.locale = $2
 `;
 
+/**
+ * GET_SERVICE_CATEGORIES
+ *
+ * Fetch categories for a service.
+ *
+ * Parameters:
+ * - $1 service_id
+ * - $2 locale
+ */
 export const GET_SERVICE_CATEGORIES = `
   SELECT c.id, c.name, c.slug
   FROM categories c
@@ -70,6 +129,14 @@ export const GET_SERVICE_CATEGORIES = `
   WHERE sc.service_id = $1 AND c.locale = $2 AND c.kind = 'service'
 `;
 
+/**
+ * GET_SERVICE_DELIVERABLES
+ *
+ * Fetch deliverables ordered by `sort_order`.
+ *
+ * Parameters:
+ * - $1 service_id
+ */
 export const GET_SERVICE_DELIVERABLES = `
   SELECT id, title, description, icon_asset_id, sort_order
   FROM service_deliverables
@@ -77,6 +144,14 @@ export const GET_SERVICE_DELIVERABLES = `
   ORDER BY sort_order ASC
 `;
 
+/**
+ * GET_SERVICE_PROCESS_STEPS
+ *
+ * Fetch process steps ordered by `sort_order`.
+ *
+ * Parameters:
+ * - $1 service_id
+ */
 export const GET_SERVICE_PROCESS_STEPS = `
   SELECT id, title, description, sort_order
   FROM service_process_steps
@@ -84,6 +159,14 @@ export const GET_SERVICE_PROCESS_STEPS = `
   ORDER BY sort_order ASC
 `;
 
+/**
+ * GET_SERVICE_FAQS
+ *
+ * Fetch FAQs ordered by `sort_order`.
+ *
+ * Parameters:
+ * - $1 service_id
+ */
 export const GET_SERVICE_FAQS = `
   SELECT id, question, answer, sort_order
   FROM service_faqs
@@ -91,6 +174,18 @@ export const GET_SERVICE_FAQS = `
   ORDER BY sort_order ASC
 `;
 
+/**
+ * GET_SERVICE_RELATED_SERVICES
+ *
+ * Fetch up to 3 related services for a service.
+ *
+ * Parameters:
+ * - $1 service_id
+ * - $2 locale
+ *
+ * Ordering:
+ * - `service_related.sort_order` ASC
+ */
 export const GET_SERVICE_RELATED_SERVICES = `
   SELECT 
     s.id, s.locale, s.title, s.slug, s.excerpt, s.hero_asset_id
@@ -101,6 +196,18 @@ export const GET_SERVICE_RELATED_SERVICES = `
   LIMIT 3
 `;
 
+/**
+ * GET_SERVICE_RELATED_POSTS
+ *
+ * Fetch up to 3 related posts for a service.
+ *
+ * Parameters:
+ * - $1 service_id
+ * - $2 locale
+ *
+ * Ordering:
+ * - `service_related_posts.sort_order` ASC
+ */
 export const GET_SERVICE_RELATED_POSTS = `
   SELECT 
     p.id, p.locale, p.title, p.slug, p.excerpt, p.hero_asset_id, p.published_at

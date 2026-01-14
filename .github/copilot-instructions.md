@@ -1,7 +1,57 @@
 # KOOLA (AI) – GitHub Copilot Instructions (copilot-instructions.md)
 
-You are GitHub Copilot / an AI coding agent working on the KOOLA project.  
+You are GitHub Copilot / an AI coding agent working on the KOOLA project.
 These instructions are **hard constraints**. If a request conflicts with them, explain the conflict and propose a compliant alternative.
+
+---
+
+## -1) Output Expectations (MUST)
+When generating code or changes, produce **production-ready, copy/paste-able** output.
+
+### What “production-ready” means
+- Provide **complete implementations**, not sketches:
+  - include imports, types, wiring, error handling, validation, and integration points
+  - avoid “TODO” placeholders unless absolutely necessary; if used, explain exactly what is missing and why
+- Follow the repository’s existing conventions (naming, folder structure, error handling patterns).
+- Keep changes minimal and scoped: do not refactor unrelated code.
+- If information is missing (e.g., DB schema fields), **do not guess silently**:
+  - either (a) infer conservatively and clearly mark assumptions, or
+  - (b) implement in a way that fails fast with explicit errors until the missing pieces are defined.
+
+### How to present changes
+- Use clear file paths (e.g., `apps/api/src/routes/v1/posts.ts`).
+- For multi-file work, list files touched and what changed.
+- When asked to implement a feature, follow the required workflow in Section 11.
+
+---
+
+## -2) Documentation & Code Comments Standard (MUST)
+Write code that is easy to read for humans. Comments must help the reader understand **purpose, usage, constraints, and edge cases**.
+
+### Commenting rules
+- Use **TSDoc/JSDoc** (`/** ... */`) for all exported/public:
+  - functions, classes, route handlers, DB/query functions, shared schemas
+- Include in docblocks (as applicable):
+  - **What it does** (1–2 lines)
+  - **Inputs** (parameters and constraints)
+  - **Returns** (shape + important fields)
+  - **Errors** (validation errors, auth errors, not found)
+  - **Side effects** (DB writes, transactions, cookies)
+- Use inline comments sparingly:
+  - comment “why”, not “what” (avoid narrating obvious code)
+  - add inline comments only for non-obvious logic, tricky SQL, caching decisions, security constraints
+- Comments should be **professional and consistent**, default to **English** (to match identifiers and broader dev norms).
+
+### API self-documentation (recommended, not required)
+- Prefer including short request/response examples in route docblocks when helpful.
+- If the repo has OpenAPI docs, update them; otherwise, keep route docblocks accurate.
+
+### SQL documentation
+- For each query, add a brief comment explaining intent and expected behavior:
+  - pagination/sorting rules
+  - filtering rules
+  - which columns are assumed indexed (if relevant)
+- Always highlight security constraints: **parameterized SQL only**.
 
 ---
 

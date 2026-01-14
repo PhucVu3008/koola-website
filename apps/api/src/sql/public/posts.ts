@@ -1,5 +1,26 @@
 // ============ POSTS QUERIES ============
 
+/**
+ * LIST_POSTS
+ *
+ * List published posts for a locale with optional taxonomy filters and free-text search.
+ *
+ * Parameters:
+ * - $1 locale (text)
+ * - $2 category slug (text | null)
+ * - $3 tag slug (text | null)
+ * - $4 search query `q` (text | null)
+ * - $5 sort ('newest' | 'oldest')
+ * - $6 limit (int)
+ * - $7 offset (int)
+ *
+ * Search:
+ * - Uses `ILIKE` against `title` and `excerpt` via concatenation with a parameter (`'%' || $4 || '%'`).
+ *   This remains safe because `$4` is still parameterized.
+ *
+ * Security:
+ * - Parameterized SQL only.
+ */
 export const LIST_POSTS = `
   SELECT 
     p.id, p.locale, p.title, p.slug, p.excerpt, p.hero_asset_id,
@@ -35,6 +56,17 @@ export const LIST_POSTS = `
   LIMIT $6 OFFSET $7
 `;
 
+/**
+ * COUNT_POSTS
+ *
+ * Count distinct posts for pagination.
+ *
+ * Parameters:
+ * - $1 locale
+ * - $2 category slug (text | null)
+ * - $3 tag slug (text | null)
+ * - $4 search query (text | null)
+ */
 export const COUNT_POSTS = `
   SELECT COUNT(DISTINCT p.id) as total
   FROM posts p
@@ -49,6 +81,15 @@ export const COUNT_POSTS = `
     AND ($4::text IS NULL OR p.title ILIKE '%' || $4 || '%' OR p.excerpt ILIKE '%' || $4 || '%')
 `;
 
+/**
+ * GET_POST_BY_SLUG
+ *
+ * Fetch a single published post by `{ slug, locale }`.
+ *
+ * Parameters:
+ * - $1 slug
+ * - $2 locale
+ */
 export const GET_POST_BY_SLUG = `
   SELECT 
     p.id, p.locale, p.title, p.slug, p.excerpt, p.content_md, 
@@ -61,6 +102,15 @@ export const GET_POST_BY_SLUG = `
   WHERE p.slug = $1 AND p.locale = $2 AND p.status = 'published'
 `;
 
+/**
+ * GET_POST_TAGS
+ *
+ * Fetch tags for a post.
+ *
+ * Parameters:
+ * - $1 post_id
+ * - $2 locale
+ */
 export const GET_POST_TAGS = `
   SELECT t.id, t.name, t.slug
   FROM tags t
@@ -68,6 +118,15 @@ export const GET_POST_TAGS = `
   WHERE pt.post_id = $1 AND t.locale = $2
 `;
 
+/**
+ * GET_POST_CATEGORIES
+ *
+ * Fetch categories for a post.
+ *
+ * Parameters:
+ * - $1 post_id
+ * - $2 locale
+ */
 export const GET_POST_CATEGORIES = `
   SELECT c.id, c.name, c.slug
   FROM categories c
@@ -75,6 +134,18 @@ export const GET_POST_CATEGORIES = `
   WHERE pc.post_id = $1 AND c.locale = $2 AND c.kind = 'post'
 `;
 
+/**
+ * GET_POST_RELATED_POSTS
+ *
+ * Fetch up to 3 related posts for a post.
+ *
+ * Parameters:
+ * - $1 post_id
+ * - $2 locale
+ *
+ * Ordering:
+ * - `post_related.sort_order` ASC
+ */
 export const GET_POST_RELATED_POSTS = `
   SELECT 
     p.id, p.locale, p.title, p.slug, p.excerpt, p.hero_asset_id, p.published_at

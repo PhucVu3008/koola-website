@@ -8,6 +8,20 @@ import leadsRoutes from './leads';
 import newsletterRoutes from './newsletter';
 import jobsRoutes from './jobs';
 
+/**
+ * Public API routes aggregator.
+ *
+ * Mounted at: `/v1`
+ *
+ * Responsibilities:
+ * - Register all public route modules.
+ * - Own the top-level public URL structure (prefix mapping).
+ *
+ * Notes:
+ * - Each sub-route is responsible for request validation (Zod) and returning
+ *   the standard response envelope.
+ * - Public form endpoints may apply additional rate limiting (per-route).
+ */
 const publicRoutes: FastifyPluginAsync = async (server) => {
   // Register all public route modules
   await server.register(servicesRoutes, { prefix: '/services' });

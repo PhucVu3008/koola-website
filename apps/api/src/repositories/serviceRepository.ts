@@ -1,6 +1,13 @@
 import { query, queryOne } from '../db';
 import * as SQL from '../sql/public/services';
 
+/**
+ * Filters for listing services.
+ *
+ * Notes:
+ * - Pagination is `limit`/`offset`.
+ * - `sort` should be validated at the API boundary (Zod) to supported values.
+ */
 interface ServiceFilters {
   locale: string;
   status?: string;
@@ -11,6 +18,14 @@ interface ServiceFilters {
   offset?: number;
 }
 
+/**
+ * Count services matching the provided filters (for pagination).
+ *
+ * @param filters - Listing filters excluding pagination/sort.
+ * @returns Total count as a number.
+ *
+ * @throws Will throw if the database query fails.
+ */
 export const countServices = async (filters: Omit<ServiceFilters, 'sort' | 'limit' | 'offset'>) => {
   const { locale, status, tag, category } = filters;
   
@@ -24,6 +39,14 @@ export const countServices = async (filters: Omit<ServiceFilters, 'sort' | 'limi
   return parseInt(result.total);
 };
 
+/**
+ * List services using locale + optional taxonomy filters.
+ *
+ * @param filters - Service list filters including pagination/sort.
+ * @returns Array of service records.
+ *
+ * @throws Will throw if the database query fails.
+ */
 export const findServices = async (filters: ServiceFilters) => {
   const { locale, status, tag, category, sort, limit, offset } = filters;
   
@@ -38,34 +61,103 @@ export const findServices = async (filters: ServiceFilters) => {
   ]);
 };
 
+/**
+ * Fetch a published service by slug + locale.
+ *
+ * @param slug - Service slug.
+ * @param locale - Locale code.
+ * @returns Service row or `null` if not found.
+ *
+ * @throws Will throw if the database query fails.
+ */
 export const findBySlug = async (slug: string, locale: string) => {
   return await queryOne(SQL.GET_SERVICE_BY_SLUG, [slug, locale]);
 };
 
+/**
+ * Get tags for a service.
+ *
+ * @param serviceId - Service id.
+ * @param locale - Locale code.
+ * @returns Tag rows.
+ *
+ * @throws Will throw if the database query fails.
+ */
 export const getServiceTags = async (serviceId: number, locale: string) => {
   return await query(SQL.GET_SERVICE_TAGS, [serviceId, locale]);
 };
 
+/**
+ * Get categories for a service.
+ *
+ * @param serviceId - Service id.
+ * @param locale - Locale code.
+ * @returns Category rows.
+ *
+ * @throws Will throw if the database query fails.
+ */
 export const getServiceCategories = async (serviceId: number, locale: string) => {
   return await query(SQL.GET_SERVICE_CATEGORIES, [serviceId, locale]);
 };
 
+/**
+ * Get deliverables for a service.
+ *
+ * @param serviceId - Service id.
+ * @returns Deliverable rows.
+ *
+ * @throws Will throw if the database query fails.
+ */
 export const getServiceDeliverables = async (serviceId: number) => {
   return await query(SQL.GET_SERVICE_DELIVERABLES, [serviceId]);
 };
 
+/**
+ * Get process steps for a service.
+ *
+ * @param serviceId - Service id.
+ * @returns Process step rows.
+ *
+ * @throws Will throw if the database query fails.
+ */
 export const getServiceProcessSteps = async (serviceId: number) => {
   return await query(SQL.GET_SERVICE_PROCESS_STEPS, [serviceId]);
 };
 
+/**
+ * Get FAQs for a service.
+ *
+ * @param serviceId - Service id.
+ * @returns FAQ rows.
+ *
+ * @throws Will throw if the database query fails.
+ */
 export const getServiceFaqs = async (serviceId: number) => {
   return await query(SQL.GET_SERVICE_FAQS, [serviceId]);
 };
 
+/**
+ * Get related services for a service.
+ *
+ * @param serviceId - Service id.
+ * @param locale - Locale code.
+ * @returns Related service rows.
+ *
+ * @throws Will throw if the database query fails.
+ */
 export const getRelatedServices = async (serviceId: number, locale: string) => {
   return await query(SQL.GET_SERVICE_RELATED_SERVICES, [serviceId, locale]);
 };
 
+/**
+ * Get related posts for a service.
+ *
+ * @param serviceId - Service id.
+ * @param locale - Locale code.
+ * @returns Related post rows.
+ *
+ * @throws Will throw if the database query fails.
+ */
 export const getRelatedPosts = async (serviceId: number, locale: string) => {
   return await query(SQL.GET_SERVICE_RELATED_POSTS, [serviceId, locale]);
 };
