@@ -12,6 +12,8 @@
     "start": "npm run start --workspace=apps/api",
     "dev:api": "cd apps/api && npm run dev",
     "build:api": "cd apps/api && npm run build",
+    "test:api": "npm run test --workspace=apps/api",
+    "test:api:watch": "npm run test:watch --workspace=apps/api",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",

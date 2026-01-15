@@ -6,6 +6,7 @@ import {
   NewsletterSubscribeInput,
 } from '../../schemas';
 import * as SQL from '../../sql/queries';
+import { ErrorCodes, errorResponse, successResponse } from '../../utils/response';
 
 /**
  * Public Newsletter routes.
@@ -17,7 +18,7 @@ import * as SQL from '../../sql/queries';
  * - `POST /unsubscribe` -> unsubscribe by email
  *
  * Security:
- * - Both endpoints are public and should be rate limited.
+ * - Both endpoints are public and rate limited.
  * - All SQL is parameterized.
  */
 const newsletterRoutes: FastifyPluginAsync = async (server) => {
@@ -37,12 +38,14 @@ const newsletterRoutes: FastifyPluginAsync = async (server) => {
         data.source_path || null,
       ]);
 
-      return reply.status(201).send({
-        data: {
-          id: subscriber.id,
-          message: 'Successfully subscribed to newsletter',
-        },
-      });
+      return reply
+        .status(201)
+        .send(
+          successResponse({
+            id: subscriber.id,
+            message: 'Successfully subscribed to newsletter',
+          })
+        );
     },
   });
 
@@ -53,19 +56,21 @@ const newsletterRoutes: FastifyPluginAsync = async (server) => {
     const result = await queryOne(SQL.UNSUBSCRIBE_NEWSLETTER, [data.email]);
 
     if (!result) {
-      return reply.status(404).send({
-        error: {
-          code: 'NOT_FOUND',
-          message: 'Email not found in subscribers list',
-        },
-      });
+      return reply
+        .status(404)
+        .send(
+          errorResponse(
+            ErrorCodes.NOT_FOUND,
+            'Email not found in subscribers list'
+          )
+        );
     }
 
-    return reply.send({
-      data: {
+    return reply.send(
+      successResponse({
         message: 'Successfully unsubscribed from newsletter',
-      },
-    });
+      })
+    );
   });
 };
 

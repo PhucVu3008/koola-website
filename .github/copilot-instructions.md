@@ -5,6 +5,26 @@ These instructions are **hard constraints**. If a request conflicts with them, e
 
 ---
 
+## -0) Execution Environment: Docker-first workflow (MUST)
+
+This project is run **inside Docker** (via `docker-compose`).
+
+### What this means for all instructions and answers
+- **Do not assume host/terminal execution** on the developer machine.
+- Any time we need to:
+  - install dependencies (`npm install`, `pip install`, etc.)
+  - run dev servers / build / type-check / lint
+  - run automated tests
+  - execute DB tasks (migrations/seed)
+  
+  …the default approach is to **run the command inside the relevant Docker container**, not on the host.
+
+### How to present run/test instructions
+- Prefer documenting commands as **docker-compose exec** (or `docker exec`) commands.
+- If the exact service/container name is unknown, ask for `docker-compose.yml` (service names) rather than guessing.
+
+---
+
 ## -1) Output Expectations (MUST)
 When generating code or changes, produce **production-ready, copy/paste-able** output.
 
@@ -56,22 +76,29 @@ Write code that is easy to read for humans. Comments must help the reader unders
 ---
 
 ## 0) Project Identity (What we’re building)
-KOOLA is an **AI-focused product/service marketing website** optimized for SEO, with a **Blog/Resources** content hub and an **Admin panel** to manage content.
+KOOLA is an **AI-focused product/service marketing website** optimized for SEO.
 
-Public pages:
-- `/` Home
-- `/about` About
-- `/services` Services listing
-- `/services/[slug]` Service Detail (AI services: deliverables, process, FAQ, proof/case studies, strong CTA)
-- `/blog` Blog/Resources listing (**if the project uses `/resources`, treat `/blog` as `/resources`**)
-- `/blog/[slug]` Blog post detail
-- `/careers` Careers listing (optional)
-- `/contact` Contact page
+**Primary scope (MVP):**
+- Public, indexable marketing pages:
+  - `/` Home
+  - `/about` About (or CMS-backed page via `/v1/pages/about`)
+  - `/services` Services listing
+  - `/services/[slug]` Service detail (deliverables/process/FAQ + strong CTA)
+  - `/contact` Contact page (lead capture)
+- Site chrome:
+  - Header/footer navigation
+  - Global site settings (meta/CTA/social)
 
-Global components (reused across pages):
-- Header/footer navigation
-- Newsletter form
-- Sidebar blocks (categories, tags, read more, ads optional)
+**Optional scope (can be deferred):**
+- Blog/Resources hub (`/blog`) **only if** the team will publish content regularly.
+- Careers (`/careers`) and job detail/apply flows.
+
+**Customer behavior analytics (required):**
+- Use **Google Analytics 4 (GA4) via Google Tag Manager (GTM)** to measure traffic and on-site behavior.
+- Track at minimum:
+  - page_view
+  - key CTA clicks (e.g. “Contact”, “Get Started”)
+  - form submissions (lead submit success)
 
 Primary goals:
 - **SEO**: indexable HTML, correct metadata, structured data, sitemap/robots

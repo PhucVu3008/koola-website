@@ -6,6 +6,9 @@ import categoriesRoutes from './categories';
 import tagsRoutes from './tags';
 import leadsRoutes from './leads';
 import newsletterSubscribersRoutes from './newsletterSubscribers';
+import navItemsRoutes from './navItems';
+import siteSettingsRoutes from './siteSettings';
+import pagesRoutes from './pages';
 
 /**
  * Admin routes aggregator.
@@ -37,6 +40,9 @@ const adminRoutes: FastifyPluginAsync = async (server) => {
   await server.register(tagsRoutes, { prefix: '/tags' });
   await server.register(leadsRoutes, { prefix: '/leads' });
   await server.register(newsletterSubscribersRoutes, { prefix: '/newsletter-subscribers' });
+  await server.register(navItemsRoutes, { prefix: '/nav-items' });
+  await server.register(siteSettingsRoutes, { prefix: '/site-settings' });
+  await server.register(pagesRoutes, { prefix: '/pages' });
 };
 
 export default adminRoutes;

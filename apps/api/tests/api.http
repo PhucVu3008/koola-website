@@ -1,9 +1,17 @@
 ### REST Client variables
 @apiBaseUrl = http://localhost:4000
-@adminAccessToken =
+@adminAccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3Njg0NTc2NjYsImV4cCI6MTc2ODQ1ODU2Nn0.-oXHmVKeCGm4TDGIpJ5zixUf6glCklIn6yiPo0hGLSA
 
 ### Health check
 GET http://localhost:4000/health
+
+### ==============================
+### Public API — smoke/contract checks
+### ==============================
+
+### ------------------------------
+### Services
+### ------------------------------
 
 ### List services (default)
 GET http://localhost:4000/v1/services
@@ -11,23 +19,64 @@ GET http://localhost:4000/v1/services
 ### List services (validation: page must be positive)
 GET http://localhost:4000/v1/services?page=0
 
-### Get service detail
-GET http://localhost:4000/v1/services/ai-strategy?locale=en
+### List services (pagination: page past totalPages should return empty data + valid meta)
+GET http://localhost:4000/v1/services?locale=en&page=999&pageSize=9&sort=order
+
+### List services (filter: tag=ai)
+# Seed has tag slug: ai
+GET http://localhost:4000/v1/services?locale=en&page=1&pageSize=9&sort=order&tag=ai
+
+### List services (filter: category=ai-solutions)
+# Seed has service category slug: ai-solutions
+GET http://localhost:4000/v1/services?locale=en&page=1&pageSize=9&sort=order&category=ai-solutions
+
+### List services (sort=newest)
+GET http://localhost:4000/v1/services?locale=en&page=1&pageSize=9&sort=newest
+
+### Get service detail (seeded slug)
+GET http://localhost:4000/v1/services/ai-chatbot-development?locale=en
+
+### Get service detail (locale mismatch should be NOT_FOUND)
+GET http://localhost:4000/v1/services/ai-chatbot-development?locale=vi
 
 ### Get service detail (NOT_FOUND)
 GET http://localhost:4000/v1/services/does-not-exist?locale=en
 
-### List posts
-GET http://localhost:4000/v1/posts?locale=en&page=1&pageSize=10
+### ------------------------------
+### Posts
+### ------------------------------
+
+### List posts (default)
+GET http://localhost:4000/v1/posts?locale=en&page=1&pageSize=10&sort=newest
 
 ### List posts (validation: pageSize too large)
 GET http://localhost:4000/v1/posts?pageSize=999
 
-### Get post detail
-GET http://localhost:4000/v1/posts/first-post?locale=en
+### List posts (pagination: page past totalPages should return empty data + valid meta)
+GET http://localhost:4000/v1/posts?locale=en&page=999&pageSize=10&sort=newest
+
+### List posts (filter: tag=ai)
+GET http://localhost:4000/v1/posts?locale=en&page=1&pageSize=10&sort=newest&tag=ai
+
+### List posts (filter: category=technology)
+# Seed has post category slug: technology
+GET http://localhost:4000/v1/posts?locale=en&page=1&pageSize=10&sort=newest&category=technology
+
+### List posts (validation: bad sort)
+GET http://localhost:4000/v1/posts?locale=en&page=1&pageSize=10&sort=bad
+
+### Get post detail (seeded slug)
+GET http://localhost:4000/v1/posts/introduction-to-machine-learning?locale=en
+
+### Get post detail (locale mismatch should be NOT_FOUND)
+GET http://localhost:4000/v1/posts/introduction-to-machine-learning?locale=vi
 
 ### Get post detail (NOT_FOUND)
 GET http://localhost:4000/v1/posts/does-not-exist?locale=en
+
+### ------------------------------
+### Nav + Site settings
+### ------------------------------
 
 ### Nav (header)
 GET http://localhost:4000/v1/nav?placement=header&locale=en
@@ -35,8 +84,66 @@ GET http://localhost:4000/v1/nav?placement=header&locale=en
 ### Nav (footer)
 GET http://localhost:4000/v1/nav?placement=footer&locale=en
 
+### Nav (locale without data should return empty data)
+GET http://localhost:4000/v1/nav?placement=header&locale=vi
+
+### Nav (validation: placement must be header|footer)
+GET http://localhost:4000/v1/nav?placement=side&locale=en
+
 ### Site settings
 GET http://localhost:4000/v1/site/settings?locale=en
+
+### Site settings (default locale)
+GET http://localhost:4000/v1/site/settings
+
+### ------------------------------
+### Pages
+### ------------------------------
+
+### Pages (published page by slug)
+GET http://localhost:4000/v1/pages/about?locale=en
+
+### Pages (default locale)
+GET http://localhost:4000/v1/pages/about
+
+### Pages (locale mismatch should be NOT_FOUND)
+GET http://localhost:4000/v1/pages/about?locale=vi
+
+### Pages (validation: slug must be a string; whitespace slug should still be parsed and return NOT_FOUND)
+# NOTE: Fastify route param cannot be empty. This uses a whitespace slug which will be URL-decoded.
+GET http://localhost:4000/v1/pages/%20?locale=en
+
+### Pages (validation-ish edge: whitespace slug)
+# NOTE:
+# - Route params cannot be empty; this uses a whitespace slug (%20).
+# - Current behavior: 404 NOT_FOUND.
+# - Some HTTP clients (wget) may not print body on non-2xx unless configured.
+GET http://localhost:4000/v1/pages/%20?locale=en
+
+### Pages (NOT_FOUND)
+GET http://localhost:4000/v1/pages/does-not-exist?locale=en
+
+### ------------------------------
+### Jobs
+### ------------------------------
+
+### Jobs list (published)
+GET http://localhost:4000/v1/jobs?locale=en&status=published
+
+### Jobs list (validation: bad status)
+GET http://localhost:4000/v1/jobs?locale=en&status=invalid
+
+### Jobs list (locale without data should return empty data)
+GET http://localhost:4000/v1/jobs?locale=vi&status=published
+
+### Jobs detail by slug (seeded)
+GET http://localhost:4000/v1/jobs/senior-ml-engineer?locale=en
+
+### Jobs detail (locale mismatch should be NOT_FOUND)
+GET http://localhost:4000/v1/jobs/senior-ml-engineer?locale=vi
+
+### Jobs detail (NOT_FOUND)
+GET http://localhost:4000/v1/jobs/does-not-exist?locale=en
 
 ### Lead (contact form)
 POST http://localhost:4000/v1/leads
@@ -295,39 +402,3 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpb
 ### Admin list leads (search)
 GET {{apiBaseUrl}}/v1/admin/leads?q=john&page=1&pageSize=20
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
-
-### Admin patch lead status
-# NOTE: replace :id
-PATCH {{apiBaseUrl}}/v1/admin/leads/1/status
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
-Content-Type: application/json
-
-{
-  "status": "contacted"
-}
-
-### =========================
-### ADMIN NEWSLETTER SUBSCRIBERS
-### =========================
-
-### Admin list newsletter subscribers
-GET {{apiBaseUrl}}/v1/admin/newsletter-subscribers?page=1&pageSize=20
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
-
-### Admin list newsletter subscribers (filter by status)
-GET {{apiBaseUrl}}/v1/admin/newsletter-subscribers?status=subscribed&page=1&pageSize=20
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
-
-### Admin list newsletter subscribers (search)
-GET {{apiBaseUrl}}/v1/admin/newsletter-subscribers?q=newsletter&page=1&pageSize=20
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
-
-### Admin patch newsletter subscriber status
-# NOTE: replace :id
-PATCH {{apiBaseUrl}}/v1/admin/newsletter-subscribers/1/status
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGtvb2xhLmNvbSIsInJvbGVzIjpbeyJpZCI6MSwibmFtZSI6ImFkbWluIn1dLCJpYXQiOjE3NjgzODE1MTEsImV4cCI6MTc2ODM4MjQxMX0.Bk2AUjYU_8juhrE2UsZPUxp2zZv8tNrBWR828FituYc
-Content-Type: application/json
-
-{
-  "status": "unsubscribed"
-}

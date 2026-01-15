@@ -34,3 +34,6 @@ export * as AdminTaxonomySQL from './admin/taxonomy';
 export * as AdminTaxonomyDeleteSQL from './admin/taxonomyDelete';
 export * as AdminLeadsSQL from './admin/leads';
 export * as AdminNewsletterSubscribersSQL from './admin/newsletterSubscribers';
+export * as AdminNavItemsSQL from './admin/navItems';
+export * as AdminSiteSettingsSQL from './admin/siteSettings';
+export * as AdminPagesSQL from './admin/pages';

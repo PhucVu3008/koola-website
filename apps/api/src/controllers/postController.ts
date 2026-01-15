@@ -6,6 +6,7 @@ import {
   postSlugParamsSchema,
   postSlugQuerySchema,
 } from '../schemas';
+import { ErrorCodes, errorResponse, successResponse } from '../utils/response';
 
 /**
  * GET `/v1/posts`
@@ -37,10 +38,7 @@ export const listPosts = async (request: FastifyRequest, reply: FastifyReply) =>
 
   const result = await postService.listPosts(query);
 
-  return reply.send({
-    data: result.posts,
-    meta: result.meta,
-  });
+  return reply.send(successResponse(result.posts, result.meta));
 };
 
 /**
@@ -79,15 +77,8 @@ export const getPostBySlug = async (request: FastifyRequest, reply: FastifyReply
   const result = await postService.getPostBySlug(slug, locale);
 
   if (!result) {
-    return reply.status(404).send({
-      error: {
-        code: 'NOT_FOUND',
-        message: 'Post not found',
-      },
-    });
+    return reply.status(404).send(errorResponse(ErrorCodes.NOT_FOUND, 'Post not found'));
   }
 
-  return reply.send({
-    data: result,
-  });
+  return reply.send(successResponse(result));
 };

@@ -6,6 +6,7 @@ import {
   serviceSlugParamsSchema,
   serviceSlugQuerySchema,
 } from '../schemas';
+import { ErrorCodes, errorResponse, successResponse } from '../utils/response';
 
 /**
  * GET `/v1/services`
@@ -37,10 +38,7 @@ export const listServices = async (request: FastifyRequest, reply: FastifyReply)
 
   const result = await serviceService.listServices(query);
 
-  return reply.send({
-    data: result.services,
-    meta: result.meta,
-  });
+  return reply.send(successResponse(result.services, result.meta));
 };
 
 /**
@@ -83,15 +81,8 @@ export const getServiceBySlug = async (request: FastifyRequest, reply: FastifyRe
   const result = await serviceService.getServiceBySlug(slug, locale);
 
   if (!result) {
-    return reply.status(404).send({
-      error: {
-        code: 'NOT_FOUND',
-        message: 'Service not found',
-      },
-    });
+    return reply.status(404).send(errorResponse(ErrorCodes.NOT_FOUND, 'Service not found'));
   }
 
-  return reply.send({
-    data: result,
-  });
+  return reply.send(successResponse(result));
 };

@@ -6,6 +6,7 @@ import {
   jobSlugQuerySchema,
 } from '../../schemas';
 import * as SQL from '../../sql/queries';
+import { ErrorCodes, errorResponse, successResponse } from '../../utils/response';
 
 /**
  * Public Jobs routes.
@@ -27,9 +28,7 @@ const jobsRoutes: FastifyPluginAsync = async (server) => {
 
     const jobs = await query(SQL.LIST_JOBS, [locale, status]);
 
-    return reply.send({
-      data: jobs,
-    });
+    return reply.send(successResponse(jobs));
   });
 
   // Get job by slug
@@ -42,17 +41,12 @@ const jobsRoutes: FastifyPluginAsync = async (server) => {
       const job = await queryOne(SQL.GET_JOB_BY_SLUG, [slug, locale]);
 
       if (!job) {
-        return reply.status(404).send({
-          error: {
-            code: 'NOT_FOUND',
-            message: 'Job not found',
-          },
-        });
+        return reply
+          .status(404)
+          .send(errorResponse(ErrorCodes.NOT_FOUND, 'Job not found'));
       }
 
-      return reply.send({
-        data: job,
-      });
+      return reply.send(successResponse(job));
     }
   );
 };

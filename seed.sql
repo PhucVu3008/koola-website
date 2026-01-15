@@ -34,7 +34,9 @@ TRUNCATE TABLE
   newsletter_subscribers,
   leads,
   job_applications,
-  job_posts
+  job_posts,
+  pages,
+  page_sections
 RESTART IDENTITY CASCADE;
 
 -- Insert roles
@@ -204,6 +206,54 @@ INSERT INTO job_posts (id, locale, title, slug, department, location, employment
    '## Requirements\n- 3+ years product management\n- Understanding of AI/ML\n- Strong analytical skills',
    'published', NOW(), 1)
 ON CONFLICT (locale, slug) DO NOTHING;
+
+-- =============================================
+-- Pages (CMS-style) — seed at least one page so
+-- `/v1/pages/:slug` can be verified with a 200
+-- =============================================
+
+-- Insert sample pages
+INSERT INTO pages (id, locale, slug, title, seo_title, seo_description, status, updated_by)
+VALUES
+  (
+    1,
+    'en',
+    'about',
+    'About KOOLA',
+    'About KOOLA — AI Solutions',
+    'Learn more about KOOLA, our mission, and how we help teams ship high-quality AI products.',
+    'published',
+    1
+  )
+ON CONFLICT (locale, slug) DO NOTHING;
+
+-- Insert page sections (ordered)
+INSERT INTO page_sections (page_id, section_key, payload, sort_order)
+VALUES
+  (
+    1,
+    'hero',
+    '{
+      "headline": "We build practical AI that ships.",
+      "subheadline": "KOOLA partners with product teams to design, build, and deploy AI solutions with measurable impact.",
+      "primary_cta": { "label": "Talk to us", "href": "/contact" },
+      "secondary_cta": { "label": "See services", "href": "/services" }
+    }'::jsonb,
+    1
+  ),
+  (
+    1,
+    'content',
+    '{
+      "content_md": "## Our mission\n\nHelp companies adopt AI responsibly and effectively.\n\n## What we do\n\n- Strategy & discovery\n- Prototyping & MVP\n- Production deployment\n- Enablement & training\n\n## Principles\n\n- Security & privacy first\n- Measurable ROI\n- Maintainable systems"
+    }'::jsonb,
+    2
+  )
+ON CONFLICT DO NOTHING;
+
+-- Keep `pages` and `page_sections` identities deterministic
+SELECT setval('pages_id_seq', (SELECT MAX(id) FROM pages), true);
+SELECT setval('page_sections_id_seq', (SELECT MAX(id) FROM page_sections), true);
 
 -- Set sequences to correct values
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users), true);

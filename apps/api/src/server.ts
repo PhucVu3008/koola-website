@@ -12,29 +12,17 @@ import { errorHandler } from './middleware/errorHandler';
 /**
  * Build and configure the Fastify server.
  *
- * Responsibilities:
- * - Configure request logging and request IDs.
- * - Register core plugins (CORS, JWT, multipart, rate limiting).
- * - Register all public/admin routes.
- * - Register the global error handler early to guarantee consistent errors.
- *
- * Important ordering note:
- * - The error handler is set *before* registering routes/plugins to avoid
- *   falling back to Fastify defaults for early failures (e.g. Zod parse errors).
- *
- * Environment variables (recommended):
- * - `NODE_ENV`
- * - `CORS_ORIGIN`
- * - `JWT_ACCESS_SECRET`
- * - `JWT_ACCESS_EXPIRES_IN`
- * - `MAX_FILE_SIZE`
- * - `RATE_LIMIT_MAX`
- * - `RATE_LIMIT_TIMEWINDOW`
+ * Production hardening notes:
+ * - In production, secrets must be provided via env (no fallback defaults).
+ * - CORS should be a strict allowlist of FE origins.
+ * - Global rate-limit is enabled, and sensitive/public form routes apply stricter per-route limits.
  */
 export const buildServer = async () => {
+  const isProd = process.env.NODE_ENV === 'production';
+
   const server = Fastify({
     logger: {
-      level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+      level: isProd ? 'info' : 'debug',
     },
     disableRequestLogging: false,
     requestIdHeader: 'x-request-id',
@@ -46,14 +34,41 @@ export const buildServer = async () => {
   });
 
   // CORS
+  // Supports single origin (CORS_ORIGIN) or comma-separated allowlist (CORS_ORIGINS).
+  const corsOriginsRaw =
+    process.env.CORS_ORIGINS ?? process.env.CORS_ORIGIN ?? 'http://localhost:3000';
+  const corsAllowlist = corsOriginsRaw
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
   await server.register(cors, {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: (origin, cb) => {
+      // Allow non-browser requests (curl, server-to-server, health checks)
+      if (!origin) return cb(null, true);
+
+      const allowed = corsAllowlist.includes(origin);
+      if (allowed) return cb(null, true);
+
+      const err: any = new Error('CORS origin not allowed');
+      err.statusCode = 403;
+      err.code = 'CORS_NOT_ALLOWED';
+      return cb(err, false);
+    },
     credentials: true,
   });
 
   // JWT
+  // IMPORTANT: never ship default secrets.
+  const jwtSecret = process.env.JWT_ACCESS_SECRET;
+  if (isProd && (!jwtSecret || jwtSecret.trim().length < 32)) {
+    throw new Error(
+      'JWT_ACCESS_SECRET must be set in production and should be at least 32 characters'
+    );
+  }
+
   await server.register(jwt, {
-    secret: process.env.JWT_ACCESS_SECRET || 'change-me-in-production',
+    secret: jwtSecret || 'dev-only-secret-change-me',
     sign: {
       expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
     },
@@ -66,7 +81,7 @@ export const buildServer = async () => {
     },
   });
 
-  // Rate limiting
+  // Rate limiting (global default)
   await server.register(rateLimit, {
     max: Number(process.env.RATE_LIMIT_MAX) || 100,
     timeWindow: Number(process.env.RATE_LIMIT_TIMEWINDOW) || 60000, // 1 minute

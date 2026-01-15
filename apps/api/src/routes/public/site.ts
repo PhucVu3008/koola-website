@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { query } from '../../db';
 import { siteSettingsQuerySchema } from '../../schemas';
 import * as SQL from '../../sql/queries';
+import { successResponse } from '../../utils/response';
 
 /**
  * Public Site routes.
@@ -35,15 +36,15 @@ const siteRoutes: FastifyPluginAsync = async (server) => {
       query(SQL.GET_NAV_ITEMS, ['footer', locale]),
     ]);
 
-    return reply.send({
-      data: {
+    return reply.send(
+      successResponse({
         ...settingsObject,
         nav: {
           header: headerNav,
           footer: footerNav,
         },
-      },
-    });
+      })
+    );
   });
 };
 

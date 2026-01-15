@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { query } from '../../db';
 import { navQuerySchema } from '../../schemas';
 import * as SQL from '../../sql/queries';
+import { successResponse } from '../../utils/response';
 
 /**
  * Public Navigation routes.
@@ -22,9 +23,7 @@ const navRoutes: FastifyPluginAsync = async (server) => {
 
     const items = await query(SQL.GET_NAV_ITEMS, [placement, locale]);
 
-    return reply.send({
-      data: items,
-    });
+    return reply.send(successResponse(items));
   });
 };
 
