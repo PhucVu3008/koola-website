@@ -121,6 +121,24 @@ services:
       - api_uploads:/workspace/apps/api/uploads
     command: sh -lc "cd /workspace/apps/api && npm run test:ci"
 
+  # Web Frontend (Next.js)
+  web:
+    image: node:20-alpine
+    container_name: koola-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_BASE_URL: http://api:4000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/workspace
+      - web_node_modules:/workspace/node_modules
+    working_dir: /workspace/apps/web
+    command: sh -lc "npm install && npm run dev"
+
 volumes:
   postgres_data:
     driver: local
@@ -131,6 +149,8 @@ volumes:
   pgadmin_data:
     driver: local
   postgres_test_data:
+    driver: local
+  web_node_modules:
     driver: local
 
 networks:

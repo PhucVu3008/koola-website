@@ -18,7 +18,10 @@
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
     "docker:seed": "docker exec -i koola-postgres psql -U koola_user -d koola_db < seed.sql",
-    "setup": "chmod +x start-dev.sh && ./start-dev.sh"
+    "setup": "chmod +x start-dev.sh && ./start-dev.sh",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "build:web": "npm run build --workspace=apps/web",
+    "start:web": "npm run start --workspace=apps/web"
   },
   "devDependencies": {
     "@types/node": "^25.0.8",

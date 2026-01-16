@@ -1,74 +1,30 @@
-import Fastify from 'fastify';
-import cors from '@fastify/cors';
-import jwt from '@fastify/jwt';
-import multipart from '@fastify/multipart';
-import rateLimit from '@fastify/rate-limit';
-import { errorHandler } from './middleware/errorHandler';
-import publicRoutes from './routes/public';
-import adminRoutes from './routes/admin';
+import { buildServer } from './server';
 
 /**
- * Application instance and initialization.
+ * Compatibility wrapper.
  *
- * This module wires core Fastify plugins needed by the API:
- * - CORS (restrict to frontend origin)
- * - JWT (admin authentication)
- * - Multipart (file uploads)
- * - Rate limit (basic abuse protection)
- * - Route registration (public and admin)
- * - Global error handler (standard error envelope)
+ * This project has a single source of truth for Fastify configuration:
+ * {@link buildServer} in `server.ts`.
  *
- * Notes:
- * - The primary entrypoint used by production is {@link buildServer} in `server.ts`.
- * - This file is kept for compatibility with tooling or alternate bootstraps.
- *
- * Environment variables (recommended):
- * - `CORS_ORIGIN`
- * - `JWT_ACCESS_SECRET`
- * - `PORT`
+ * Why this file still exists:
+ * - Some tooling or older imports may expect `initializeApp()`/default export.
+ * - Keeping this thin wrapper avoids configuration drift between multiple
+ *   bootstraps (CORS/JWT/rate-limit/error handling).
  */
 
-const app = Fastify({ logger: true });
-
-// Register plugins
+/**
+ * Initialize and return a fully configured Fastify instance.
+ *
+ * @deprecated Prefer importing `buildServer` from `./server` directly.
+ */
 export const initializeApp = async () => {
-  // CORS
-  await app.register(cors, {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-    credentials: true,
-  });
-
-  // JWT
-  await app.register(jwt, {
-    // IMPORTANT: do not use a static fallback secret in production.
-    secret: process.env.JWT_ACCESS_SECRET || 'your-secret-key-change-this',
-  });
-
-  // Multipart (file upload)
-  await app.register(multipart, {
-    limits: {
-      fieldNameSize: 100,
-      fieldSize: 1000000, // 1MB
-      fields: 10,
-      fileSize: 10000000, // 10MB
-      files: 5,
-    },
-  });
-
-  // Rate limiting
-  await app.register(rateLimit, {
-    max: 100,
-    timeWindow: '15 minutes',
-  });
-
-  // Routes
-  await app.register(publicRoutes, { prefix: '/v1' });
-  await app.register(adminRoutes, { prefix: '/v1/admin' });
-
-  // Error handler
-  app.setErrorHandler(errorHandler);
-
-  return app;
+  return await buildServer();
 };
 
-export default app;
+/**
+ * Default export kept for backward compatibility.
+ *
+ * Note: This is a Promise to discourage using this default export directly.
+ */
+const appPromise = buildServer();
+export default appPromise;

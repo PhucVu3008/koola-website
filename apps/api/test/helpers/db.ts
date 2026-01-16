@@ -20,6 +20,9 @@ export const resetTestDb = async () => {
     await client.query(`SET lock_timeout = '3s'`);
     await client.query(`SET statement_timeout = '15s'`);
 
+    // Ensure TRUNCATE and related operations are atomic.
+    await client.query('BEGIN');
+
     // Serialize resets across test files/processes.
     await client.query(`SELECT pg_advisory_lock(4242424242);`);
 
@@ -50,6 +53,15 @@ export const resetTestDb = async () => {
         media_assets
       RESTART IDENTITY CASCADE;
     `);
+
+    await client.query('COMMIT');
+  } catch (err) {
+    try {
+      await client.query('ROLLBACK');
+    } catch {
+      // ignore rollback errors
+    }
+    throw err;
   } finally {
     try {
       await client.query(`SELECT pg_advisory_unlock(4242424242);`);

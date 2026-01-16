@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "siteName": "KOOLA",
+    "homeTitle": "KOOLA",
+    "homeDescription": "KOOLA — AI-focused services and solutions."
+  },
+  "locales": {
+    "en": "English",
+    "vi": "Vietnamese"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About Us",
+    "services": "Services",
+    "careers": "Careers",
+    "contact": "Contact Us",
+    "scheduleCall": "Schedule a Call"
+  },
+  "footer": {
+    "product": "Product",
+    "information": "Information",
+    "company": "Company",
+    "subscribe": "Subscribe",
+    "emailAddress": "Email address",
+    "subscribeCta": "Subscribe",
+    "subscribeDescription": "Hello, we are Lift Media. Our goal is to translate the positive effects from revolutionizing how companies engage with their clients & their team.",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "cookies": "Cookies"
+  }
+}

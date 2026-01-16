@@ -1,21 +1,8 @@
-# KOOLA Website - Full Stack Project
+# KOOLA Website 
 
-KOOLA là một **AI-focused marketing website** được tối ưu hóa cho SEO, với Blog/Resources hub và Admin panel để quản lý nội dung.
 
 ## 🏗️ Kiến trúc dự án
 
-```
-koola-website/
-├── apps/
-│   ├── api/              # Backend API (Fastify + PostgreSQL + TypeScript)
-│   └── web/              # Frontend (Next.js App Router) - TBD
-├── packages/
-│   └── shared/           # Shared types/schemas - TBD
-├── db.sql                # Database schema
-├── seed.sql              # Sample data for development
-├── docker-compose.yml    # Docker orchestration
-└── README.md             # This file
-```
 
 ## 🚀 Tech Stack
 
