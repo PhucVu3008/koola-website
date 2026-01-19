@@ -52,7 +52,7 @@ export function SiteFooter({
     { label: 'About us', href: hrefFor('About us', '/about') },
     { label: 'Careers', href: hrefFor('Careers', '/careers') },
     { label: 'Contact us', href: hrefFor('Contact us', '/contact') },
-    { label: 'Lift Media', href: hrefFor('Lift Media', '/') },
+    { label: 'KOOLA', href: hrefFor('KOOLA', '/') },
   ];
 
   return (

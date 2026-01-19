@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "i18n:generate": "node ./scripts/generate-i18n.ts",
+    "i18n:generate": "node ./scripts/generate-i18n.mjs",
     "dev": "npm run i18n:generate && next dev -H 0.0.0.0 -p 3000",
     "build": "npm run i18n:generate && next build --no-lint",
     "start": "next start -H 0.0.0.0 -p 3000",

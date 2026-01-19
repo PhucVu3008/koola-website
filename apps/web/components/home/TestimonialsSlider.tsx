@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Card } from '../ui/Card';
 
@@ -34,10 +34,47 @@ export function TestimonialsSlider({ data }: { data: TestimonialsSliderData }) {
   const [index, setIndex] = useState(0);
   const max = data.items.length;
 
+  const [anim, setAnim] = useState<'idle' | 'in' | 'out'>('idle');
+  const [dir, setDir] = useState<-1 | 1>(1);
+
+  const prefersReducedMotion = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
+  }, []);
+
+  const go = (nextIndex: number) => {
+    const clamped = Math.max(0, Math.min(max - 1, nextIndex));
+    if (clamped === index) return;
+
+    const nextDir: -1 | 1 = clamped > index ? 1 : -1;
+    setDir(nextDir);
+
+    if (prefersReducedMotion) {
+      setIndex(clamped);
+      return;
+    }
+
+    setAnim('out');
+    window.setTimeout(() => {
+      setIndex(clamped);
+      setAnim('in');
+      window.setTimeout(() => setAnim('idle'), 160);
+    }, 140);
+  };
+
   const item = data.items[index] ?? data.items[0];
 
   const canPrev = index > 0;
   const canNext = index < max - 1;
+
+  const cardAnimClass =
+    anim === 'idle'
+      ? 'opacity-100 translate-x-0'
+      : anim === 'out'
+        ? dir === 1
+          ? 'opacity-0 -translate-x-4'
+          : 'opacity-0 translate-x-4'
+        : 'opacity-100 translate-x-0';
 
   return (
     <div className="grid grid-cols-2 items-center gap-12">
@@ -51,7 +88,9 @@ export function TestimonialsSlider({ data }: { data: TestimonialsSliderData }) {
       </div>
 
       <div>
-        <Card className="relative p-7">
+        <Card
+          className={`relative p-7 transition-[opacity,transform] duration-200 ease-out will-change-[opacity,transform] ${cardAnimClass}`}
+        >
           <Stars count={item.stars} />
           <p className="mt-4 text-sm leading-6 text-slate-700">{item.quote}</p>
           <div className="mt-5 flex items-center gap-3">
@@ -64,7 +103,7 @@ export function TestimonialsSlider({ data }: { data: TestimonialsSliderData }) {
           <button
             type="button"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 disabled:opacity-40"
-            onClick={() => setIndex((v) => Math.max(0, v - 1))}
+            onClick={() => go(index - 1)}
             disabled={!canPrev}
             aria-label="Previous"
           >
@@ -82,7 +121,7 @@ export function TestimonialsSlider({ data }: { data: TestimonialsSliderData }) {
           <button
             type="button"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 disabled:opacity-40"
-            onClick={() => setIndex((v) => Math.min(max - 1, v + 1))}
+            onClick={() => go(index + 1)}
             disabled={!canNext}
             aria-label="Next"
           >

@@ -2,7 +2,9 @@
   "meta": {
     "siteName": "KOOLA",
     "homeTitle": "KOOLA",
-    "homeDescription": "KOOLA — Dịch vụ và giải pháp tập trung AI."
+    "homeDescription": "KOOLA — Dịch vụ và giải pháp tập trung AI.",
+    "aboutTitle": "Về chúng tôi",
+    "aboutDescription": "Tìm hiểu về KOOLA và cách chúng tôi làm việc."
   },
   "locales": {
     "en": "Tiếng Anh",
@@ -16,6 +18,23 @@
     "contact": "Liên hệ",
     "scheduleCall": "Đặt lịch trao đổi"
   },
+  "about": {
+    "intro": {
+      "label": "VỀ CHÚNG TÔI"
+    },
+    "story": {
+      "label": "CÂU CHUYỆN"
+    },
+    "milestone": {
+      "label": "Từ đó đến nay..."
+    },
+    "teamRoles": {
+      "intro": "Mỗi năm, các lập trình viên, kỹ sư QA, nhà thiết kế và quản lý dự án của chúng tôi tham gia hàng trăm dự án thú vị..."
+    },
+    "timeline": {
+      "label": "Chúng tôi đã làm như thế nào..."
+    }
+  },
   "footer": {
     "product": "Sản phẩm",
     "information": "Thông tin",
@@ -23,7 +42,7 @@
     "subscribe": "Đăng ký",
     "emailAddress": "Địa chỉ email",
     "subscribeCta": "Đăng ký",
-    "subscribeDescription": "Xin chào, chúng tôi là Lift Media. Mục tiêu của chúng tôi là mang những tác động tích cực từ việc cách mạng hóa cách các công ty tương tác với khách hàng và đội ngũ của họ.",
+    "subscribeDescription": "Xin chào, chúng tôi là KOOLA. Mục tiêu của chúng tôi là tạo ra tác động tích cực bằng cách chuyển đổi cách các công ty tương tác với khách hàng và đội ngũ của họ.",
     "terms": "Điều khoản",
     "privacy": "Quyền riêng tư",
     "cookies": "Cookie"

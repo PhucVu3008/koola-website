@@ -1,4 +1,4 @@
-# KOOLA (AI) – GitHub Copilot Instructions (copilot-instructions.md)
+# KOOLA – GitHub Copilot Instructions (copilot-instructions.md)
 
 You are GitHub Copilot / an AI coding agent working on the KOOLA project.
 These instructions are **hard constraints**. If a request conflicts with them, explain the conflict and propose a compliant alternative.

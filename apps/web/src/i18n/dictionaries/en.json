@@ -2,7 +2,9 @@
   "meta": {
     "siteName": "KOOLA",
     "homeTitle": "KOOLA",
-    "homeDescription": "KOOLA — AI-focused services and solutions."
+    "homeDescription": "KOOLA — AI-focused services and solutions.",
+    "aboutTitle": "About Us",
+    "aboutDescription": "Learn more about KOOLA and how we work."
   },
   "locales": {
     "en": "English",
@@ -16,6 +18,23 @@
     "contact": "Contact Us",
     "scheduleCall": "Schedule a Call"
   },
+  "about": {
+    "intro": {
+      "label": "ABOUT US"
+    },
+    "story": {
+      "label": "OUR STORY"
+    },
+    "milestone": {
+      "label": "Since then..."
+    },
+    "teamRoles": {
+      "intro": "Every year our software developers, QA engineers, designers, and project managers work on hundreds of exciting projects..."
+    },
+    "timeline": {
+      "label": "How we did it..."
+    }
+  },
   "footer": {
     "product": "Product",
     "information": "Information",
@@ -23,7 +42,7 @@
     "subscribe": "Subscribe",
     "emailAddress": "Email address",
     "subscribeCta": "Subscribe",
-    "subscribeDescription": "Hello, we are Lift Media. Our goal is to translate the positive effects from revolutionizing how companies engage with their clients & their team.",
+    "subscribeDescription": "Hello, we are KOOLA. Our goal is to deliver positive impact by transforming how companies engage with their clients and their teams.",
     "terms": "Terms",
     "privacy": "Privacy",
     "cookies": "Cookies"

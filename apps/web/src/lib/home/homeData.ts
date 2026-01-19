@@ -7,7 +7,7 @@
 export const HOME = {
   hero: {
     label: 'TECH SERVICES',
-    headline: ['TechSynergy:', 'Innovate,', 'Create, Elevate'],
+    headline: ['KOOLA:', 'Innovate,', 'Create, Elevate'],
     subhead: 'Unlocking Possibilities, One Code at a Time',
     primaryCta: { label: 'Sign projects', href: '/contact' },
     secondaryCta: { label: 'Get Started', href: '/services' },
@@ -95,7 +95,7 @@ export const HOME = {
       {
         stars: 5,
         quote:
-          'Exceptional Solutions, Exceeded Expectation! Working with TechNova has been incredible. Their team listened to our needs and delivered an outstanding product on time.',
+          'Exceptional Solutions, Exceeded Expectation! Working with KOOLA has been incredible. Their team listened to our needs and delivered an outstanding product on time.',
         name: 'Mary Johnson',
       },
       {
@@ -198,7 +198,7 @@ export const HOME_I18N = {
   vi: {
     hero: {
       label: 'DỊCH VỤ CÔNG NGHỆ',
-      headline: ['TechSynergy:', 'Đổi mới,', 'Tạo dựng, Nâng tầm'],
+      headline: ['KOOLA:', 'Đổi mới,', 'Tạo dựng, Nâng tầm'],
       subhead: 'Mở khóa tiềm năng, từng dòng code một',
       primaryCta: { label: 'Ký dự án', href: '/contact' },
       secondaryCta: { label: 'Bắt đầu', href: '/services' },
@@ -286,7 +286,7 @@ export const HOME_I18N = {
         {
           stars: 5,
           quote:
-            'Giải pháp xuất sắc, vượt kỳ vọng! Làm việc với TechNova thật tuyệt vời. Họ lắng nghe nhu cầu và bàn giao sản phẩm đúng hạn.',
+            'Giải pháp xuất sắc, vượt kỳ vọng! Làm việc với KOOLA thật tuyệt vời. Họ lắng nghe nhu cầu và bàn giao sản phẩm đúng hạn.',
           name: 'Mary Johnson',
         },
         {

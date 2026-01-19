@@ -69,27 +69,33 @@ export function SiteHeader({ locale }: { locale: string }) {
         </nav>
 
         <div className="flex items-center gap-4">
-          <label className="sr-only" htmlFor="locale-select">
-            Language
-          </label>
-          <select
-            id="locale-select"
-            className="h-9 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-800"
-            value={baseLocale}
-            onChange={(e) => {
-              window.location.href = switchTo(e.target.value);
-            }}
-          >
-            {supportedLocales.map((l) => (
-              <option key={l} value={l}>
-                {getLocaleLabel(l, baseLocale)}
-              </option>
-            ))}
-          </select>
+          <div className="flex h-9 items-center gap-4">
+            <label className="sr-only" htmlFor="locale-select">
+              Language
+            </label>
+            <select
+              id="locale-select"
+              className="h-9 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold leading-none text-slate-800"
+              value={baseLocale}
+              onChange={(e) => {
+                window.location.href = switchTo(e.target.value);
+              }}
+            >
+              {supportedLocales.map((l) => (
+                <option key={l} value={l}>
+                  {getLocaleLabel(l, baseLocale)}
+                </option>
+              ))}
+            </select>
 
-          <Button href={withLocale('/contact')} variant="primary" className="h-9 px-5 text-xs">
-            {dict.nav.scheduleCall}
-          </Button>
+            <Button
+              href={withLocale('/contact')}
+              variant="primary"
+              className="relative top-[1px] h-9 px-5 text-xs leading-none"
+            >
+              {dict.nav.scheduleCall}
+            </Button>
+          </div>
         </div>
       </div>
     </header>

@@ -3,6 +3,7 @@ import { query, queryOne } from '../../db';
 import { pageSlugParamsSchema, pageQuerySchema } from '../../schemas';
 import * as SQL from '../../sql/queries';
 import { ErrorCodes, errorResponse, successResponse } from '../../utils/response';
+import aboutRoutes from './about';
 
 /**
  * Public Pages routes.
@@ -19,6 +20,9 @@ import { ErrorCodes, errorResponse, successResponse } from '../../utils/response
  * - 404 `NOT_FOUND` when page does not exist.
  */
 const pagesRoutes: FastifyPluginAsync = async (server) => {
+  // About page extra endpoints
+  await server.register(aboutRoutes, { prefix: '/about' });
+
   // Get page by slug
   server.get<{ Params: { slug: string }; Querystring: { locale?: string } }>(
     '/:slug',

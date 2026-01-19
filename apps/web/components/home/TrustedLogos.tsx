@@ -6,6 +6,7 @@ export type TrustedLogosData = {
   title: string;
   subtitle: string;
   ctaLabel: string;
+  ctaHref?: string;
   logos: ReadonlyArray<string>;
 };
 
@@ -15,24 +16,23 @@ export type TrustedLogosData = {
 export function TrustedLogos({ data }: { data: TrustedLogosData }) {
   return (
     <div className="text-center">
-      <h2 className="text-2xl font-semibold text-slate-900">{data.title}</h2>
-      <p className="mt-2 text-sm text-slate-500">{data.subtitle}</p>
+      <div className="mb-8 text-base leading-relaxed text-slate-900">{data.title}</div>
 
-      <div className="mt-10 flex items-center justify-center gap-10 opacity-70">
+      <div className="flex items-center justify-center gap-12 opacity-60 grayscale">
         {data.logos.map((logo) => (
           <Image
             key={logo}
             src={`/home/logos/${logo}.svg`}
             alt={logo}
-            width={90}
-            height={28}
-            className="h-7 w-auto grayscale"
+            width={100}
+            height={32}
+            className="h-8 w-auto transition-opacity hover:opacity-100"
           />
         ))}
       </div>
 
-      <div className="mt-10 flex justify-center">
-        <Button href="/contact" variant="primary" className="h-9 px-6 text-xs">
+      <div className="mt-8 flex justify-center">
+        <Button href={data.ctaHref || '/contact'} variant="secondary" className="text-sm">
           {data.ctaLabel}
         </Button>
       </div>

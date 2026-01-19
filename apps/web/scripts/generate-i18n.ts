@@ -75,4 +75,11 @@ function toIdentifier(locale: string) {
   return `${first.toLowerCase()}${rest.map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join('')}`;
 }
 
-main();
+/**
+ * DEPRECATED.
+ *
+ * Docker/Node cannot execute `.ts` scripts without a loader.
+ * Use `scripts/generate-i18n.mjs` instead.
+ */
+
+throw new Error('Deprecated: use scripts/generate-i18n.mjs');

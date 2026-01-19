@@ -6,6 +6,7 @@ import { InteractiveCard } from '../ui/InteractiveCard';
 export type TeamRolesPreviewData = {
   title: string;
   ctaLabel: string;
+  ctaHref?: string;
   roles: ReadonlyArray<{ role: string; image: string }>;
 };
 
@@ -15,20 +16,22 @@ export type TeamRolesPreviewData = {
 export function TeamRolesPreview({ data }: { data: TeamRolesPreviewData }) {
   return (
     <div className="text-center">
-      <div className="flex items-center justify-center gap-10">
+      <div className="mb-8 text-center text-base leading-relaxed text-slate-900">{data.title}</div>
+
+      <div className="flex items-center justify-center gap-8">
         {data.roles.map((r) => (
           <InteractiveCard key={r.role} className="inline-block">
             <div className="text-center">
-              <div className="mx-auto h-16 w-16 overflow-hidden rounded-full bg-slate-200">
+              <div className="mx-auto h-20 w-20 overflow-hidden rounded-full bg-gradient-to-br from-blue-100 to-purple-100 p-1">
                 <Image
                   src={r.image}
                   alt={r.role}
-                  width={96}
-                  height={96}
-                  className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.08]"
+                  width={80}
+                  height={80}
+                  className="h-full w-full rounded-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                 />
               </div>
-              <div className="mt-4 text-xs font-medium text-slate-600 transition-colors duration-300 group-hover:text-slate-900">
+              <div className="mt-3 whitespace-pre-line text-xs font-medium text-slate-700 transition-colors duration-300 group-hover:text-slate-900">
                 {r.role}
               </div>
             </div>
@@ -36,13 +39,10 @@ export function TeamRolesPreview({ data }: { data: TeamRolesPreviewData }) {
         ))}
       </div>
 
-      <div className="mt-10">
-        <div className="text-2xl font-semibold text-slate-900">{data.title}</div>
-        <div className="mt-6 flex justify-center">
-          <Button href="/contact" variant="primary" className="h-9 px-7 text-xs">
-            {data.ctaLabel}
-          </Button>
-        </div>
+      <div className="mt-8 flex justify-center">
+        <Button href={data.ctaHref || '/contact'} variant="secondary" className="text-sm">
+          {data.ctaLabel}
+        </Button>
       </div>
     </div>
   );

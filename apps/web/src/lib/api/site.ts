@@ -28,6 +28,7 @@ export type SiteSettingsPayload = {
  * @returns Bundled settings payload
  */
 export async function getSiteSettings(locale: string): Promise<SiteSettingsPayload> {
+  // Backend route is mounted at `/v1/site/settings`.
   const res = await apiFetchJson<ApiSuccessEnvelope<SiteSettingsPayload>>(
     `/v1/site/settings?locale=${encodeURIComponent(locale)}`,
     {
@@ -36,5 +37,16 @@ export async function getSiteSettings(locale: string): Promise<SiteSettingsPaylo
     } as any
   );
 
-  return res.data;
+  // The API returns `{ ...settingsObject, nav: { header, footer } }`.
+  // Normalize into the shape used by the layout.
+  const anyRes = res as any;
+  const settings = Object.entries(anyRes.data ?? {})
+    .filter(([k]) => k !== 'nav')
+    .map(([key, value]) => ({ key, value }));
+
+  return {
+    settings,
+    header_nav: anyRes.data?.nav?.header ?? [],
+    footer_nav: anyRes.data?.nav?.footer ?? [],
+  };
 }
