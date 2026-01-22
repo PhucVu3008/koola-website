@@ -69,6 +69,28 @@ export function SiteHeader({ locale }: { locale: string }) {
       }
     }
     
+    // Check if we're on a job detail page: /[locale]/careers/[slug]
+    if (newParts.length >= 3 && newParts[1] === 'careers') {
+      const currentSlug = newParts[2];
+      const currentLocale = isLocale(newParts[0]) ? newParts[0] : baseLocale;
+      
+      try {
+        // Call API to get translated job slug
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/v1/jobs/slug-map?from_slug=${currentSlug}&from_locale=${currentLocale}&to_locale=${nextLocale}`
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data?.slug) {
+            return `/${nextLocale}/careers/${data.data.slug}`;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to map job slug:', error);
+      }
+    }
+    
     // Default behavior: just replace locale
     if (isLocale(newParts[0])) newParts[0] = nextLocale;
     else newParts.unshift(nextLocale);

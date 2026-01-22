@@ -138,7 +138,7 @@
       "phone": "Điện thoại",
       "address": "Địa chỉ",
       "businessHours": "Giờ làm việc",
-      "businessHoursValue": "Thứ 2 - Thứ 6: 9:00 SA - 6:00 CH"
+      "businessHoursValue": "Thứ 2 - Thứ 6: 8:00 SA - 5:00 CH"
     },
     "form": {
       "title": "Gửi tin nhắn cho chúng tôi",
@@ -172,6 +172,58 @@
     "terms": "Điều khoản",
     "privacy": "Quyền riêng tư",
     "cookies": "Cookie"
+  },
+  "errors": {
+    "notFound": {
+      "title": "404 - Không tìm thấy trang",
+      "heading": "Rất tiếc! Không tìm thấy trang",
+      "description": "Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển.",
+      "homeButton": "Về trang chủ",
+      "servicesButton": "Xem dịch vụ",
+      "contactButton": "Liên hệ"
+    },
+    "serverError": {
+      "title": "500 - Lỗi máy chủ",
+      "heading": "Đã xảy ra lỗi",
+      "description": "Chúng tôi đang gặp sự cố kỹ thuật. Vui lòng thử lại sau.",
+      "homeButton": "Về trang chủ",
+      "retryButton": "Thử lại"
+    },
+    "unauthorized": {
+      "title": "401 - Chưa xác thực",
+      "heading": "Yêu cầu đăng nhập",
+      "description": "Bạn cần đăng nhập để truy cập trang này.",
+      "homeButton": "Về trang chủ",
+      "loginButton": "Đăng nhập"
+    },
+    "forbidden": {
+      "title": "403 - Bị cấm",
+      "heading": "Truy cập bị từ chối",
+      "description": "Bạn không có quyền truy cập tài nguyên này.",
+      "homeButton": "Về trang chủ",
+      "contactButton": "Liên hệ hỗ trợ"
+    },
+    "badRequest": {
+      "title": "400 - Yêu cầu không hợp lệ",
+      "heading": "Yêu cầu không hợp lệ",
+      "description": "Yêu cầu không thể hiểu được hoặc thiếu tham số bắt buộc.",
+      "homeButton": "Về trang chủ",
+      "retryButton": "Thử lại"
+    },
+    "serviceUnavailable": {
+      "title": "503 - Dịch vụ không khả dụng",
+      "heading": "Chúng tôi sẽ quay lại ngay",
+      "description": "Chúng tôi đang thực hiện bảo trì. Vui lòng quay lại sau.",
+      "homeButton": "Về trang chủ",
+      "statusButton": "Kiểm tra trạng thái"
+    },
+    "badGateway": {
+      "title": "502 - Lỗi Gateway",
+      "heading": "Lỗi kết nối Gateway",
+      "description": "Chúng tôi đang gặp sự cố khi kết nối đến máy chủ. Vui lòng thử lại sau vài phút.",
+      "homeButton": "Về trang chủ",
+      "retryButton": "Thử lại"
+    }
   },
   "legal": {
     "terms": {

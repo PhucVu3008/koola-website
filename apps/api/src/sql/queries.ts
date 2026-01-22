@@ -295,7 +295,7 @@ export const UNSUBSCRIBE_NEWSLETTER = `
 
 export const LIST_JOBS = `
   SELECT 
-    id, locale, title, slug, department, location, 
+    id, locale, title, slug, slug_group, department, location, 
     employment_type, level, summary, status, published_at
   FROM job_posts
   WHERE locale = $1 AND status = $2
@@ -304,7 +304,7 @@ export const LIST_JOBS = `
 
 export const GET_JOB_BY_SLUG = `
   SELECT 
-    id, locale, title, slug, department, location, 
+    id, locale, title, slug, slug_group, department, location, 
     employment_type, level, summary, responsibilities_md, requirements_md,
     status, published_at, created_at, updated_at
   FROM job_posts

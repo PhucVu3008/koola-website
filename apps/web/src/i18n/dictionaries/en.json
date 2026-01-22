@@ -138,7 +138,7 @@
       "phone": "Phone",
       "address": "Address",
       "businessHours": "Business Hours",
-      "businessHoursValue": "Mon - Fri: 9:00 AM - 6:00 PM"
+      "businessHoursValue": "Mon - Fri: 8:00 AM - 5:00 PM"
     },
     "form": {
       "title": "Send us a Message",
@@ -172,6 +172,58 @@
     "terms": "Terms",
     "privacy": "Privacy",
     "cookies": "Cookies"
+  },
+  "errors": {
+    "notFound": {
+      "title": "404 - Page Not Found",
+      "heading": "Oops! Page not found",
+      "description": "The page you are looking for doesn't exist or has been moved.",
+      "homeButton": "Back to Home",
+      "servicesButton": "View Our Services",
+      "contactButton": "Contact Us"
+    },
+    "serverError": {
+      "title": "500 - Server Error",
+      "heading": "Something went wrong",
+      "description": "We're experiencing technical difficulties. Please try again later.",
+      "homeButton": "Back to Home",
+      "retryButton": "Try Again"
+    },
+    "unauthorized": {
+      "title": "401 - Unauthorized",
+      "heading": "Authentication Required",
+      "description": "You need to sign in to access this page.",
+      "homeButton": "Back to Home",
+      "loginButton": "Sign In"
+    },
+    "forbidden": {
+      "title": "403 - Forbidden",
+      "heading": "Access Denied",
+      "description": "You don't have permission to access this resource.",
+      "homeButton": "Back to Home",
+      "contactButton": "Contact Support"
+    },
+    "badRequest": {
+      "title": "400 - Bad Request",
+      "heading": "Invalid Request",
+      "description": "The request could not be understood or was missing required parameters.",
+      "homeButton": "Back to Home",
+      "retryButton": "Try Again"
+    },
+    "serviceUnavailable": {
+      "title": "503 - Service Unavailable",
+      "heading": "We'll be right back",
+      "description": "We're currently performing maintenance. Please check back soon.",
+      "homeButton": "Back to Home",
+      "statusButton": "Check Status"
+    },
+    "badGateway": {
+      "title": "502 - Bad Gateway",
+      "heading": "Gateway Error",
+      "description": "We're having trouble connecting to our servers. Please try again in a few moments.",
+      "homeButton": "Back to Home",
+      "retryButton": "Try Again"
+    }
   },
   "legal": {
     "terms": {

@@ -98,6 +98,45 @@ const jobsRoutes: FastifyPluginAsync = async (server) => {
       );
     }
   );
+
+  // Slug map endpoint for locale switching
+  server.get('/slug-map', async (request, reply) => {
+    const query = request.query as { from_slug?: string; from_locale?: string; to_locale?: string };
+    
+    if (!query.from_slug || !query.from_locale || !query.to_locale) {
+      return reply.status(400).send(
+        errorResponse(ErrorCodes.VALIDATION_ERROR, 'Missing required query parameters: from_slug, from_locale, to_locale')
+      );
+    }
+
+    const { from_slug, from_locale, to_locale } = query;
+
+    // Get slug_group from source job
+    const sourceJob = await queryOne(
+      `SELECT slug_group FROM job_posts WHERE slug = $1 AND locale = $2 AND status = 'published'`,
+      [from_slug, from_locale]
+    );
+
+    if (!sourceJob || !sourceJob.slug_group) {
+      return reply.status(404).send(
+        errorResponse(ErrorCodes.NOT_FOUND, 'Job not found or missing slug_group')
+      );
+    }
+
+    // Find target job with same slug_group in target locale
+    const targetJob = await queryOne(
+      `SELECT slug FROM job_posts WHERE slug_group = $1 AND locale = $2 AND status = 'published'`,
+      [sourceJob.slug_group, to_locale]
+    );
+
+    if (!targetJob) {
+      return reply.status(404).send(
+        errorResponse(ErrorCodes.NOT_FOUND, `No ${to_locale} version found for this job`)
+      );
+    }
+
+    return reply.send(successResponse({ slug: targetJob.slug }));
+  });
 };
 
 export default jobsRoutes;

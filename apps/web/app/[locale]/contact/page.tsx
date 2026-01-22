@@ -56,8 +56,8 @@ export default async function ContactRoute({
       phone: '+84 123 456 789',
       addressLabel: dict.contact.info.address,
       address: locale === 'vi' 
-        ? 'Hà Nội, Việt Nam' 
-        : 'Hanoi, Vietnam',
+        ? 'Lâm Đồng, Việt Nam' 
+        : 'Lam Dong, Vietnam',
       businessHoursLabel: dict.contact.info.businessHours,
       businessHours: dict.contact.info.businessHoursValue,
     },
