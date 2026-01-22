@@ -22,83 +22,55 @@ export function SiteFooter({
 }) {
   const dict = getDictionary(isLocale(locale) ? locale : 'en');
 
-  const footer = site.footer_nav ?? [];
+  const withLocale = (path: string) => `/${locale}${path}`;
 
-  const byLabel = new Map(
-    footer
-      .filter((i) => typeof i.label === 'string')
-      .map((i) => [i.label.trim().toLowerCase(), i.href] as const),
-  );
-
-  const hrefFor = (label: string, fallbackHref: string) =>
-    byLabel.get(label.trim().toLowerCase()) ?? fallbackHref;
-
-  const productLinks = [
-    { label: 'Employee database', href: hrefFor('Employee database', '/services') },
-    { label: 'Payroll', href: hrefFor('Payroll', '/services') },
-    { label: 'Absences', href: hrefFor('Absences', '/services') },
-    { label: 'Time tracking', href: hrefFor('Time tracking', '/services') },
-    { label: 'Shift planner', href: hrefFor('Shift planner', '/services') },
-    { label: 'Recruiting', href: hrefFor('Recruiting', '/services') },
-  ];
-
-  const informationLinks = [
-    { label: 'FAQ', href: hrefFor('FAQ', '/about') },
-    { label: 'Blog', href: hrefFor('Blog', '/blog') },
-    { label: 'Support', href: hrefFor('Support', '/contact') },
-  ];
-
+  // Main navigation links
   const companyLinks = [
-    { label: 'About us', href: hrefFor('About us', '/about') },
-    { label: 'Careers', href: hrefFor('Careers', '/careers') },
-    { label: 'Contact us', href: hrefFor('Contact us', '/contact') },
-    { label: 'KOOLA', href: hrefFor('KOOLA', '/') },
+    { label: dict.nav.home, href: withLocale('/') },
+    { label: dict.nav.about, href: withLocale('/about') },
+    { label: dict.nav.services, href: withLocale('/services') },
+    { label: dict.nav.careers, href: withLocale('/careers') },
+    { label: dict.nav.contact, href: withLocale('/contact') },
+  ];
+
+  // Resources/support links
+  const resourceLinks = [
+    { 
+      label: locale === 'vi' ? 'Dịch vụ của chúng tôi' : 'Our Services', 
+      href: withLocale('/services') 
+    },
+    { 
+      label: locale === 'vi' ? 'Tuyển dụng' : 'Career Opportunities', 
+      href: withLocale('/careers') 
+    },
+    { 
+      label: locale === 'vi' ? 'Về chúng tôi' : 'About KOOLA', 
+      href: withLocale('/about') 
+    },
+  ];
+
+  // Legal/policy links
+  const legalLinks = [
+    { label: dict.footer.terms, href: withLocale('/terms') },
+    { label: dict.footer.privacy, href: withLocale('/privacy') },
+    { label: dict.footer.cookies, href: withLocale('/cookies') },
   ];
 
   return (
-    <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto w-full max-w-[1240px] px-6 pb-8 pt-14">
+    <footer className="w-full border-t border-slate-200 bg-white">
+      <div className="container pb-8 pt-14">
         <div className="grid grid-cols-12 gap-x-10 gap-y-10">
-          <div className="col-span-12 md:col-span-2">
-            <div className="text-[18px] font-semibold text-slate-900">{dict.footer.product}</div>
-            <ul className="mt-5 space-y-3">
-              {productLinks.map((l) => (
-                <li key={l.label}>
-                  <a
-                    href={l.href}
-                    className="text-[18px] leading-7 text-slate-500 hover:text-slate-900"
-                  >
-                    {l.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="col-span-12 md:col-span-2">
-            <div className="text-[18px] font-semibold text-slate-900">{dict.footer.information}</div>
-            <ul className="mt-5 space-y-3">
-              {informationLinks.map((l) => (
-                <li key={l.label}>
-                  <a
-                    href={l.href}
-                    className="text-[18px] leading-7 text-slate-500 hover:text-slate-900"
-                  >
-                    {l.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="col-span-12 md:col-span-2">
-            <div className="text-[18px] font-semibold text-slate-900">{dict.footer.company}</div>
+          {/* Company Links */}
+          <div className="col-span-12 md:col-span-3">
+            <div className="text-[18px] font-semibold text-slate-900">
+              {locale === 'vi' ? 'Công ty' : 'Company'}
+            </div>
             <ul className="mt-5 space-y-3">
               {companyLinks.map((l) => (
                 <li key={l.label}>
                   <a
                     href={l.href}
-                    className="text-[18px] leading-7 text-slate-500 hover:text-slate-900"
+                    className="text-[16px] leading-7 text-slate-500 hover:text-slate-900"
                   >
                     {l.label}
                   </a>
@@ -107,7 +79,27 @@ export function SiteFooter({
             </ul>
           </div>
 
-          <div className="col-span-12 md:col-span-6 md:col-start-8">
+          {/* Resources Links */}
+          <div className="col-span-12 md:col-span-3">
+            <div className="text-[18px] font-semibold text-slate-900">
+              {locale === 'vi' ? 'Tài nguyên' : 'Resources'}
+            </div>
+            <ul className="mt-5 space-y-3">
+              {resourceLinks.map((l) => (
+                <li key={l.label}>
+                  <a
+                    href={l.href}
+                    className="text-[16px] leading-7 text-slate-500 hover:text-slate-900"
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Subscribe Section */}
+          <div className="col-span-12 md:col-span-6">
             <div className="rounded-[28px] bg-slate-50 p-10">
               <div className="text-[20px] font-semibold text-slate-900">{dict.footer.subscribe}</div>
 
@@ -163,22 +155,22 @@ export function SiteFooter({
         <div className="mt-14 h-px w-full bg-slate-200" />
 
         <div className="mt-7 flex items-center justify-between">
-          <a href="/" aria-label="Home" className="inline-flex items-center">
+          <a href={withLocale('/')} aria-label="Home" className="inline-flex items-center">
             <div className="grid h-11 w-11 place-items-center rounded-xl bg-slate-50">
               <span className="text-xl font-bold text-indigo-600">K</span>
             </div>
           </a>
 
           <nav aria-label="Legal" className="flex items-center gap-14">
-            <a href={hrefFor('Terms', '/terms')} className="text-[16px] text-slate-700 hover:text-slate-900">
-              {dict.footer.terms}
-            </a>
-            <a href={hrefFor('Privacy', '/privacy')} className="text-[16px] text-slate-700 hover:text-slate-900">
-              {dict.footer.privacy}
-            </a>
-            <a href={hrefFor('Cookies', '/cookies')} className="text-[16px] text-slate-700 hover:text-slate-900">
-              {dict.footer.cookies}
-            </a>
+            {legalLinks.map((l) => (
+              <a
+                key={l.label}
+                href={l.href}
+                className="text-[16px] text-slate-700 hover:text-slate-900"
+              >
+                {l.label}
+              </a>
+            ))}
           </nav>
 
           <div className="flex items-center gap-4">

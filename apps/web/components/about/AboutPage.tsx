@@ -47,7 +47,7 @@ export function AboutPage({ data }: { data: AboutPageData }) {
   const cta = assertSection('about_cta', data.cta);
 
   return (
-    <div className="space-y-16 py-8">
+    <div className="space-y-16 py-8 px-4 md:px-6 lg:px-8">
       <RevealOnScroll delayMs={0} hoverParallax>
         <Section tone="white">
           <AboutIntroSection data={intro} />

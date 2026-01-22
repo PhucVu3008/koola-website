@@ -311,6 +311,26 @@ export const GET_JOB_BY_SLUG = `
   WHERE slug = $1 AND locale = $2 AND status = 'published'
 `;
 
+// ============ JOB APPLICATION QUERIES ============
+
+export const CREATE_JOB_APPLICATION = `
+  INSERT INTO job_applications (
+    job_id, full_name, email, phone, linkedin_url, 
+    portfolio_url, resume_asset_id, cover_letter, status
+  )
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'new')
+  RETURNING id, created_at
+`;
+
+export const GET_JOB_APPLICATION_BY_ID = `
+  SELECT 
+    ja.id, ja.job_id, ja.full_name, ja.email, ja.phone,
+    ja.linkedin_url, ja.portfolio_url, ja.resume_asset_id,
+    ja.cover_letter, ja.status, ja.created_at
+  FROM job_applications ja
+  WHERE ja.id = $1
+`;
+
 // ============ AUTH QUERIES ============
 
 export const GET_USER_BY_EMAIL = `

@@ -7,6 +7,23 @@ const config: Config = {
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: '1.5rem',
+        sm: '2rem',
+        lg: '2.5rem',
+        xl: '3rem',
+        '2xl': '4rem',
+      },
+      screens: {
+        sm: '640px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px',
+        '2xl': '1400px',
+      },
+    },
     extend: {
       colors: {
         brand: {
@@ -25,9 +42,35 @@ const config: Config = {
       boxShadow: {
         card: '0 10px 30px rgba(2, 6, 23, 0.08)',
       },
+      animation: {
+        'fade-in-up': 'fadeInUp 0.8s ease-out',
+        'float-slow': 'float 6s ease-in-out infinite',
+        'float-medium': 'float 4s ease-in-out infinite',
+        'float-fast': 'float 3s ease-in-out infinite',
+      },
+      keyframes: {
+        fadeInUp: {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(30px)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
+        },
+        float: {
+          '0%, 100%': {
+            transform: 'translateY(0px)',
+          },
+          '50%': {
+            transform: 'translateY(-20px)',
+          },
+        },
+      },
     },
   },
-  plugins: [require('@tailwindcss/line-clamp')],
+  plugins: [require('@tailwindcss/line-clamp'), require('@tailwindcss/typography')],
 };
 
 export default config;

@@ -2,8 +2,12 @@ import type { Metadata } from 'next';
 
 import { notFound } from 'next/navigation';
 
-import { ContactForm } from '../../../components/ContactForm';
+import { ContactPage } from '../../../components/contact';
 import { isLocale, type Locale } from '../../../src/i18n/locales';
+import { getDictionary } from '../../../src/i18n/getDictionary';
+import type { ContactPageData } from '../../../components/contact/ContactPage';
+
+export const revalidate = 3600; // Revalidate every hour
 
 export async function generateMetadata({
   params,
@@ -13,8 +17,10 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
 
+  const dict = await getDictionary(locale);
+
   return {
-    title: locale === 'vi' ? 'Liên hệ' : 'Contact',
+    title: dict.nav.contact,
     description:
       locale === 'vi'
         ? 'Liên hệ KOOLA — cho chúng tôi biết bạn đang xây dựng gì. Chúng tôi phản hồi trong 1–2 ngày làm việc.'
@@ -23,9 +29,10 @@ export async function generateMetadata({
 }
 
 /**
- * Contact page.
+ * Contact page with Hero, Info, and Form sections.
+ * Fully i18n and scroll-triggered animations.
  */
-export default async function ContactPage({
+export default async function ContactRoute({
   params,
 }: {
   params: Promise<{ locale: Locale }>;
@@ -33,20 +40,48 @@ export default async function ContactPage({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  return (
-    <div className="py-12">
-      <div className="space-y-6">
-        <header className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight">
-            {locale === 'vi' ? 'Liên hệ' : 'Contact'}
-          </h1>
-          <p className="text-slate-600">
-            {locale === 'vi' ? 'Gửi cho chúng tôi một tin nhắn.' : 'Send us a message.'}
-          </p>
-        </header>
+  const dict = await getDictionary(locale);
 
-        <ContactForm />
-      </div>
-    </div>
-  );
+  // Build page data from translations
+  const pageData: ContactPageData = {
+    hero: {
+      title: dict.contact.hero.title,
+      subtitle: dict.contact.hero.subtitle,
+    },
+    info: {
+      title: dict.contact.info.title,
+      emailLabel: dict.contact.info.email,
+      email: 'contact@koola.vn',
+      phoneLabel: dict.contact.info.phone,
+      phone: '+84 123 456 789',
+      addressLabel: dict.contact.info.address,
+      address: locale === 'vi' 
+        ? 'Hà Nội, Việt Nam' 
+        : 'Hanoi, Vietnam',
+      businessHoursLabel: dict.contact.info.businessHours,
+      businessHours: dict.contact.info.businessHoursValue,
+    },
+    form: {
+      title: dict.contact.form.title,
+      subtitle: dict.contact.form.subtitle,
+      nameLabel: dict.contact.form.name,
+      namePlaceholder: dict.contact.form.namePlaceholder,
+      emailLabel: dict.contact.form.email,
+      emailPlaceholder: dict.contact.form.emailPlaceholder,
+      companyLabel: dict.contact.form.company,
+      companyPlaceholder: dict.contact.form.companyPlaceholder,
+      phoneLabel: dict.contact.form.phone,
+      phonePlaceholder: dict.contact.form.phonePlaceholder,
+      messageLabel: dict.contact.form.message,
+      messagePlaceholder: dict.contact.form.messagePlaceholder,
+      submitLabel: dict.contact.form.submit,
+      submittingLabel: dict.contact.form.submitting,
+      successTitle: dict.contact.form.successTitle,
+      successMessage: dict.contact.form.successMessage,
+      errorTitle: dict.contact.form.errorTitle,
+      disclaimer: dict.contact.form.disclaimer,
+    },
+  };
+
+  return <ContactPage data={pageData} />;
 }

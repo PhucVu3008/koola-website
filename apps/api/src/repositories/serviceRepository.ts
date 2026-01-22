@@ -137,6 +137,18 @@ export const getServiceFaqs = async (serviceId: number) => {
 };
 
 /**
+ * Get key benefits for a service.
+ *
+ * @param serviceId - Service id.
+ * @returns Benefit rows.
+ *
+ * @throws Will throw if the database query fails.
+ */
+export const getServiceBenefits = async (serviceId: number) => {
+  return await query(SQL.GET_SERVICE_BENEFITS, [serviceId]);
+};
+
+/**
  * Get related services for a service.
  *
  * @param serviceId - Service id.
@@ -160,4 +172,19 @@ export const getRelatedServices = async (serviceId: number, locale: string) => {
  */
 export const getRelatedPosts = async (serviceId: number, locale: string) => {
   return await query(SQL.GET_SERVICE_RELATED_POSTS, [serviceId, locale]);
+};
+
+/**
+ * Get the slug for the same service in a different locale.
+ * Used for locale switching on service detail pages.
+ *
+ * @param slugGroup - The slug_group identifier.
+ * @param targetLocale - Target locale code (e.g., 'en', 'vi').
+ * @returns The slug in the target locale, or null if not found.
+ *
+ * @throws Will throw if the database query fails.
+ */
+export const getServiceAlternateSlug = async (slugGroup: string, targetLocale: string): Promise<string | null> => {
+  const rows = await query<{ slug: string }>(SQL.GET_SERVICE_ALTERNATE_SLUG, [slugGroup, targetLocale]);
+  return rows.length > 0 ? rows[0].slug : null;
 };

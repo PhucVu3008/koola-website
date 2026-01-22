@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 
 import { getDictionary, getLocaleLabel, getSupportedLocales } from '../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../src/i18n/locales';
-import { Button } from './ui/Button';
 
 /**
  * Marketing site header.
@@ -42,10 +41,35 @@ export function SiteHeader({ locale }: { locale: string }) {
       ? 'text-sm font-semibold text-brand-700'
       : 'text-sm font-medium text-slate-700 hover:text-slate-900';
 
-  const switchTo = (next: string) => {
+  const switchTo = async (next: string) => {
     const nextLocale = isLocale(next) ? next : 'en';
     const newParts = pathname.split('/').filter(Boolean);
+    
     if (newParts.length === 0) return `/${nextLocale}`;
+    
+    // Check if we're on a service detail page: /[locale]/services/[slug]
+    if (newParts.length >= 3 && newParts[1] === 'services') {
+      const currentSlug = newParts[2];
+      const currentLocale = isLocale(newParts[0]) ? newParts[0] : baseLocale;
+      
+      try {
+        // Call API to get translated slug
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/v1/services/slug-map?from_slug=${currentSlug}&from_locale=${currentLocale}&to_locale=${nextLocale}`
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data?.to_slug) {
+            return `/${nextLocale}/services/${data.data.to_slug}`;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to map service slug:', error);
+      }
+    }
+    
+    // Default behavior: just replace locale
     if (isLocale(newParts[0])) newParts[0] = nextLocale;
     else newParts.unshift(nextLocale);
     return `/${newParts.join('/')}`;
@@ -54,8 +78,8 @@ export function SiteHeader({ locale }: { locale: string }) {
   const supportedLocales = getSupportedLocales();
 
   return (
-    <header className="bg-white">
-      <div className="mx-auto flex h-16 w-full max-w-[1240px] items-center justify-between px-6">
+    <header className="w-full bg-white">
+      <div className="container flex h-16 items-center justify-between">
         <Link href={`/${baseLocale}`} className="text-base font-semibold tracking-tight text-slate-900">
           KOOLA
         </Link>
@@ -69,33 +93,31 @@ export function SiteHeader({ locale }: { locale: string }) {
         </nav>
 
         <div className="flex items-center gap-4">
-          <div className="flex h-9 items-center gap-4">
-            <label className="sr-only" htmlFor="locale-select">
-              Language
-            </label>
-            <select
-              id="locale-select"
-              className="h-9 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold leading-none text-slate-800"
-              value={baseLocale}
-              onChange={(e) => {
-                window.location.href = switchTo(e.target.value);
-              }}
-            >
-              {supportedLocales.map((l) => (
-                <option key={l} value={l}>
-                  {getLocaleLabel(l, baseLocale)}
-                </option>
-              ))}
-            </select>
+          <label className="sr-only" htmlFor="locale-select">
+            Language
+          </label>
+          <select
+            id="locale-select"
+            className="h-9 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-800"
+            value={baseLocale}
+            onChange={async (e) => {
+              const newUrl = await switchTo(e.target.value);
+              window.location.href = newUrl;
+            }}
+          >
+            {supportedLocales.map((l) => (
+              <option key={l} value={l}>
+                {getLocaleLabel(l, baseLocale)}
+              </option>
+            ))}
+          </select>
 
-            <Button
-              href={withLocale('/contact')}
-              variant="primary"
-              className="relative top-[1px] h-9 px-5 text-xs leading-none"
-            >
-              {dict.nav.scheduleCall}
-            </Button>
-          </div>
+          <Link
+            href={withLocale('/contact')}
+            className="inline-flex h-9 items-center justify-center rounded-full bg-brand-600 px-5 text-xs font-medium text-white transition-colors hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          >
+            {dict.nav.scheduleCall}
+          </Link>
         </div>
       </div>
     </header>

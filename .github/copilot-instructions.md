@@ -352,3 +352,96 @@ Whenever asked to implement something:
 If the website uses `/resources` instead of `/blog`, treat them as synonyms:
 - FE routes: `/resources` and `/resources/[slug]`
 - Public API may remain `/v1/posts` or be renamed consistently; if renamed, update FE and admin routes together.
+
+---
+
+## 14) Internationalization (i18n) and Multilingual Content (MUST)
+
+This project supports **multiple locales** (currently: EN, VI). When working with multilingual content:
+
+### Slug Mapping Pattern (CRITICAL)
+
+**Problem:** Different locales use different slugs for the same content.
+- English: `/en/services/it-infrastructure-solutions`
+- Vietnamese: `/vi/services/giai-phap-ha-tang-cntt`
+
+**Solution:** Use `slug_group` column to link content across locales.
+
+### Required Implementation for New Content Types:
+
+When creating a new content type (services, posts, pages, jobs) that supports i18n:
+
+1. **Database Schema MUST include:**
+   ```sql
+   CREATE TABLE content_table (
+     id SERIAL PRIMARY KEY,
+     slug VARCHAR(255) NOT NULL,
+     slug_group VARCHAR(100),  -- ✅ REQUIRED for i18n
+     locale VARCHAR(2) NOT NULL,
+     -- ...other fields
+     UNIQUE(slug, locale)
+   );
+   
+   CREATE INDEX idx_content_slug_group ON content_table(slug_group);
+   ```
+
+2. **When seeding multilingual content:**
+   ```sql
+   -- English version
+   INSERT INTO services (slug, slug_group, locale, title, ...) 
+   VALUES ('my-service', 'my-service', 'en', 'My Service', ...);
+   
+   -- Vietnamese version (SAME slug_group!)
+   INSERT INTO services (slug, slug_group, locale, title, ...) 
+   VALUES ('dich-vu-cua-toi', 'my-service', 'vi', 'Dịch vụ của tôi', ...);
+   ```
+   
+   **Rule:** Use the English slug as the `slug_group` identifier.
+
+3. **Create a slug-map API endpoint:**
+   ```typescript
+   // GET /v1/[content-type]/slug-map?from_slug=X&from_locale=Y&to_locale=Z
+   // Returns the equivalent slug in the target locale
+   ```
+
+4. **Update locale switcher logic:**
+   - Detect if user is on a detail page
+   - Call slug-map API to get translated slug
+   - Navigate to correct translated URL
+   - Fallback to simple locale replacement if API fails
+
+### Example Implementation:
+
+See `/v1/services/slug-map` endpoint and `SiteHeader.tsx` locale switching logic for reference.
+
+### When to Apply This Pattern:
+
+- ✅ **Services** (already implemented)
+- ✅ **Posts/Blog** (if multilingual)
+- ✅ **Pages** (if multilingual)
+- ✅ **Jobs** (if multilingual)
+- ❌ **NOT needed** for: tags, categories (use shared identifiers)
+
+### Testing Requirements:
+
+For each content type with i18n:
+1. Create content in both EN and VI with proper slug_group
+2. Test locale switching from EN → VI
+3. Test locale switching from VI → EN
+4. Verify no 404 errors when switching locales
+5. Test API endpoint directly with curl/Postman
+
+### Common Mistakes to Avoid:
+
+- ❌ Forgetting to add `slug_group` column
+- ❌ Using different `slug_group` values for same content
+- ❌ Not updating SQL queries to include slug_group
+- ❌ Not creating slug-map API endpoint
+- ❌ Hardcoding locale-specific slugs
+
+---
+
+## 15) Routing Note: `/blog` vs `/resources`
+If the website uses `/resources` instead of `/blog`, treat them as synonyms:
+- FE routes: `/resources` and `/resources/[slug]`
+- Public API may remain `/v1/posts` or be renamed consistently; if renamed, update FE and admin routes together.

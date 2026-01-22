@@ -1,5 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import servicesRoutes from './services';
+import servicesSlugMapRoutes from './services-slug-map';
 import postsRoutes from './posts';
 import pagesRoutes from './pages';
 import navRoutes from './nav';
@@ -7,6 +8,7 @@ import siteRoutes from './site';
 import leadsRoutes from './leads';
 import newsletterRoutes from './newsletter';
 import jobsRoutes from './jobs';
+import careersRoutes from './careers';
 
 /**
  * Public API routes aggregator.
@@ -25,8 +27,10 @@ import jobsRoutes from './jobs';
 const publicRoutes: FastifyPluginAsync = async (server) => {
   // Register all public route modules
   await server.register(servicesRoutes, { prefix: '/services' });
+  await server.register(servicesSlugMapRoutes, { prefix: '/services' });
   await server.register(postsRoutes, { prefix: '/posts' });
   await server.register(pagesRoutes, { prefix: '/pages' });
+  await server.register(careersRoutes, { prefix: '/pages/careers' });
   await server.register(navRoutes, { prefix: '/nav' });
   await server.register(siteRoutes, { prefix: '/site' });
   await server.register(leadsRoutes, { prefix: '/leads' });

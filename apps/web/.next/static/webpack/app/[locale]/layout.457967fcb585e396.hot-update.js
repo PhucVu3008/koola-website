@@ -1,0 +1,22 @@
+"use strict";
+/*
+ * ATTENTION: An "eval-source-map" devtool has been used.
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file with attached SourceMaps in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+self["webpackHotUpdate_N_E"]("app/[locale]/layout",{
+
+/***/ "(app-pages-browser)/./src/i18n/dictionaries/en.json":
+/*!***************************************!*\
+  !*** ./src/i18n/dictionaries/en.json ***!
+  \***************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+module.exports = /*#__PURE__*/JSON.parse('{"meta":{"siteName":"KOOLA","homeTitle":"KOOLA","homeDescription":"KOOLA — AI-focused services and solutions.","aboutTitle":"About Us","aboutDescription":"Learn more about KOOLA and how we work.","servicesTitle":"Our Services — KOOLA","servicesDescription":"Discover KOOLA\'s comprehensive IT, IoT, and Automation solutions designed to transform your business operations."},"locales":{"en":"English","vi":"Vietnamese"},"nav":{"home":"Home","about":"About Us","services":"Services","careers":"Careers","contact":"Contact Us","scheduleCall":"Schedule a Call"},"about":{"intro":{"label":"ABOUT US"},"story":{"label":"OUR STORY"},"milestone":{"label":"Since then..."},"teamRoles":{"intro":"Every year our software developers, QA engineers, designers, and project managers work on hundreds of exciting projects..."},"timeline":{"label":"How we did it..."}},"services":{"hero":{"label":"Our services","title":"Koola ...."},"grid":{"title":"Our Services"}},"serviceDetail":{"breadcrumbs":{"home":"Home","services":"Services"},"cta":{"caseStudies":"See Case Studies","bookCall":"Book a Call"},"content":{"highlightPrefix":"AI/ML services and solutions built for business impact and long term value"},"sidebar":{"search":{"title":"Search","placeholder":"Search"},"social":{"title":"Stay in touch"}},"benefits":{"title":"Key benefits","subtitle":""},"related":{"title":"Related"}},"careers":{"hero":{"title":"Join the Koola Journey","subtitle":"Where technology meets excellence"},"featuredJobs":{"title":"Featured jobs","exploreMore":"Explore more"},"job":{"locationLabel":"Location","levelLabel":"Level","responsibilitiesTitle":"Responsibilities","qualificationsTitle":"Qualifications","applyButton":"Apply Now"},"jobDetail":{"breadcrumbs":{"home":"Home","careers":"Careers"},"overview":"Overview","responsibilities":"Responsibilities","qualifications":"Qualifications","applySection":{"title":"Apply for this position","subtitle":"Fill out the form below and we\'ll get back to you soon"},"form":{"fullName":"Full Name","email":"Email","phone":"Phone Number","linkedIn":"LinkedIn Profile","portfolio":"Portfolio URL","resume":"Upload Resume","resumeHint":"PDF, DOC, DOCX (Max 5MB)","coverLetter":"Cover Letter","coverLetterPlaceholder":"Tell us why you\'re a great fit for this role...","submit":"Submit Application","submitting":"Submitting..."}},"pride":{"title":"Proud to be\\na part of Koola"},"culture":{"title":"What makes Koola a great place to work?"},"news":{"title":"News"}},"footer":{"product":"Product","information":"Information","company":"Company","subscribe":"Subscribe","emailAddress":"Email address","subscribeCta":"Subscribe","subscribeDescription":"Hello, we are KOOLA. Our goal is to deliver positive impact by transforming how companies engage with their clients and their teams.","terms":"Terms","privacy":"Privacy","cookies":"Cookies"}}');
+
+/***/ })
+
+});

@@ -83,3 +83,15 @@ export const jobSlugParamsSchema = z.object({
 export const jobSlugQuerySchema = z.object({
   locale: z.string().default('en'),
 });
+
+/**
+ * Body schema for `POST /v1/jobs/:slug/apply`.
+ */
+export const jobApplicationSchema = z.object({
+  fullName: z.string().min(2, 'Full name is required'),
+  email: z.string().email('Invalid email address'),
+  phone: z.string().min(10, 'Phone number is required'),
+  linkedIn: z.string().url().optional().or(z.literal('')),
+  portfolio: z.string().url().optional().or(z.literal('')),
+  coverLetter: z.string().optional(),
+});

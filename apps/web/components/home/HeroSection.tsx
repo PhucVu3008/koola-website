@@ -19,7 +19,7 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
 
   return (
     <div className="grid grid-cols-2 items-center gap-12">
-      <div>
+      <div className="pl-12 md:pl-16 lg:pl-24">
         <div className="text-xs font-semibold uppercase tracking-widest text-slate-400">
           {data.label}
         </div>

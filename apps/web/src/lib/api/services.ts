@@ -59,9 +59,11 @@ export type ServiceDetailService = {
   id: number;
   locale: string;
   slug: string;
+  slug_group?: string | null;
   title: string;
   excerpt?: string | null;
   content_md?: string | null;
+  benefits_subtitle?: string | null;
 };
 
 export type ServiceDetailPayload = {
@@ -69,6 +71,7 @@ export type ServiceDetailPayload = {
   deliverables?: Array<{ id: number; title: string; description?: string | null }>;
   process_steps?: Array<{ id: number; title: string; description?: string | null; sort_order?: number }>;
   faqs?: Array<{ id: number; question: string; answer: string }>;
+  benefits?: Array<{ id: number; title: string; description?: string | null; icon_name?: string | null }>;
   related_services?: Array<{ id: number; slug: string; title: string; excerpt?: string | null }>;
   sidebar?: unknown;
 };
@@ -99,4 +102,50 @@ export async function getServiceBySlug(params: {
   );
 
   return res.data;
+}
+
+/**
+ * Services Page Content Types
+ */
+export type ServicesHeroPayload = {
+  label: string;
+  title: string;
+  backgroundImage: string;
+};
+
+export type ServicesMidQuotePayload = {
+  imageUrl: string;
+  headline: string;
+  paragraph: string;
+};
+
+export type ServicesCtaPayload = {
+  title: string;
+  buttonLabel: string;
+  backgroundImage: string;
+};
+
+export type ServicesPagePayload = {
+  hero: ServicesHeroPayload;
+  midQuote: ServicesMidQuotePayload;
+  cta: ServicesCtaPayload;
+};
+
+/**
+ * Fetch services page aggregate content.
+ *
+ * Endpoint: `GET /v1/services/page?locale=en`
+ */
+export async function getServicesPage(params: { locale: string }): Promise<ServicesPagePayload> {
+  const search = new URLSearchParams();
+  search.set('locale', params.locale);
+
+  const res = await apiFetchJson<ApiSuccessEnvelope<ServicesPagePayload>>(
+    `/v1/services/page?${search.toString()}`,
+    {
+      next: { revalidate: 300 },
+    } as any
+  );
+
+  return (res as any).data;
 }

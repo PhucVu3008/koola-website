@@ -89,7 +89,7 @@ export const COUNT_SERVICES = `
  */
 export const GET_SERVICE_BY_SLUG = `
   SELECT 
-    id, locale, title, slug, excerpt, content_md, 
+    id, locale, title, slug, slug_group, excerpt, content_md, benefits_subtitle,
     hero_asset_id, og_asset_id, status, published_at,
     seo_title, seo_description, canonical_url, sort_order,
     created_at, updated_at
@@ -175,6 +175,21 @@ export const GET_SERVICE_FAQS = `
 `;
 
 /**
+ * GET_SERVICE_BENEFITS
+ *
+ * Fetch key benefits ordered by `sort_order`.
+ *
+ * Parameters:
+ * - $1 service_id
+ */
+export const GET_SERVICE_BENEFITS = `
+  SELECT id, title, description, icon_name, sort_order
+  FROM service_benefits
+  WHERE service_id = $1
+  ORDER BY sort_order ASC
+`;
+
+/**
  * GET_SERVICE_RELATED_SERVICES
  *
  * Fetch up to 3 related services for a service.
@@ -216,4 +231,21 @@ export const GET_SERVICE_RELATED_POSTS = `
   WHERE srp.service_id = $1 AND p.locale = $2 AND p.status = 'published'
   ORDER BY srp.sort_order ASC
   LIMIT 3
+`;
+
+/**
+ * GET_SERVICE_ALTERNATE_SLUG
+ *
+ * Get the slug for the same service in a different locale.
+ * Used for locale switching on service detail pages.
+ *
+ * Parameters:
+ * - $1 slug_group
+ * - $2 target_locale
+ */
+export const GET_SERVICE_ALTERNATE_SLUG = `
+  SELECT slug
+  FROM services
+  WHERE slug_group = $1 AND locale = $2 AND status = 'published'
+  LIMIT 1
 `;

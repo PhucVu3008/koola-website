@@ -1,6 +1,9 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
+  "/[locale]/privacy/page": "app/[locale]/privacy/page.js",
+  "/[locale]/cookies/page": "app/[locale]/cookies/page.js",
+  "/[locale]/terms/page": "app/[locale]/terms/page.js",
   "/[locale]/page": "app/[locale]/page.js",
-  "/[locale]/about/page": "app/[locale]/about/page.js",
+  "/[locale]/careers/page": "app/[locale]/careers/page.js",
   "/[locale]/contact/page": "app/[locale]/contact/page.js"
 }

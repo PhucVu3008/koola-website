@@ -19,7 +19,7 @@ export function PageLayout({
   return (
     <div className="min-h-dvh bg-white">
       <SiteHeader locale={locale} />
-      <main className="mx-auto w-full max-w-[1240px] px-6">{children}</main>
+      <main className="w-full">{children}</main>
       {site ? <SiteFooter locale={locale} site={site} /> : null}
     </div>
   );
