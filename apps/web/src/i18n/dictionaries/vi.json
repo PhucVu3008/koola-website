@@ -4,9 +4,13 @@
     "homeTitle": "KOOLA",
     "homeDescription": "KOOLA — Dịch vụ và giải pháp tập trung AI.",
     "aboutTitle": "Về chúng tôi",
-    "aboutDescription": "Tìm hiểu về KOOLA và cách chúng tôi làm việc.",
+    "aboutDescription": "Khám phá câu chuyện, giá trị và chuyên môn của KOOLA trong việc cung cấp các giải pháp AI, IoT và tự động hóa sáng tạo. Tìm hiểu cách chúng tôi giúp doanh nghiệp chuyển đổi thông qua công nghệ.",
     "servicesTitle": "Dịch vụ của chúng tôi — KOOLA",
-    "servicesDescription": "Khám phá các giải pháp IT, IoT và Tự động hóa toàn diện của KOOLA được thiết kế để chuyển đổi hoạt động doanh nghiệp của bạn."
+    "servicesDescription": "Khám phá các giải pháp IT, IoT và Tự động hóa toàn diện của KOOLA được thiết kế để chuyển đổi hoạt động doanh nghiệp của bạn.",
+    "careersTitle": "Tuyển dụng",
+    "careersDescription": "Tham gia KOOLA và cùng định hình tương lai của AI và tự động hóa. Khám phá các cơ hội nghề nghiệp thú vị trong phát triển phần mềm, IoT, khoa học dữ liệu và hơn thế nữa.",
+    "contactTitle": "Liên hệ",
+    "contactDescription": "Liên hệ với KOOLA để thảo luận về dự án của bạn. Dù bạn cần giải pháp AI, triển khai IoT, hay dịch vụ tự động hóa, chúng tôi sẵn sàng hỗ trợ. Phản hồi trong vòng 1-2 ngày làm việc."
   },
   "locales": {
     "en": "Tiếng Anh",

@@ -4,9 +4,13 @@
     "homeTitle": "KOOLA",
     "homeDescription": "KOOLA — AI-focused services and solutions.",
     "aboutTitle": "About Us",
-    "aboutDescription": "Learn more about KOOLA and how we work.",
+    "aboutDescription": "Discover KOOLA's story, values, and expertise in delivering innovative AI, IoT, and automation solutions. Learn how we help businesses transform through technology.",
     "servicesTitle": "Our Services — KOOLA",
-    "servicesDescription": "Discover KOOLA's comprehensive IT, IoT, and Automation solutions designed to transform your business operations."
+    "servicesDescription": "Discover KOOLA's comprehensive IT, IoT, and Automation solutions designed to transform your business operations.",
+    "careersTitle": "Careers",
+    "careersDescription": "Join KOOLA and help shape the future of AI and automation. Explore exciting career opportunities in software development, IoT, data science, and more.",
+    "contactTitle": "Contact Us",
+    "contactDescription": "Get in touch with KOOLA to discuss your project. Whether you need AI solutions, IoT implementation, or automation services, we're here to help. Response within 1-2 business days."
   },
   "locales": {
     "en": "English",
