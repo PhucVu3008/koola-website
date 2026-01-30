@@ -380,5 +380,80 @@
       "phone": "+84 (28) 1234 5678",
       "address": "123 Đường Sáng tạo, Quận 1, Thành phố Hồ Chí Minh, Việt Nam"
     }
+  },
+  "admin": {
+    "users": {
+      "title": "Quản Lý Người Dùng",
+      "createButton": "Tạo Người Dùng",
+      "editButton": "Sửa",
+      "deleteButton": "Xóa",
+      "passwordButton": "Đổi Mật Khẩu",
+      "toggleActiveButton": "Bật/Tắt",
+      "backButton": "Về Danh Sách",
+      "saveButton": "Lưu",
+      "saving": "Đang lưu...",
+      "createTitle": "Tạo Người Dùng Mới",
+      "editTitle": "Chỉnh Sửa Người Dùng",
+      "changePasswordTitle": "Đổi Mật Khẩu",
+      "filters": {
+        "role": "Lọc Theo Vai Trò",
+        "allRoles": "Tất Cả Vai Trò",
+        "status": "Lọc Theo Trạng Thái",
+        "allStatuses": "Tất Cả",
+        "active": "Đang Hoạt Động",
+        "inactive": "Đã Tắt"
+      },
+      "table": {
+        "email": "Email",
+        "fullName": "Họ Tên",
+        "roles": "Vai Trò",
+        "status": "Trạng Thái",
+        "lastLogin": "Đăng Nhập Cuối",
+        "actions": "Hành Động",
+        "never": "Chưa bao giờ",
+        "activeStatus": "Đang hoạt động",
+        "inactiveStatus": "Đã tắt"
+      },
+      "form": {
+        "email": "Email",
+        "emailPlaceholder": "nguoidung@example.com",
+        "fullName": "Họ và Tên",
+        "fullNamePlaceholder": "Nguyễn Văn A",
+        "password": "Mật Khẩu",
+        "passwordPlaceholder": "Tối thiểu 8 ký tự",
+        "newPassword": "Mật Khẩu Mới",
+        "confirmPassword": "Xác Nhận Mật Khẩu",
+        "confirmPasswordPlaceholder": "Nhập lại mật khẩu",
+        "roles": "Vai Trò",
+        "active": "Hoạt Động",
+        "activeHelp": "Người dùng có thể đăng nhập nếu được kích hoạt",
+        "passwordNote": "(Để trống nếu không muốn đổi mật khẩu)",
+        "passwordRequired": "(Bắt buộc cho người dùng mới)"
+      },
+      "messages": {
+        "loading": "Đang tải người dùng...",
+        "noUsers": "Không tìm thấy người dùng",
+        "createSuccess": "Tạo người dùng thành công",
+        "updateSuccess": "Cập nhật người dùng thành công",
+        "deleteSuccess": "Xóa người dùng thành công",
+        "passwordSuccess": "Đổi mật khẩu thành công. Đang chuyển hướng...",
+        "toggleSuccess": "Cập nhật trạng thái thành công",
+        "deleteConfirm": "Bạn có chắc chắn muốn xóa người dùng này?",
+        "cannotDeleteSelf": "Bạn không thể xóa tài khoản của chính mình",
+        "passwordMismatch": "Mật khẩu không khớp",
+        "error": "Đã xảy ra lỗi"
+      },
+      "security": {
+        "notifyUser": "Lưu Ý Bảo Mật: Người dùng nên được thông báo về việc thay đổi mật khẩu qua email hoặc kênh an toàn khác."
+      },
+      "pagination": {
+        "showing": "Hiển thị",
+        "to": "đến",
+        "of": "trong tổng số",
+        "results": "kết quả",
+        "previous": "Trước",
+        "next": "Sau"
+      }
+    }
   }
 }

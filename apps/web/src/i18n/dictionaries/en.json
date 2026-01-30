@@ -380,5 +380,80 @@
       "phone": "+84 (28) 1234 5678",
       "address": "123 Innovation Street, District 1, Ho Chi Minh City, Vietnam"
     }
+  },
+  "admin": {
+    "users": {
+      "title": "User Management",
+      "createButton": "Create User",
+      "editButton": "Edit",
+      "deleteButton": "Delete",
+      "passwordButton": "Change Password",
+      "toggleActiveButton": "Toggle Active",
+      "backButton": "Back to Users",
+      "saveButton": "Save User",
+      "saving": "Saving...",
+      "createTitle": "Create New User",
+      "editTitle": "Edit User",
+      "changePasswordTitle": "Change Password",
+      "filters": {
+        "role": "Filter by Role",
+        "allRoles": "All Roles",
+        "status": "Filter by Status",
+        "allStatuses": "All Statuses",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "table": {
+        "email": "Email",
+        "fullName": "Full Name",
+        "roles": "Roles",
+        "status": "Status",
+        "lastLogin": "Last Login",
+        "actions": "Actions",
+        "never": "Never",
+        "activeStatus": "Active",
+        "inactiveStatus": "Inactive"
+      },
+      "form": {
+        "email": "Email",
+        "emailPlaceholder": "user@example.com",
+        "fullName": "Full Name",
+        "fullNamePlaceholder": "John Doe",
+        "password": "Password",
+        "passwordPlaceholder": "Min 8 characters",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "confirmPasswordPlaceholder": "Re-enter password",
+        "roles": "Roles",
+        "active": "Active",
+        "activeHelp": "User can login if active",
+        "passwordNote": "(Leave blank to keep current password)",
+        "passwordRequired": "(Required for new users)"
+      },
+      "messages": {
+        "loading": "Loading users...",
+        "noUsers": "No users found",
+        "createSuccess": "User created successfully",
+        "updateSuccess": "User updated successfully",
+        "deleteSuccess": "User deleted successfully",
+        "passwordSuccess": "Password changed successfully. Redirecting...",
+        "toggleSuccess": "User status updated",
+        "deleteConfirm": "Are you sure you want to delete this user?",
+        "cannotDeleteSelf": "You cannot delete your own account",
+        "passwordMismatch": "Passwords do not match",
+        "error": "An error occurred"
+      },
+      "security": {
+        "notifyUser": "Security Note: The user should be notified about this password change via email or other secure channel."
+      },
+      "pagination": {
+        "showing": "Showing",
+        "to": "to",
+        "of": "of",
+        "results": "results",
+        "previous": "Previous",
+        "next": "Next"
+      }
+    }
   }
 }
