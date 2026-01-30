@@ -3,6 +3,8 @@ import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
 import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
+import fastifyStatic from '@fastify/static';
+import path from 'path';
 
 // Routes
 import publicRoutes from './routes/public';
@@ -80,6 +82,17 @@ export const buildServer = async () => {
       fileSize: Number(process.env.MAX_FILE_SIZE) || 10 * 1024 * 1024, // 10MB
     },
   });
+
+  // Static files (serve uploaded media)
+  // Note: process.cwd() returns monorepo root (/workspace)
+  const uploadsPath = path.join(process.cwd(), 'apps', 'api', 'uploads');
+  await server.register(fastifyStatic, {
+    root: uploadsPath,
+    prefix: '/uploads/',
+    decorateReply: false, // Don't add reply.sendFile (avoid conflicts)
+  });
+
+  server.log.info(`Static files serving from: ${uploadsPath}`);
 
   // Rate limiting (global default)
   await server.register(rateLimit, {
