@@ -29,7 +29,7 @@
  */
 export const ADMIN_LIST_SERVICES = `
   SELECT 
-    s.id, s.locale, s.title, s.slug, s.excerpt, s.content_md,
+    s.id, s.locale, s.title, s.slug, s.slug_group, s.excerpt, s.content_md,
     s.hero_asset_id, s.og_asset_id,
     s.status, s.published_at,
     s.seo_title, s.seo_description, s.canonical_url,
@@ -86,7 +86,7 @@ export const ADMIN_COUNT_SERVICES = `
  */
 export const ADMIN_GET_SERVICE_BY_ID = `
   SELECT 
-    id, locale, title, slug, excerpt, content_md,
+    id, locale, title, slug, slug_group, excerpt, content_md,
     hero_asset_id, og_asset_id,
     status, published_at,
     seo_title, seo_description, canonical_url,

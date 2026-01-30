@@ -66,52 +66,77 @@ export const getServiceById = async (request: FastifyRequest, reply: FastifyRepl
  * POST `/v1/admin/services`
  */
 export const createService = async (request: FastifyRequest, reply: FastifyReply) => {
-  const body = adminServiceCreateSchema.parse(request.body);
+  try {
+    const body = adminServiceCreateSchema.parse(request.body);
 
-  const user = request.user as any;
-  const userId = Number(user?.id);
-  if (!userId || Number.isNaN(userId)) {
-    return reply
-      .status(401)
-      .send(errorResponse(ErrorCodes.UNAUTHORIZED, 'Authentication required'));
+    const user = request.user as any;
+    const userId = Number(user?.id);
+    if (!userId || Number.isNaN(userId)) {
+      return reply
+        .status(401)
+        .send(errorResponse(ErrorCodes.UNAUTHORIZED, 'Authentication required'));
+    }
+
+    const id = await adminServiceService.createService({ userId, data: body });
+
+    return reply.status(201).send(successResponse({ id }));
+  } catch (error: any) {
+    if (error.name === 'ZodError') {
+      return reply.status(400).send(
+        errorResponse(ErrorCodes.VALIDATION_ERROR, 'Validation failed. Please check required fields.', {
+          issues: error.issues,
+          requiredFields: ['locale', 'title', 'slug', 'slug_group', 'excerpt', 'content_md'],
+        })
+      );
+    }
+    throw error;
   }
-
-  const id = await adminServiceService.createService({ userId, data: body });
-
-  return reply.status(201).send(successResponse({ id }));
 };
 
 /**
  * PUT `/v1/admin/services/:id`
  */
 export const updateService = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = idParamsSchema.parse(request.params);
-  const body = adminServiceUpdateSchema.parse(request.body);
+  try {
+    const { id } = idParamsSchema.parse(request.params);
+    const body = adminServiceUpdateSchema.parse(request.body);
 
-  const user = request.user as any;
-  const userId = Number(user?.id);
-  if (!userId || Number.isNaN(userId)) {
-    return reply
-      .status(401)
-      .send(errorResponse(ErrorCodes.UNAUTHORIZED, 'Authentication required'));
+    const user = request.user as any;
+    const userId = Number(user?.id);
+    if (!userId || Number.isNaN(userId)) {
+      return reply
+        .status(401)
+        .send(errorResponse(ErrorCodes.UNAUTHORIZED, 'Authentication required'));
+    }
+
+    // Enforce required core fields for PUT semantics.
+    const required = adminServiceCreateSchema.safeParse(body);
+    if (!required.success) {
+      return reply.status(400).send(
+        errorResponse(ErrorCodes.VALIDATION_ERROR, 'Validation failed. Missing required fields.', {
+          issues: required.error.issues,
+          requiredFields: ['locale', 'title', 'slug', 'slug_group', 'excerpt', 'content_md'],
+        })
+      );
+    }
+
+    const updatedId = await adminServiceService.updateService({ id, userId, data: required.data });
+    if (!updatedId) {
+      return reply.status(404).send(errorResponse(ErrorCodes.NOT_FOUND, 'Service not found'));
+    }
+
+    return reply.send(successResponse({ id: updatedId }));
+  } catch (error: any) {
+    if (error.name === 'ZodError') {
+      return reply.status(400).send(
+        errorResponse(ErrorCodes.VALIDATION_ERROR, 'Validation failed. Please check required fields.', {
+          issues: error.issues,
+          requiredFields: ['locale', 'title', 'slug', 'slug_group', 'excerpt', 'content_md'],
+        })
+      );
+    }
+    throw error;
   }
-
-  // Enforce required core fields for PUT semantics.
-  const required = adminServiceCreateSchema.safeParse(body);
-  if (!required.success) {
-    return reply.status(400).send(
-      errorResponse(ErrorCodes.VALIDATION_ERROR, 'Invalid request body', {
-        issues: required.error.issues,
-      })
-    );
-  }
-
-  const updatedId = await adminServiceService.updateService({ id, userId, data: required.data });
-  if (!updatedId) {
-    return reply.status(404).send(errorResponse(ErrorCodes.NOT_FOUND, 'Service not found'));
-  }
-
-  return reply.send(successResponse({ id: updatedId }));
 };
 
 /**
@@ -126,4 +151,75 @@ export const deleteService = async (request: FastifyRequest, reply: FastifyReply
   }
 
   return reply.send(successResponse({ ok: true }));
+};
+
+/**
+ * POST `/v1/admin/services/:id/translate`
+ *
+ * Sync/Translate service to another locale
+ */
+const translateRequestSchema = z.object({
+  targetLocale: z.enum(['en', 'vi']),
+  mode: z.enum(['auto', 'manual']),
+});
+
+export const translateService = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { id } = idParamsSchema.parse(request.params);
+  const body = translateRequestSchema.parse(request.body);
+
+  const user = request.user as any;
+  const userId = Number(user?.id);
+  if (!userId || Number.isNaN(userId)) {
+    return reply
+      .status(401)
+      .send(errorResponse(ErrorCodes.UNAUTHORIZED, 'Authentication required'));
+  }
+
+  try {
+    const translatedId = await adminServiceService.syncTranslation({
+      id,
+      targetLocale: body.targetLocale,
+      mode: body.mode,
+      userId,
+    });
+
+    return reply.send(
+      successResponse({
+        id: translatedId,
+        message: `Service ${body.mode === 'auto' ? 'auto-translated' : 'copied'} to ${body.targetLocale}`,
+      })
+    );
+  } catch (err: any) {
+    return reply.status(400).send(errorResponse(ErrorCodes.BAD_REQUEST, err.message));
+  }
+};
+
+/**
+ * POST `/v1/admin/services/:id/sync-images`
+ *
+ * Sync images across all locales with the same slug_group
+ */
+export const syncServiceImages = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { id } = idParamsSchema.parse(request.params);
+
+  const user = request.user as any;
+  const userId = Number(user?.id);
+  if (!userId || Number.isNaN(userId)) {
+    return reply
+      .status(401)
+      .send(errorResponse(ErrorCodes.UNAUTHORIZED, 'Authentication required'));
+  }
+
+  try {
+    await adminServiceService.syncImagesAcrossLocales(id, userId);
+
+    return reply.send(
+      successResponse({
+        ok: true,
+        message: 'Images synced across all locales',
+      })
+    );
+  } catch (err: any) {
+    return reply.status(400).send(errorResponse(ErrorCodes.BAD_REQUEST, err.message));
+  }
 };

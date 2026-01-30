@@ -23,8 +23,13 @@
  */
 export const LIST_SERVICES = `
   SELECT 
-    s.id, s.locale, s.title, s.slug, s.excerpt, s.hero_asset_id,
+    s.id, s.locale, s.title, s.slug, s.excerpt, s.hero_asset_id, s.icon_name,
     s.status, s.published_at, s.sort_order, s.created_at,
+    -- Construct hero image URL from media_assets
+    CASE 
+      WHEN m.id IS NOT NULL THEN CONCAT('/uploads/', m.storage_path)
+      ELSE NULL
+    END as hero_image_url,
     COALESCE(
       json_agg(
         DISTINCT jsonb_build_object('id', t.id, 'name', t.name, 'slug', t.slug)
@@ -38,15 +43,19 @@ export const LIST_SERVICES = `
       '[]'
     ) as categories
   FROM services s
+  LEFT JOIN media_assets m ON s.hero_asset_id = m.id
   LEFT JOIN service_tags st ON s.id = st.service_id
   LEFT JOIN tags t ON st.tag_id = t.id AND t.locale = s.locale
   LEFT JOIN service_categories sc ON s.id = sc.service_id
   LEFT JOIN categories c ON sc.category_id = c.id AND c.locale = s.locale AND c.kind = 'service'
   WHERE s.locale = $1
-    AND ($2::text IS NULL OR s.status = $2::content_status)
+    AND (
+      $2::text IS NULL AND s.status = 'published' -- Default to published when no status filter
+      OR s.status = $2::content_status
+    )
     AND ($3::text IS NULL OR t.slug = $3)
     AND ($4::text IS NULL OR c.slug = $4)
-  GROUP BY s.id
+  GROUP BY s.id, m.id, m.storage_path
   ORDER BY 
     CASE WHEN $5 = 'order' THEN s.sort_order END ASC,
     CASE WHEN $5 = 'newest' THEN s.published_at END DESC,
@@ -73,7 +82,10 @@ export const COUNT_SERVICES = `
   LEFT JOIN service_categories sc ON s.id = sc.service_id
   LEFT JOIN categories c ON sc.category_id = c.id AND c.locale = s.locale AND c.kind = 'service'
   WHERE s.locale = $1
-    AND ($2::text IS NULL OR s.status = $2::content_status)
+    AND (
+      $2::text IS NULL AND s.status = 'published' -- Default to published when no status filter
+      OR s.status = $2::content_status
+    )
     AND ($3::text IS NULL OR t.slug = $3)
     AND ($4::text IS NULL OR c.slug = $4)
 `;
@@ -89,12 +101,24 @@ export const COUNT_SERVICES = `
  */
 export const GET_SERVICE_BY_SLUG = `
   SELECT 
-    id, locale, title, slug, slug_group, excerpt, content_md, benefits_subtitle,
-    hero_asset_id, og_asset_id, status, published_at,
-    seo_title, seo_description, canonical_url, sort_order,
-    created_at, updated_at
-  FROM services
-  WHERE slug = $1 AND locale = $2 AND status = 'published'
+    s.id, s.locale, s.title, s.slug, s.slug_group, s.excerpt, s.content_md, s.benefits_subtitle,
+    s.hero_asset_id, s.og_asset_id, s.status, s.published_at,
+    s.seo_title, s.seo_description, s.canonical_url, s.sort_order,
+    s.created_at, s.updated_at,
+    -- Construct hero image URL from media_assets
+    CASE 
+      WHEN m_hero.id IS NOT NULL THEN CONCAT('/uploads/', m_hero.storage_path)
+      ELSE NULL
+    END as hero_image_url,
+    -- Construct OG image URL from media_assets
+    CASE 
+      WHEN m_og.id IS NOT NULL THEN CONCAT('/uploads/', m_og.storage_path)
+      ELSE NULL
+    END as og_image_url
+  FROM services s
+  LEFT JOIN media_assets m_hero ON s.hero_asset_id = m_hero.id
+  LEFT JOIN media_assets m_og ON s.og_asset_id = m_og.id
+  WHERE s.slug = $1 AND s.locale = $2 AND s.status = 'published'
 `;
 
 /**

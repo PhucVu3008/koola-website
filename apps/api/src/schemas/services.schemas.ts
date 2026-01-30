@@ -55,6 +55,7 @@ export const adminServiceCreateSchema = z.object({
   locale: z.string().default('en'),
   title: z.string().min(1),
   slug: z.string().min(1),
+  slug_group: z.string().optional(), // For linking translations, defaults to slug if not provided
   excerpt: z.string().optional(),
   content_md: z.string().min(1),
   hero_asset_id: z.number().optional(),

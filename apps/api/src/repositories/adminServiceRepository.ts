@@ -28,6 +28,7 @@ export interface AdminServiceCreateRow {
   locale: string;
   title: string;
   slug: string;
+  slug_group?: string; // For linking translations, defaults to slug if not provided
   excerpt?: string;
   content_md: string;
   hero_asset_id?: number;
@@ -142,6 +143,7 @@ export const createServiceWithNested = async (
       row.locale,
       row.title,
       row.slug,
+      row.slug_group ?? row.slug, // Default slug_group to slug if not provided
       row.excerpt ?? null,
       row.content_md,
       row.hero_asset_id ?? null,
@@ -175,6 +177,7 @@ export const updateServiceWithNested = async (
         id,
         row.title,
         row.slug,
+        row.slug_group ?? row.slug, // Default slug_group to slug if not provided
         row.excerpt ?? null,
         row.content_md,
         row.hero_asset_id ?? null,
@@ -241,14 +244,18 @@ const replaceNested = async (
   if (nested.tags) {
     await client.query(ServicesCrudSQL.ADMIN_DELETE_SERVICE_TAGS, [serviceId]);
     for (const tagId of nested.tags) {
-      await client.query(ServicesCrudSQL.ADMIN_INSERT_SERVICE_TAG, [serviceId, tagId]);
+      if (tagId != null) {
+        await client.query(ServicesCrudSQL.ADMIN_INSERT_SERVICE_TAG, [serviceId, tagId]);
+      }
     }
   }
 
   if (nested.categories) {
     await client.query(ServicesCrudSQL.ADMIN_DELETE_SERVICE_CATEGORIES, [serviceId]);
     for (const categoryId of nested.categories) {
-      await client.query(ServicesCrudSQL.ADMIN_INSERT_SERVICE_CATEGORY, [serviceId, categoryId]);
+      if (categoryId != null) {
+        await client.query(ServicesCrudSQL.ADMIN_INSERT_SERVICE_CATEGORY, [serviceId, categoryId]);
+      }
     }
   }
 
@@ -293,11 +300,13 @@ const replaceNested = async (
     await client.query(ServicesCrudSQL.ADMIN_DELETE_SERVICE_RELATED_SERVICES, [serviceId]);
     for (let i = 0; i < nested.related_services.length; i++) {
       const relatedId = nested.related_services[i];
-      await client.query(ServicesCrudSQL.ADMIN_INSERT_SERVICE_RELATED_SERVICE, [
-        serviceId,
-        relatedId,
-        i,
-      ]);
+      if (relatedId != null) {
+        await client.query(ServicesCrudSQL.ADMIN_INSERT_SERVICE_RELATED_SERVICE, [
+          serviceId,
+          relatedId,
+          i,
+        ]);
+      }
     }
   }
 
@@ -305,7 +314,46 @@ const replaceNested = async (
     await client.query(ServicesCrudSQL.ADMIN_DELETE_SERVICE_RELATED_POSTS, [serviceId]);
     for (let i = 0; i < nested.related_posts.length; i++) {
       const postId = nested.related_posts[i];
-      await client.query(ServicesCrudSQL.ADMIN_INSERT_SERVICE_RELATED_POST, [serviceId, postId, i]);
+      if (postId != null) {
+        await client.query(ServicesCrudSQL.ADMIN_INSERT_SERVICE_RELATED_POST, [serviceId, postId, i]);
+      }
     }
   }
+};
+
+/**
+ * Get all services with the same slug_group (for translation sync)
+ * 
+ * @param slugGroup - The slug_group identifier
+ * @returns Array of services in different locales
+ */
+export const getServicesBySlugGroup = async (slugGroup: string) => {
+  return await query(AdminServicesSQL.GET_SERVICES_BY_SLUG_GROUP, [slugGroup]);
+};
+
+/**
+ * Update hero_asset_id and og_asset_id for all services in a slug_group
+ * Used when admin uploads image for one locale and wants to sync to all others
+ * 
+ * @param slugGroup - The slug_group identifier
+ * @param heroAssetId - New hero image ID
+ * @param ogAssetId - New OG image ID
+ * @param updatedBy - User ID making the change
+ * @returns True if at least one row was updated
+ */
+export const syncImagesBySlugGroup = async (
+  slugGroup: string,
+  heroAssetId: number | null,
+  ogAssetId: number | null,
+  updatedBy: number
+): Promise<boolean> => {
+  // Import pool directly from db module
+  const { pool } = await import('../db');
+  const result = await pool.query(AdminServicesSQL.UPDATE_IMAGES_BY_SLUG_GROUP, [
+    heroAssetId,
+    ogAssetId,
+    slugGroup,
+    updatedBy,
+  ]);
+  return (result.rowCount ?? 0) > 0;
 };

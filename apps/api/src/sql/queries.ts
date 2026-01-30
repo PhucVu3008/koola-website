@@ -2,7 +2,7 @@
 
 export const LIST_SERVICES = `
   SELECT 
-    s.id, s.locale, s.title, s.slug, s.excerpt, s.hero_asset_id,
+    s.id, s.locale, s.title, s.slug, s.excerpt, s.hero_asset_id, s.icon_name,
     s.status, s.published_at, s.sort_order, s.created_at,
     COALESCE(
       json_agg(
