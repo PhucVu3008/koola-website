@@ -923,7 +923,7 @@ VALUES
         "Born from the vision of forward-thinking engineers and entrepreneurs, KOOLA was founded on a simple yet powerful principle: technology should empower, not complicate. Today, we partner with forward-looking organizations across industries to turn complex challenges into competitive advantages."
       ],
       "image": {
-        "src": "/home/hero-placeholder.svg",
+        "src": "/images/about/intro.jpg",
         "alt": "KOOLA innovation team"
       }
     }'::jsonb,
@@ -939,7 +939,7 @@ VALUES
         "Every project we undertake is guided by three core pillars: precision in execution, transparency in communication, and obsession with measurable outcomes. Our clients do not just get solutions—they gain a technology partner invested in their long-term success."
       ],
       "image": {
-        "src": "/home/hero-placeholder.svg",
+        "src": "/images/about/story.jpg",
         "alt": "KOOLA growth story"
       }
     }'::jsonb,
@@ -1066,7 +1066,7 @@ VALUES
         "Sinh ra từ tầm nhìn của các kỹ sư và doanh nhân có tư duy tiến bộ, KOOLA được thành lập dựa trên nguyên tắc đơn giản nhưng mạnh mẽ: công nghệ nên trao quyền, không phức tạp hóa. Ngày nay, chúng tôi hợp tác với các tổ chức có tầm nhìn xa trông rộng để biến những thách thức phức tạp thành lợi thế cạnh tranh."
       ],
       "image": {
-        "src": "/home/hero-placeholder.svg",
+        "src": "/images/about/intro.jpg",
         "alt": "Đội ngũ đổi mới KOOLA"
       }
     }'::jsonb,
@@ -1082,7 +1082,7 @@ VALUES
         "Mỗi dự án chúng tôi thực hiện đều được dẫn dắt bởi ba trụ cột cốt lõi: chính xác trong thực thi, minh bạch trong giao tiếp, và tập trung vào kết quả đo lường được. Khách hàng không chỉ nhận được giải pháp—họ có được một đối tác công nghệ cam kết với thành công lâu dài của họ."
       ],
       "image": {
-        "src": "/home/hero-placeholder.svg",
+        "src": "/images/about/story.jpg",
         "alt": "Câu chuyện phát triển KOOLA"
       }
     }'::jsonb,
