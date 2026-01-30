@@ -109,7 +109,7 @@ export function PrideQuoteSlider({ data }: { data: PrideQuoteSliderData }) {
             </div>
 
             {/* Decorative Elements */}
-            <div className="absolute -right-4 -top-4 h-24 w-24 rounded-2xl bg-yellow-400 opacity-80" />
+            <div className="absolute -right-4 -top-4 h-16 w-16 rounded-2xl bg-yellow-400 opacity-80" />
             <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-xl bg-pink-400 opacity-80" />
           </div>
         </div>

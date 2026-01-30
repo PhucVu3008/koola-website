@@ -20,7 +20,7 @@ export async function generateMetadata({
 
   return {
     title: `${dict.nav.careers} — ${dict.meta.siteName}`,
-    description: 'Join the Koola team. Explore career opportunities in software development, IoT, and automation.',
+    description: dict.meta.careersDescription,
   };
 }
 

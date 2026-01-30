@@ -2,7 +2,12 @@
  * Careers page API client
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+// Use different API URLs for server vs client
+// Server Components need to use Docker internal hostname 'api'
+const API_URL = 
+  typeof window === 'undefined' 
+    ? (process.env.API_BASE_URL_SERVER || 'http://api:4000')
+    : (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000');
 
 export type CareersHeroData = {
   imageUrl: string;
@@ -114,4 +119,28 @@ export async function getLatestPosts({
 
   const json = await res.json();
   return json.data.posts || [];
+}
+
+/**
+ * Fetch job detail by slug
+ */
+export async function getJobBySlug({ 
+  slug, 
+  locale 
+}: { 
+  slug: string;
+  locale: string;
+}) {
+  const url = `${API_URL}/v1/jobs/${slug}?locale=${locale}`;
+  const res = await fetch(url, {
+    next: { revalidate: 300 },
+  });
+
+  if (!res.ok) {
+    if (res.status === 404) return null;
+    throw new Error(`Failed to fetch job: ${res.status}`);
+  }
+
+  const json = await res.json();
+  return json.data;
 }

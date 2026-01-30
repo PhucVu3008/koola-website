@@ -57,12 +57,12 @@ export function CultureValuesSection({ data }: { data: CultureValuesSectionData 
                 {/* Decorative Emoji/Icon */}
                 <div className="mt-0.5 flex-shrink-0">
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-yellow-100 text-sm">
-                    {idx === 0 && '💼'}
-                    {idx === 1 && '🎯'}
-                    {idx === 2 && '🤝'}
-                    {idx === 3 && '📚'}
-                    {idx === 4 && '🎨'}
-                    {idx > 4 && '✨'}
+                    {idx === 0 && '1'}
+                    {idx === 1 && '2'}
+                    {idx === 2 && '3'}
+                    {idx === 3 && '4'}
+                    {idx === 4 && '5'}
+                    {idx > 4 && '6'}
                   </div>
                 </div>
 
