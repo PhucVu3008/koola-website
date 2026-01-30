@@ -47,6 +47,7 @@ const config: Config = {
         'float-slow': 'float 6s ease-in-out infinite',
         'float-medium': 'float 4s ease-in-out infinite',
         'float-fast': 'float 3s ease-in-out infinite',
+        'infinite-scroll': 'infiniteScroll 30s linear infinite',
       },
       keyframes: {
         fadeInUp: {
@@ -65,6 +66,14 @@ const config: Config = {
           },
           '50%': {
             transform: 'translateY(-20px)',
+          },
+        },
+        infiniteScroll: {
+          '0%': {
+            transform: 'translateX(0)',
+          },
+          '100%': {
+            transform: 'translateX(-33.333%)',
           },
         },
       },
