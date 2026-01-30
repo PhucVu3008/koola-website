@@ -22,9 +22,18 @@ export function OurStorySection({ data }: { data: OurStorySectionData }) {
       </div>
 
       <div className="flex justify-end">
-        <div className="relative h-[300px] w-[420px] overflow-hidden rounded-[44px] bg-slate-100">
-          <Image src={data.image.src} alt={data.image.alt} width={840} height={600} className="h-full w-full object-cover" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-300/35 via-transparent to-brand-500/35" />
+        <div className="relative h-[300px] w-[420px] overflow-hidden rounded-[44px] shadow-lg">
+          <Image 
+            src={data.image.src} 
+            alt={data.image.alt} 
+            width={840} 
+            height={600} 
+            className="h-full w-full object-cover"
+            quality={95}
+            priority
+          />
+          {/* Subtle overlay for brand color tint - much lighter */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-500/8 via-transparent to-brand-500/8" />
         </div>
       </div>
     </div>

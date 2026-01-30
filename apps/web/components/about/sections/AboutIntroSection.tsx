@@ -25,8 +25,18 @@ export function AboutIntroSection({ data }: { data: AboutIntroSectionData }) {
       </div>
 
       <div className="flex justify-end">
-        <div className="relative h-[280px] w-[380px] overflow-hidden rounded-[32px] bg-gradient-to-br from-emerald-200 to-blue-200">
-          <Image src={data.image.src} alt={data.image.alt} width={760} height={560} className="h-full w-full object-cover mix-blend-overlay" />
+        <div className="relative h-[280px] w-[380px] overflow-hidden rounded-[32px] shadow-lg">
+          <Image 
+            src={data.image.src} 
+            alt={data.image.alt} 
+            width={760} 
+            height={560} 
+            className="h-full w-full object-cover"
+            quality={95}
+            priority
+          />
+          {/* Optional subtle overlay for color tint */}
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-blue-500/5 pointer-events-none" />
         </div>
       </div>
     </div>
