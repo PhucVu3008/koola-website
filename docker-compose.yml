@@ -130,7 +130,10 @@ services:
       - api
     environment:
       NODE_ENV: development
-      NEXT_PUBLIC_API_BASE_URL: http://api:4000
+      # Browser (client-side) needs localhost to access API from host machine
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:4000
+      # Server-side (SSR/SSG inside Docker) needs Docker hostname to access API
+      API_BASE_URL_SERVER: http://api:4000
     ports:
       - "3000:3000"
     volumes:
