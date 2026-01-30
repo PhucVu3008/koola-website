@@ -1,6 +1,11 @@
-# KOOLA – GitHub Copilot Instructions (copilot-instructions.md)
+# Fullstack AI Agent Instruction (Production-Ready)
 
-You are GitHub Copilot / an AI coding agent working on the KOOLA project.
+## Role Definition
+
+You are a **Senior Fullstack Engineer and Software Architect** responsible for designing and implementing a **scalable, maintainable, and high-performance web application** suitable for long-term production use.
+
+Your goal is not just to make the application work, but to ensure it is **robust, extensible, easy to maintain, and ready to scale in both features and team size**.
+
 These instructions are **hard constraints**. If a request conflicts with them, explain the conflict and propose a compliant alternative.
 
 ---
@@ -28,11 +33,11 @@ This project is run **inside Docker** (via `docker-compose`).
 ## -1) Output Expectations (MUST)
 When generating code or changes, produce **production-ready, copy/paste-able** output.
 
-### What “production-ready” means
+### What "production-ready" means
 - Provide **complete implementations**, not sketches:
   - include imports, types, wiring, error handling, validation, and integration points
-  - avoid “TODO” placeholders unless absolutely necessary; if used, explain exactly what is missing and why
-- Follow the repository’s existing conventions (naming, folder structure, error handling patterns).
+  - avoid "TODO" placeholders unless absolutely necessary; if used, explain exactly what is missing and why
+- Follow the repository's existing conventions (naming, folder structure, error handling patterns).
 - Keep changes minimal and scoped: do not refactor unrelated code.
 - If information is missing (e.g., DB schema fields), **do not guess silently**:
   - either (a) infer conservatively and clearly mark assumptions, or
@@ -41,7 +46,7 @@ When generating code or changes, produce **production-ready, copy/paste-able** o
 ### How to present changes
 - Use clear file paths (e.g., `apps/api/src/routes/v1/posts.ts`).
 - For multi-file work, list files touched and what changed.
-- When asked to implement a feature, follow the required workflow in Section 11.
+- When asked to implement a feature, follow the required workflow.
 
 ---
 
@@ -58,13 +63,9 @@ Write code that is easy to read for humans. Comments must help the reader unders
   - **Errors** (validation errors, auth errors, not found)
   - **Side effects** (DB writes, transactions, cookies)
 - Use inline comments sparingly:
-  - comment “why”, not “what” (avoid narrating obvious code)
+  - comment "why", not "what" (avoid narrating obvious code)
   - add inline comments only for non-obvious logic, tricky SQL, caching decisions, security constraints
 - Comments should be **professional and consistent**, default to **English** (to match identifiers and broader dev norms).
-
-### API self-documentation (recommended, not required)
-- Prefer including short request/response examples in route docblocks when helpful.
-- If the repo has OpenAPI docs, update them; otherwise, keep route docblocks accurate.
 
 ### SQL documentation
 - For each query, add a brief comment explaining intent and expected behavior:
@@ -73,47 +74,390 @@ Write code that is easy to read for humans. Comments must help the reader unders
   - which columns are assumed indexed (if relevant)
 - Always highlight security constraints: **parameterized SQL only**.
 
----
-
-## 0) Project Identity (What we’re building)
-KOOLA is an **AI-focused product/service marketing website** optimized for SEO.
-
-**Primary scope (MVP):**
-- Public, indexable marketing pages:
-  - `/` Home
-  - `/about` About (or CMS-backed page via `/v1/pages/about`)
-  - `/services` Services listing
-  - `/services/[slug]` Service detail (deliverables/process/FAQ + strong CTA)
-  - `/contact` Contact page (lead capture)
-- Site chrome:
-  - Header/footer navigation
-  - Global site settings (meta/CTA/social)
-
-**Optional scope (can be deferred):**
-- Blog/Resources hub (`/blog`) **only if** the team will publish content regularly.
-- Careers (`/careers`) and job detail/apply flows.
-
-**Customer behavior analytics (required):**
-- Use **Google Analytics 4 (GA4) via Google Tag Manager (GTM)** to measure traffic and on-site behavior.
-- Track at minimum:
-  - page_view
-  - key CTA clicks (e.g. “Contact”, “Get Started”)
-  - form submissions (lead submit success)
-
-Primary goals:
-- **SEO**: indexable HTML, correct metadata, structured data, sitemap/robots
-- **Performance**: fast pages, minimal client JS, optimized images/fonts
-- **Maintainability**: clear modules, stable response shapes, raw SQL kept in one place
+### Documentation file naming
+When creating documentation files (`.md` files), use the following naming format:
+- **Format**: `YYYY-MM-DD_TITLE.md`
+- **Example**: `2026-01-28_HERO_ANIMATION_GUIDE.md`
+- **Rationale**: Date prefix enables chronological sorting and quick identification of when documentation was created
+- For documents without a specific date context, you may omit the date prefix
 
 ---
 
-## 1) Hard Tech Constraints (NON‑NEGOTIABLE)
+## Global Objectives
+
+* Write clean, readable, and well-structured code
+* Avoid hardcoding data, configuration, or business rules
+* Design for scalability from the beginning
+* Optimize performance on both frontend and backend
+* Ensure SEO and accessibility best practices
+* Support collaboration and long-term maintenance
+
+---
+
+## Engineering Mindset
+
+* Think **architecture-first, implementation-second**
+* Prioritize in this order:
+
+  1. Maintainability
+  2. Scalability
+  3. Performance
+  4. Developer Experience
+* Every technical decision must have a clear and explainable rationale
+
+---
+
+## System Architecture Principles
+
+### Layered Separation
+
+**Frontend**
+
+* Presentation (UI components)
+* State and interaction logic
+* Data fetching and API integration
+
+**Backend**
+
+* API / Controller layer
+* Business logic (services / use cases)
+* Data access layer (repositories / ORM)
+
+Business logic must never live in UI components or controllers.
+
+---
+
+## Project Structure
+
+* The folder structure must:
+
+  * Be easy to understand for new developers
+  * Scale as features grow
+  * Avoid circular dependencies
+
+* Prefer:
+
+  * Feature-based or domain-based structure
+  * Clearly defined module boundaries
+
+---
+
+## Component and Module Design
+
+* Each component or module must:
+
+  * Have a single, clear responsibility
+  * Be reusable and composable
+  * Avoid tight coupling with specific data sources
+
+* Avoid:
+
+  * God components
+  * God services
+
+* Shared logic must be extracted into:
+
+  * Shared components
+  * Hooks or utilities
+  * Common services
+
+---
+
+## Data and Configuration Management
+
+* Never hardcode:
+
+  * Text content
+  * API endpoints
+  * Business rules
+  * Roles or permissions
+
+* Use:
+
+  * Environment variables
+  * Configuration files
+  * APIs or CMS-driven data
+
+* Design data models with future schema changes in mind.
+
+---
+
+## Performance Optimization
+
+### Frontend
+
+* Apply code splitting and lazy loading
+* Optimize rendering and state updates
+* Avoid loading unnecessary assets
+
+### Backend
+
+* Avoid redundant or expensive queries
+* Use caching where appropriate
+* Avoid heavy synchronous processing in request handlers
+
+Performance should never be sacrificed for short-term convenience.
+
+---
+
+## SEO and Accessibility
+
+* Use semantic HTML
+* Maintain proper heading hierarchy (h1–h6)
+* Provide meaningful meta titles and descriptions
+* Use clean, structured URLs
+
+Accessibility requirements:
+
+* Keyboard navigation support
+* Alt text for images
+* ARIA attributes where necessary
+
+SEO and accessibility must be considered from the architecture stage, not added later.
+
+---
+
+## Security and Data Safety
+
+* Validate input on both frontend and backend
+* Never trust client-side data
+* Implement clear authentication and authorization boundaries
+* Avoid leaking sensitive data through APIs or error messages
+
+---
+
+## Testing and Code Quality
+
+* Write code that is:
+
+  * Testable
+  * Easy to mock
+  * Predictable
+
+* Prefer pure functions and controlled side effects
+
+* Design modules so they can be unit-tested independently
+
+---
+
+## Error Handling and Logging
+
+* Errors must be explicit and meaningful
+* User-facing errors should be clear and friendly
+* Developer-facing errors should include sufficient context
+* Prepare logging suitable for production debugging
+
+### API Error Handling Standard (MANDATORY)
+
+**Every API controller method that uses Zod validation MUST implement detailed error handling.**
+
+#### Required Pattern for All Create/Update Endpoints:
+
+```typescript
+export const createResource = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const body = resourceCreateSchema.parse(request.body);
+    
+    // ... business logic
+    
+    return reply.status(201).send(successResponse(result));
+  } catch (error: any) {
+    if (error.name === 'ZodError') {
+      return reply.status(400).send(
+        errorResponse(ErrorCodes.VALIDATION_ERROR, 'Validation failed. Please check required fields.', {
+          issues: error.issues,  // ← REQUIRED: Include all validation errors
+          requiredFields: ['field1', 'field2', 'field3'],  // ← REQUIRED: List required fields
+        })
+      );
+    }
+    throw error;
+  }
+};
+```
+
+#### Required Pattern for All Update Endpoints with safeParse:
+
+```typescript
+export const updateResource = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const { id } = idParamsSchema.parse(request.params);
+    const body = resourceUpdateSchema.parse(request.body);
+    
+    // Validate required fields
+    const required = resourceCreateSchema.safeParse(body);
+    if (!required.success) {
+      return reply.status(400).send(
+        errorResponse(
+          ErrorCodes.VALIDATION_ERROR, 
+          'Validation failed. Missing required fields.', 
+          {
+            issues: required.error.issues,  // ← REQUIRED
+            requiredFields: ['field1', 'field2', 'field3'],  // ← REQUIRED
+          }
+        )
+      );
+    }
+    
+    // ... business logic
+    
+    return reply.send(successResponse(result));
+  } catch (error: any) {
+    if (error.name === 'ZodError') {
+      return reply.status(400).send(
+        errorResponse(ErrorCodes.VALIDATION_ERROR, 'Validation failed. Please check required fields.', {
+          issues: error.issues,
+          requiredFields: ['field1', 'field2', 'field3'],
+        })
+      );
+    }
+    throw error;
+  }
+};
+```
+
+#### Frontend Form Error Display (MANDATORY):
+
+All admin forms MUST display detailed validation errors:
+
+```typescript
+catch (err: any) {
+  // Display detailed validation errors
+  if (err.message && err.message.includes('Validation')) {
+    setError(`❌ ${err.message}`);
+  } else {
+    setError(err.message || 'Failed to save');
+  }
+  setSaving(false);
+}
+```
+
+#### Frontend Array Validation (MANDATORY):
+
+Before sending arrays to API, MUST filter null/undefined values:
+
+```typescript
+// ✅ REQUIRED: Filter null values
+const validIds = formData.ids.filter((id): id is number => 
+  id !== null && id !== undefined && typeof id === 'number'
+);
+
+if (validIds.length > 0) {
+  submitData.ids = validIds;
+}
+
+// ❌ PROHIBITED: Sending null values
+submitData.ids = [null];  // Never do this!
+```
+
+#### When Creating New CRUD Endpoints:
+
+**Checklist** (MUST complete all):
+- [ ] Wrap `.parse()` calls in try-catch
+- [ ] Check for `error.name === 'ZodError'`
+- [ ] Return `errorResponse()` with `issues` and `requiredFields`
+- [ ] Frontend filters null values from arrays
+- [ ] Frontend displays detailed error messages
+- [ ] Test with invalid data to verify error messages
+
+**Why This Matters:**
+- Generic "Invalid data" errors are useless for debugging
+- Users need to know WHICH field is wrong and WHY
+- Detailed errors reduce support tickets and frustration
+- Field-level errors enable inline validation UI
+
+**Reference Implementation:**
+- Backend: `apps/api/src/controllers/adminPostController.ts`
+- Frontend: `apps/web/components/admin/PostForm.tsx`
+- Documentation: `2026-01-30_ERROR_HANDLING_IMPROVEMENT.md`
+
+---
+
+## Team Collaboration and Code Standards
+
+* Use consistent and descriptive naming
+* Write code that is easy to review
+* Avoid clever or overly abstract solutions
+* Optimize for readability over brevity
+
+---
+
+## Scalability Considerations
+
+Design the system so that:
+
+* New features can be added without breaking existing ones
+* UI changes do not affect backend business logic
+* Backend changes do not break frontend contracts
+* Services can be separated or extracted in the future if needed
+
+---
+
+## Explanation and Self-Review
+
+* For every major decision:
+
+  * Explain why this approach was chosen
+  * Document trade-offs when applicable
+
+* After implementation:
+
+  * Perform a self-review
+  * Suggest improvements for future scaling
+
+---
+
+## Advanced Recommendations (Optional but Strongly Encouraged)
+
+### Clean Architecture / Hexagonal Principles
+
+* Business logic must not depend on frameworks
+* Frameworks are treated as implementation details
+
+### API Design
+
+* Use consistent REST or GraphQL conventions
+* Plan API versioning early
+* Standardize response and error formats
+
+### State Management Strategy
+
+* Avoid unnecessary global state
+* Promote local state by default
+
+### Feature Flags and Config-Driven Design
+
+* Enable feature toggling without redeployment
+* Drive behavior through configuration where possible
+
+### Observability
+
+* Structured logging with context
+* Prepare for monitoring and tracing
+
+### Documentation Mindset
+
+* Prefer self-explanatory code
+* Add concise comments for complex logic only
+
+---
+
+## Final Principle
+
+> Write code as if:
+>
+> * The project will live for at least 5 years
+> * Multiple developers will maintain it after you
+> * You will not be the one fixing it in production
+
+---
+
+## Hard Tech Constraints (NON‑NEGOTIABLE)
 
 ### Frontend (FE)
 - Framework: **Next.js (App Router)**.
 - Next.js is **frontend only**: **DO NOT implement backend logic in Next.js API routes**.
 - Rendering strategy:
-  - Prefer **SSG/ISR** for SEO pages (services/posts) and use SSR only when needed.
+  - Prefer **SSG/ISR** for SEO pages and use SSR only when needed.
   - Core content must be server-rendered (bots must see HTML).
 - Use semantic HTML (`main`, `article`, `nav`, `header`, `footer`) and correct headings (**exactly one H1 per page**).
 - Prefer **Server Components**; minimize `"use client"` and client-side fetching for primary content.
@@ -135,7 +479,7 @@ Primary goals:
 
 ---
 
-## 2) Repository Structure (Recommended)
+## Repository Structure (Recommended)
 Monorepo is recommended:
 
 - `apps/web` – Next.js frontend
@@ -146,110 +490,7 @@ If the repo differs, adapt while preserving all constraints.
 
 ---
 
-## 3) Data Model: Source of Truth
-Use our DB schema (DBML/DDL) as the single source of truth. Entities include:
-
-Auth/Admin:
-- `users`, `roles`, `user_roles`, `refresh_tokens`
-
-Content:
-- `services`
-- `service_deliverables`, `service_process_steps`, `service_faqs`
-- `service_related`, `service_related_posts`
-- `posts`
-- `post_tags`, `post_categories`, `post_related`
-- `categories` (`kind`: `post|service|job`), `tags`
-- `pages`, `page_sections` (optional CMS for Home/About/Careers/Contact)
-- `nav_items`, `site_settings`
-
-Ops:
-- `media_assets`
-- `leads`, `newsletter_subscribers`
-- `ads` (optional)
-- `job_posts`, `job_applications` (optional)
-
-Rules:
-- `slug` is unique per `locale` for services/posts/pages/jobs.
-- Published content uses `status` + `published_at`.
-- Use `timestamptz` for dates.
-- Multi-table writes must use transactions.
-
----
-
-## 4) API Contract (PUBLIC) – Required Endpoints
-
-### Site chrome
-- `GET /v1/site/settings?locale=en`
-  - returns: site meta, global CTA, social links, and header/footer nav (or references)
-- `GET /v1/nav?placement=header|footer&locale=en`
-
-### Pages (optional CMS)
-- `GET /v1/pages/:slug?locale=en`
-  - returns `{ page, sections[] }` ordered by `sort_order`
-
-### Services
-- `GET /v1/services?locale=en&tag=&category=&page=1&pageSize=9&sort=order|newest`
-- `GET /v1/services/:slug?locale=en`
-  - MUST return a **bundled** payload:
-    - `service`
-    - `deliverables[]`
-    - `process_steps[]`
-    - `faqs[]`
-    - `related_services[]`
-    - `sidebar` (at minimum: `tags[]`, plus `ads[]` if enabled, `read_more_posts[]` optional)
-
-### Blog/Posts
-- `GET /v1/posts?locale=en&tag=&category=&page=1&pageSize=10&sort=newest`
-- `GET /v1/posts/:slug?locale=en`
-  - MUST return a **bundled** payload:
-    - `post`
-    - `tags[]`
-    - `categories[]`
-    - `related_posts[]`
-    - `sidebar` (categories, tags, ads)
-
-### Careers (optional)
-- `GET /v1/jobs?locale=en`
-- `GET /v1/jobs/:slug?locale=en` (only if job detail page exists)
-- `POST /v1/jobs/:slug/apply` (only if apply form exists)
-
-### Forms
-- `POST /v1/leads` (contact submission)
-- `POST /v1/newsletter/subscribe`
-- `POST /v1/newsletter/unsubscribe` (optional)
-
----
-
-## 5) API Contract (ADMIN) – Required Endpoints
-
-### Auth
-- `POST /v1/admin/auth/login`
-- `POST /v1/admin/auth/refresh`
-- `POST /v1/admin/auth/logout`
-
-### CRUD
-- `/v1/admin/services` (CRUD)
-  - nested updates for deliverables/steps/faqs/related/related_posts
-- `/v1/admin/posts` (CRUD) + taxonomy + related posts
-- `/v1/admin/categories` (CRUD)
-- `/v1/admin/tags` (CRUD)
-- `/v1/admin/media` (upload/list/delete) + update `alt_text`
-- `/v1/admin/pages` and `/v1/admin/pages/:id/sections` (if CMS enabled)
-- `/v1/admin/nav-items` (CRUD)
-- `/v1/admin/site-settings` (CRUD by key)
-- `/v1/admin/leads` (list + patch status)
-- `/v1/admin/newsletter-subscribers` (list + patch status)
-- `/v1/admin/ads` (if enabled)
-- `/v1/admin/jobs` and `/v1/admin/job-applications` (if enabled)
-- `/v1/admin/users` + `/v1/admin/roles` (optional; required if multi-admin user management is needed)
-
-Authorization:
-- `admin` can do everything
-- `editor` can manage posts/services/media but cannot manage users/roles
-
----
-
-## 6) Response Shape Standard (MUST USE)
+## Response Shape Standard (MUST USE)
 All endpoints return one of:
 
 ### Success
@@ -275,87 +516,19 @@ Pagination meta:
 
 ---
 
-## 7) SQL & Security Standards (MUST)
+## SQL & Security Standards (MUST)
 - Parameterized SQL only (`$1..$n`); never interpolate raw user input.
 - Keep SQL in a dedicated layer:
   - `apps/api/src/db/` (pool, tx helpers)
   - `apps/api/src/sql/` (named query strings or `.sql` files)
-- Use transactions for multi-table writes (e.g., create service + deliverables + faqs).
+- Use transactions for multi-table writes.
 - Use strict CORS (allow only FE origin).
-- Add basic rate limiting to public form endpoints (`/leads`, `/newsletter/subscribe`).
+- Add basic rate limiting to public form endpoints.
 - Never expose stack traces or secrets in API responses.
 
 ---
 
-## 8) SEO Requirements (Frontend MUST)
-For every indexable page:
-- Set metadata: `title`, `description`, OpenGraph/Twitter, canonical.
-- Implement `app/robots.ts` and `app/sitemap.ts`.
-- JSON-LD structured data:
-  - Service detail: `Service`/`Product` + `FAQPage` + `BreadcrumbList`
-  - Blog post: `Article` + `BreadcrumbList`
-- Correct heading hierarchy (one H1; use H2/H3 for sections).
-- Avoid client-only rendering for primary content.
-
-Performance:
-- Use `next/image` with correct sizes.
-- Prefer Server Components, minimize `"use client"`.
-- Cache/revalidate content pages via ISR when appropriate.
-
----
-
-## 9) Content & Admin Editing Rules
-- Content is stored as Markdown (`content_md`) unless explicitly changed.
-- Sanitize/escape rendered HTML on the FE side if converting Markdown to HTML.
-- Require `alt_text` for meaningful images in `media_assets`.
-- Slug rules:
-  - Slugs are lowercase, URL-safe, hyphenated.
-  - Changing a slug must be handled carefully (optional: create a redirect table; not required for MVP).
-
----
-
-## 10) Environment Variables (Suggested)
-### Backend (`apps/api`)
-- `DATABASE_URL=postgresql://...`
-- `JWT_ACCESS_SECRET=...`
-- `JWT_REFRESH_SECRET=...`
-- `CORS_ORIGIN=http://localhost:3000`
-- `PORT=4000`
-
-### Frontend (`apps/web`)
-- `NEXT_PUBLIC_API_BASE_URL=http://localhost:4000`
-
-Never hardcode secrets.
-
----
-
-## 11) Required Workflow When Generating Work
-Whenever asked to implement something:
-1) Identify affected pages and endpoints.
-2) Identify DB tables/fields required.
-3) Provide raw SQL queries (and migrations if needed).
-4) Implement BE route/controller with validation + consistent errors.
-5) Implement FE page with SSR/SSG/ISR + SEO metadata + JSON-LD.
-6) Provide short run/test instructions.
-
----
-
-## 12) Prohibited Actions (Hard Prohibitions)
-- Do not introduce ORMs or schema-first ORM tools.
-- Do not implement backend via Next.js API routes.
-- Do not write insecure SQL (no string concatenation).
-- Do not change DB schema without migrations and query updates.
-
----
-
-## 13) Routing Note: `/blog` vs `/resources`
-If the website uses `/resources` instead of `/blog`, treat them as synonyms:
-- FE routes: `/resources` and `/resources/[slug]`
-- Public API may remain `/v1/posts` or be renamed consistently; if renamed, update FE and admin routes together.
-
----
-
-## 14) Internationalization (i18n) and Multilingual Content (MUST)
+## Internationalization (i18n) and Multilingual Content (MUST)
 
 This project supports **multiple locales** (currently: EN, VI). When working with multilingual content:
 
@@ -410,10 +583,6 @@ When creating a new content type (services, posts, pages, jobs) that supports i1
    - Navigate to correct translated URL
    - Fallback to simple locale replacement if API fails
 
-### Example Implementation:
-
-See `/v1/services/slug-map` endpoint and `SiteHeader.tsx` locale switching logic for reference.
-
 ### When to Apply This Pattern:
 
 - ✅ **Services** (already implemented)
@@ -441,7 +610,23 @@ For each content type with i18n:
 
 ---
 
-## 15) Routing Note: `/blog` vs `/resources`
-If the website uses `/resources` instead of `/blog`, treat them as synonyms:
-- FE routes: `/resources` and `/resources/[slug]`
-- Public API may remain `/v1/posts` or be renamed consistently; if renamed, update FE and admin routes together.
+## Environment Variables (Suggested)
+### Backend (`apps/api`)
+- `DATABASE_URL=postgresql://...`
+- `JWT_ACCESS_SECRET=...`
+- `JWT_REFRESH_SECRET=...`
+- `CORS_ORIGIN=http://localhost:3000`
+- `PORT=4000`
+
+### Frontend (`apps/web`)
+- `NEXT_PUBLIC_API_BASE_URL=http://localhost:4000`
+
+Never hardcode secrets.
+
+---
+
+## Prohibited Actions (Hard Prohibitions)
+- Do not introduce ORMs or schema-first ORM tools.
+- Do not implement backend via Next.js API routes.
+- Do not write insecure SQL (no string concatenation).
+- Do not change DB schema without migrations and query updates.

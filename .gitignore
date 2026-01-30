@@ -10,7 +10,7 @@ uploads/
 coverage/
 .vscode/
 .idea/
-
+.github/
 # Docker
 postgres_data/
 api_uploads/
