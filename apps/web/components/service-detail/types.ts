@@ -22,7 +22,7 @@ export type ServiceDetailContentData = {
   highlightTitle: string;
   coverImage: string;
   heading: string;
-  bodyParagraphs: string[];
+  content: string; // Full markdown content as string
   ctaPrimary: { label: string; href: string };
   ctaSecondary: { label: string; href: string };
 };

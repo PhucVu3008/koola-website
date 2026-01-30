@@ -1,13 +1,13 @@
 import { ServicesHero, type ServicesHeroData } from './ServicesHero';
 import { ServicesGrid, type ServicesGridData } from './ServicesGrid';
 import { ServicesMidQuote, type ServicesMidQuoteData } from './ServicesMidQuote';
-import { PrimaryCTASection, type PrimaryCTASectionData } from '../home/PrimaryCTASection';
+import { ServicesCTASection, type ServicesCTASectionData } from './ServicesCTASection';
 
 export type ServicesPageData = {
   hero: ServicesHeroData;
   servicesGrid: ServicesGridData;
   midQuote: ServicesMidQuoteData;
-  cta: PrimaryCTASectionData;
+  cta: ServicesCTASectionData;
 };
 
 /**
@@ -39,7 +39,7 @@ export function ServicesPage({ data, locale }: { data: ServicesPageData; locale:
         </div>
         
         <div className="container relative z-10">
-          <PrimaryCTASection data={data.cta} />
+          <ServicesCTASection data={data.cta} />
         </div>
       </section>
     </div>

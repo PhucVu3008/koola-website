@@ -18,15 +18,7 @@ import { Lightbulb } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-
-export type ServiceDetailContentData = {
-  highlightTitle: string;
-  coverImage: string;
-  heading: string;
-  content: string; // Full markdown content
-  ctaPrimary: { label: string; href: string };
-  ctaSecondary: { label: string; href: string };
-};
+import type { ServiceDetailContentData } from './types';
 
 export function ServiceDetailContent({ data }: { data: ServiceDetailContentData }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -52,7 +44,8 @@ export function ServiceDetailContent({ data }: { data: ServiceDetailContentData 
   }, []);
 
   // Extract body content (skip title and first section)
-  const bodyContent = data.content
+  // Added null safety to prevent errors if content is undefined
+  const bodyContent = (data.content || '')
     .split('\n')
     .filter((line) => !line.startsWith('# ') && !line.startsWith('## Transform') && !line.startsWith('## Chuyển đổi'))
     .join('\n')

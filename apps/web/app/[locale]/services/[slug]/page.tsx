@@ -6,6 +6,13 @@ import { ServiceDetailPage } from '../../../../components/service-detail';
 import { getServiceBySlug } from '../../../../src/lib/api/services';
 import { getDictionary } from '../../../../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../../../../src/i18n/locales';
+import {
+  generateServiceSchema,
+  generateFAQPageSchema,
+  generateBreadcrumbSchema,
+  combineSchemas,
+  serializeJsonLd,
+} from '../../../../src/lib/seo/structuredData';
 
 export const revalidate = 300;
 
@@ -28,6 +35,47 @@ export async function generateMetadata({
 
   try {
     const data = await getServiceBySlug({ slug, locale });
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+    const dict = getDictionary(locale);
+
+    // Generate structured data schemas
+    const schemas = [];
+
+    // Service schema
+    schemas.push(
+      generateServiceSchema({
+        name: data.service.title,
+        description: data.service.excerpt || '',
+        slug,
+        locale,
+        baseUrl,
+        benefits: data.benefits?.map((b: any) => b.title) || [],
+      })
+    );
+
+    // Breadcrumb schema
+    schemas.push(
+      generateBreadcrumbSchema(
+        [
+          { name: dict.serviceDetail.breadcrumbs.home, url: `/${locale}` },
+          { name: dict.serviceDetail.breadcrumbs.services, url: `/${locale}/services` },
+          { name: data.service.title, url: '' },
+        ],
+        baseUrl
+      )
+    );
+
+    // FAQ schema if FAQs exist
+    if (data.faqs && data.faqs.length > 0) {
+      schemas.push(
+        generateFAQPageSchema(
+          data.faqs.map((faq: any) => ({
+            question: faq.question,
+            answer: faq.answer,
+          }))
+        )
+      );
+    }
 
     return {
       title: `${data.service.title} — KOOLA`,
@@ -36,6 +84,23 @@ export async function generateMetadata({
         title: data.service.title,
         description: data.service.excerpt || '',
         type: 'article',
+        images: [
+          {
+            url: `${baseUrl}/services/${slug}.jpg`,
+            width: 1200,
+            height: 630,
+            alt: data.service.title,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: data.service.title,
+        description: data.service.excerpt || '',
+        images: [`${baseUrl}/services/${slug}.jpg`],
+      },
+      other: {
+        'script:ld+json': serializeJsonLd(schemas),
       },
     };
   } catch {
@@ -64,7 +129,8 @@ export default async function ServiceDetailRoute({
   // Transform API data into component props
   const pageData = {
     hero: {
-      backgroundImage: `/services/${slug}-hero.jpg`, // Convention: slug-based image
+      // Use uploaded hero image from admin, fallback to convention-based path
+      backgroundImage: data.service.hero_image_url || `/services/${slug}-hero.jpg`,
       breadcrumbs: [
         { label: dict.serviceDetail.breadcrumbs.home, href: `/${locale}` },
         { label: dict.serviceDetail.breadcrumbs.services, href: `/${locale}/services` },
@@ -83,9 +149,10 @@ export default async function ServiceDetailRoute({
     },
     content: {
       highlightTitle: data.service.excerpt || dict.serviceDetail.content.highlightPrefix,
-      coverImage: `/services/${slug}-cover.jpg`, // Convention
+      // Use uploaded hero image for cover as well, fallback to convention-based path
+      coverImage: data.service.hero_image_url || `/services/${slug}-cover.jpg`,
       heading: data.service.title,
-      content: data.service.content_md || data.service.excerpt || '',
+      content: data.service.content_md || data.service.excerpt || '', // Pass full markdown content as string
       ctaPrimary: {
         label: dict.serviceDetail.cta.bookCall,
         href: `/${locale}/contact`,

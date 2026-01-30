@@ -36,7 +36,7 @@ export default async function ServicesPageRoute({
   // Fetch page content and services list
   const [pageData, servicesData] = await Promise.all([
     getServicesPage({ locale }),
-    getServices({ locale, pageSize: 6, sort: 'order' }),
+    getServices({ locale, pageSize: 100, sort: 'order' }), // Fetch all services (up to 100)
   ]);
 
   // Transform API data into component props
@@ -52,7 +52,9 @@ export default async function ServicesPageRoute({
         id: item.id,
         slug: item.slug,
         title: item.title,
-        imageUrl: `/services/${item.slug}.jpg`, // Convention: use slug for image filename
+        // Use uploaded image URL from admin, fallback to convention-based path
+        // Use relative path so Next.js can proxy via rewrites
+        imageUrl: item.hero_image_url || `/services/${item.slug}.jpg`,
         order: index + 1,
       })),
     },
@@ -65,7 +67,7 @@ export default async function ServicesPageRoute({
       title: pageData.cta.title,
       ctaLabel: pageData.cta.buttonLabel,
       ctaHref: `/${locale}/contact`,
-      image: pageData.cta.backgroundImage,
+      image: pageData.cta.image,
     },
   };
 

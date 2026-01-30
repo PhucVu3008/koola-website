@@ -6,6 +6,8 @@ export type ServiceListItem = {
   slug: string;
   title: string;
   excerpt?: string | null;
+  hero_image_url?: string | null; // URL to uploaded hero image
+  icon_name?: string | null; // Icon identifier for service card (e.g., 'brain', 'spark', 'cloud')
   status?: string;
   published_at?: string | null;
 };
@@ -64,6 +66,7 @@ export type ServiceDetailService = {
   excerpt?: string | null;
   content_md?: string | null;
   benefits_subtitle?: string | null;
+  hero_image_url?: string | null; // URL to uploaded hero image
 };
 
 export type ServiceDetailPayload = {
@@ -122,7 +125,7 @@ export type ServicesMidQuotePayload = {
 export type ServicesCtaPayload = {
   title: string;
   buttonLabel: string;
-  backgroundImage: string;
+  image: string;
 };
 
 export type ServicesPagePayload = {
