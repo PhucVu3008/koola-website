@@ -22,7 +22,13 @@ export type ApiSuccessEnvelope<T> = {
  * @throws Error for non-2xx responses, including API error envelope.
  */
 export async function apiFetchJson<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = new URL(path, env.NEXT_PUBLIC_API_BASE_URL);
+  // Use server-side URL if available (for Docker internal network),
+  // otherwise fallback to client-side URL (for browser and local dev).
+  const baseUrl = typeof window === 'undefined' 
+    ? (env.API_BASE_URL_SERVER || env.NEXT_PUBLIC_API_BASE_URL)
+    : env.NEXT_PUBLIC_API_BASE_URL;
+
+  const url = new URL(path, baseUrl);
 
   const res = await fetch(url, {
     ...init,
