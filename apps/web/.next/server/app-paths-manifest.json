@@ -1,9 +1,8 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/[locale]/privacy/page": "app/[locale]/privacy/page.js",
-  "/[locale]/cookies/page": "app/[locale]/cookies/page.js",
-  "/[locale]/terms/page": "app/[locale]/terms/page.js",
+  "/admin/[locale]/users/[id]/password/page": "app/admin/[locale]/users/[id]/password/page.js",
+  "/[locale]/contact/page": "app/[locale]/contact/page.js",
   "/[locale]/page": "app/[locale]/page.js",
-  "/[locale]/careers/page": "app/[locale]/careers/page.js",
-  "/[locale]/contact/page": "app/[locale]/contact/page.js"
+  "/admin/[locale]/posts/page": "app/admin/[locale]/posts/page.js",
+  "/admin/[locale]/leads/page": "app/admin/[locale]/leads/page.js",
+  "/admin/[locale]/settings/page": "app/admin/[locale]/settings/page.js"
 }

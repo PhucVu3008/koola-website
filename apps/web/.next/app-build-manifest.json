@@ -1,14 +1,14 @@
 {
   "pages": {
-    "/not-found": [
+    "/admin/[locale]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/not-found.js"
+      "static/chunks/app/admin/[locale]/page.js"
     ],
-    "/_not-found/page": [
+    "/admin/[locale]/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/admin/[locale]/layout.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -16,55 +16,75 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/[locale]/careers/page": [
+    "/error": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/[locale]/careers/page.js"
+      "static/chunks/app/error.js"
     ],
-    "/[locale]/layout": [
+    "/not-found": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/[locale]/layout.js"
+      "static/chunks/app/not-found.js"
     ],
     "/[locale]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/[locale]/page.js"
     ],
+    "/[locale]/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/[locale]/layout.js"
+    ],
+    "/[locale]/error": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/[locale]/error.js"
+    ],
+    "/[locale]/not-found": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/[locale]/not-found.js"
+    ],
+    "/admin/[locale]/users/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/[locale]/users/page.js"
+    ],
+    "/admin/[locale]/users/new/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/[locale]/users/new/page.js"
+    ],
+    "/admin/[locale]/users/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/[locale]/users/[id]/page.js"
+    ],
+    "/admin/[locale]/users/[id]/password/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/[locale]/users/[id]/password/page.js"
+    ],
+    "/admin/[locale]/settings/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/[locale]/settings/page.js"
+    ],
     "/[locale]/contact/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/[locale]/contact/page.js"
     ],
-    "/[locale]/services/page": [
+    "/admin/[locale]/posts/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/[locale]/services/page.js"
+      "static/chunks/app/admin/[locale]/posts/page.js"
     ],
-    "/services/[slug]/page": [
+    "/admin/[locale]/leads/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/services/[slug]/page.js"
-    ],
-    "/[locale]/careers/[slug]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/[locale]/careers/[slug]/page.js"
-    ],
-    "/[locale]/terms/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/[locale]/terms/page.js"
-    ],
-    "/[locale]/privacy/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/[locale]/privacy/page.js"
-    ],
-    "/[locale]/cookies/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/[locale]/cookies/page.js"
+      "static/chunks/app/admin/[locale]/leads/page.js"
     ]
   }
 }

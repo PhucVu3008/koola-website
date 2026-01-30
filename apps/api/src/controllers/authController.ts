@@ -3,6 +3,7 @@ import * as authService from '../services/authService';
 import { LoginInput } from '../schemas/auth.schemas';
 import { successResponse, errorResponse, ErrorCodes } from '../utils/response';
 import { loginSchema, refreshTokenSchema } from '../schemas';
+import { recordAttempt } from '../middleware/ipBlocking';
 
 /**
  * POST `/v1/admin/auth/login`
@@ -33,11 +34,27 @@ export const login = async (request: FastifyRequest, reply: FastifyReply) => {
 
   const result = await authService.login(credentials, request.server);
 
+  // Record login attempt in database (for IP blocking)
   if (!result.success) {
+    // Failed login - record with reason
+    await recordAttempt(
+      request,
+      credentials.email,
+      false,
+      'INVALID_CREDENTIALS'
+    );
+    
     return reply
       .status(401)
       .send(errorResponse(ErrorCodes.UNAUTHORIZED, result.message || 'Login failed'));
   }
+
+  // Successful login - record success
+  await recordAttempt(
+    request,
+    credentials.email,
+    true
+  );
 
   return reply.send(successResponse(result.data));
 };

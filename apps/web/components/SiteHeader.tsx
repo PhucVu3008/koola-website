@@ -55,7 +55,7 @@ export function SiteHeader({ locale }: { locale: string }) {
       try {
         // Call API to get translated slug
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/v1/services/slug-map?from_slug=${currentSlug}&from_locale=${currentLocale}&to_locale=${nextLocale}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000'}/v1/services/slug-map?from_slug=${currentSlug}&from_locale=${currentLocale}&to_locale=${nextLocale}`
         );
         
         if (response.ok) {
@@ -77,7 +77,7 @@ export function SiteHeader({ locale }: { locale: string }) {
       try {
         // Call API to get translated job slug
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/v1/jobs/slug-map?from_slug=${currentSlug}&from_locale=${currentLocale}&to_locale=${nextLocale}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000'}/v1/jobs/slug-map?from_slug=${currentSlug}&from_locale=${currentLocale}&to_locale=${nextLocale}`
         );
         
         if (response.ok) {

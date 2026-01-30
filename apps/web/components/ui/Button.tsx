@@ -20,8 +20,10 @@ type ButtonAsButtonProps = CommonProps &
 type ButtonAsLinkProps = CommonProps &
   {
     href: string;
+    onMouseEnter?: () => void;
+    onMouseLeave?: () => void;
   } &
-  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className' | 'children' | 'href'>;
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className' | 'children' | 'href' | 'onMouseEnter' | 'onMouseLeave'>;
 
 /**
  * Reusable button component.
@@ -44,9 +46,15 @@ export function Button(props: ButtonAsButtonProps | ButtonAsLinkProps) {
   const cls = cx(base, variantClass, className);
 
   if ('href' in props && typeof props.href === 'string') {
-    const { href, ...rest } = props;
+    const { href, onMouseEnter, onMouseLeave, ...rest } = props;
     return (
-      <Link href={href} className={cls} {...rest}>
+      <Link 
+        href={href} 
+        className={cls} 
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        {...rest}
+      >
         {children}
       </Link>
     );
