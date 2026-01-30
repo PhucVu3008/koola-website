@@ -7,7 +7,7 @@
 export const HOME = {
   hero: {
     label: 'TECH SERVICES',
-    headline: ['KOOLA:', 'Innovate,', 'Create, Elevate'],
+    headline: ['KOOLA', 'Innovate,', 'Create, Elevate'],
     subhead: 'Unlocking Possibilities, One Code at a Time',
     primaryCta: { label: 'Sign projects', href: '/contact' },
     secondaryCta: { label: 'Get Started', href: '/services' },
@@ -15,6 +15,8 @@ export const HOME = {
       src: '/home/hero.jpg',
       alt: 'Team working at a laptop',
     },
+    backgroundImage: '/home/hero-bg.avif',
+    overlayImage: '/home/hero-bg.png', // Static PNG overlay on top
   },
   capabilities: {
     heading: 'We have multidisciplinary teams to meet any challenge.',
@@ -149,22 +151,22 @@ export const HOME = {
         title:
           'The Power of UI/UX: Creating Engaging Digital Experiences',
         author: 'Ben Taylor',
-        date: '15 May 2023',
-        image: '/home/blog-1.jpg',
+        date: '15 May 2025',
+        image: '/home/blog-1.png',
       },
       {
         category: 'Development',
         title: 'Agile Development: The Key to Flexibility',
         author: 'Jane Lewis',
-        date: '12 May 2023',
-        image: '/home/blog-2.jpg',
+        date: '12 Dec 2025',
+        image: '/home/blog-2.png',
       },
       {
         category: 'Management',
-        title: 'Media App Development: Watch in 2023',
+        title: 'Media App Development: Watch in 2026',
         author: 'Sarah Mitchell',
-        date: '10 May 2023',
-        image: '/home/blog-3.jpg',
+        date: '10 Jan 2026',
+        image: '/home/blog-3.png',
       },
     ],
   },
@@ -198,7 +200,7 @@ export const HOME_I18N = {
   vi: {
     hero: {
       label: 'DỊCH VỤ CÔNG NGHỆ',
-      headline: ['KOOLA:', 'Đổi mới,', 'Tạo dựng, Nâng tầm'],
+      headline: ['KOOLA', 'Đổi mới,', 'Tạo dựng, Nâng tầm'],
       subhead: 'Mở khóa tiềm năng, từng dòng code một',
       primaryCta: { label: 'Ký dự án', href: '/contact' },
       secondaryCta: { label: 'Bắt đầu', href: '/services' },
@@ -206,6 +208,7 @@ export const HOME_I18N = {
         src: '/home/hero.jpg',
         alt: 'Nhóm làm việc trên laptop',
       },
+      backgroundImage: '/home/hero-bg.avif',
     },
     capabilities: {
       heading: 'Chúng tôi có đội ngũ đa ngành để đáp ứng mọi thách thức.',

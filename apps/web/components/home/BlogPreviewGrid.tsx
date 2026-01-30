@@ -76,7 +76,11 @@ export function BlogPreviewGrid({ data }: { data: BlogPreviewGridData }) {
 
   return (
     <div className="space-y-10">
-      <h2 className="text-2xl font-semibold text-slate-900">{data.title}</h2>
+      {/* Section header with simple accent bar */}
+      <div className="flex items-center gap-4">
+        <div className="h-12 w-1.5 rounded-full bg-gradient-to-b from-blue-500 to-indigo-500" />
+        <h2 className="text-2xl font-semibold text-slate-900">{data.title}</h2>
+      </div>
 
       <div
         className={`grid grid-cols-3 gap-7 transition-[opacity,transform] duration-200 ease-out will-change-[opacity,transform] ${gridAnimClass}`}
