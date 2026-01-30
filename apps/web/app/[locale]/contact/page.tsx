@@ -20,11 +20,8 @@ export async function generateMetadata({
   const dict = await getDictionary(locale);
 
   return {
-    title: dict.nav.contact,
-    description:
-      locale === 'vi'
-        ? 'Liên hệ KOOLA — cho chúng tôi biết bạn đang xây dựng gì. Chúng tôi phản hồi trong 1–2 ngày làm việc.'
-        : 'Contact KOOLA — tell us what you are building. We reply within 1–2 business days.',
+    title: dict.meta.contactTitle,
+    description: dict.meta.contactDescription,
   };
 }
 
@@ -47,6 +44,7 @@ export default async function ContactRoute({
     hero: {
       title: dict.contact.hero.title,
       subtitle: dict.contact.hero.subtitle,
+      backgroundImage: '/contact/hero-bg.jpg',
     },
     info: {
       title: dict.contact.info.title,
