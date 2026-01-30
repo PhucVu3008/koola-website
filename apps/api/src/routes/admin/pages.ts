@@ -13,7 +13,7 @@ import * as adminPagesController from '../../controllers/adminPagesController';
  */
 const adminPagesRoutes: FastifyPluginAsync = async (server) => {
   server.addHook('preHandler', authenticate);
-  server.addHook('preHandler', authorize(['admin', 'editor']));
+  server.addHook('preHandler', authorize(['admin', 'manager', 'editor']));
 
   // Pages
   server.get('/', { handler: adminPagesController.listPages });

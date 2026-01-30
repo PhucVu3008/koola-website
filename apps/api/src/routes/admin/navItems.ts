@@ -13,7 +13,7 @@ import * as adminNavItemController from '../../controllers/adminNavItemControlle
  */
 const adminNavItemsRoutes: FastifyPluginAsync = async (server) => {
   server.addHook('preHandler', authenticate);
-  server.addHook('preHandler', authorize(['admin', 'editor']));
+  server.addHook('preHandler', authorize(['admin', 'manager', 'editor']));
 
   server.get('/', { handler: adminNavItemController.listNavItems });
   server.get('/:id', { handler: adminNavItemController.getNavItemById });

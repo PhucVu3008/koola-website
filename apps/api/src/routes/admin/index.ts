@@ -1,5 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import authRoutes from './auth';
+import usersRoutes from './users';
 import servicesRoutes from './services';
 import postsRoutes from './posts';
 import categoriesRoutes from './categories';
@@ -9,6 +10,7 @@ import newsletterSubscribersRoutes from './newsletterSubscribers';
 import navItemsRoutes from './navItems';
 import siteSettingsRoutes from './siteSettings';
 import pagesRoutes from './pages';
+import mediaRoutes from './media';
 
 /**
  * Admin routes aggregator.
@@ -33,6 +35,9 @@ const adminRoutes: FastifyPluginAsync = async (server) => {
   // Auth routes (no JWT required)
   await server.register(authRoutes, { prefix: '/auth' });
 
+  // User management routes (admin/manager access)
+  await server.register(usersRoutes, { prefix: '/users' });
+
   // Protected CRUD routes
   await server.register(servicesRoutes, { prefix: '/services' });
   await server.register(postsRoutes, { prefix: '/posts' });
@@ -43,6 +48,7 @@ const adminRoutes: FastifyPluginAsync = async (server) => {
   await server.register(navItemsRoutes, { prefix: '/nav-items' });
   await server.register(siteSettingsRoutes, { prefix: '/site-settings' });
   await server.register(pagesRoutes, { prefix: '/pages' });
+  await server.register(mediaRoutes, { prefix: '/media' });
 };
 
 export default adminRoutes;

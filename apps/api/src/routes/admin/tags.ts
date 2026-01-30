@@ -13,7 +13,7 @@ import * as adminTaxonomyController from '../../controllers/adminTaxonomyControl
  */
 const adminTagsRoutes: FastifyPluginAsync = async (server) => {
   server.addHook('preHandler', authenticate);
-  server.addHook('preHandler', authorize(['admin', 'editor']));
+  server.addHook('preHandler', authorize(['admin', 'manager', 'editor']));
 
   server.get('/', { handler: adminTaxonomyController.listTags });
   server.get('/:id', { handler: adminTaxonomyController.getTagById });

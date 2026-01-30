@@ -9,11 +9,11 @@ import * as adminPostController from '../../controllers/adminPostController';
  *
  * Security:
  * - Requires a valid access token (JWT) via `authenticate`.
- * - Requires role `admin` or `editor` via `authorize([...])`.
+ * - Requires role `admin`, `manager`, or `editor` via `authorize([...])`.
  */
 const adminPostsRoutes: FastifyPluginAsync = async (server) => {
   server.addHook('preHandler', authenticate);
-  server.addHook('preHandler', authorize(['admin', 'editor']));
+  server.addHook('preHandler', authorize(['admin', 'manager', 'editor']));
 
   server.get('/', { handler: adminPostController.listPosts });
   server.get('/:id', { handler: adminPostController.getPostById });

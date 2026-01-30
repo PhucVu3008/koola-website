@@ -1,5 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import * as authController from '../../controllers/authController';
+import { checkIPBlocking } from '../../middleware/ipBlocking';
 
 /**
  * Admin Auth routes.
@@ -13,6 +14,7 @@ import * as authController from '../../controllers/authController';
  *
  * Security:
  * - These endpoints are public (no JWT) and MUST be rate limited.
+ * - Login endpoint has IP blocking middleware (30s block after 5 failed attempts).
  *
  * Validation:
  * - Body validation is performed inside `authController` using Zod.
@@ -20,6 +22,7 @@ import * as authController from '../../controllers/authController';
 const authRoutes: FastifyPluginAsync = async (server) => {
   // Login
   server.post('/login', {
+    preHandler: [checkIPBlocking], // Check if IP is blocked before processing
     config: {
       rateLimit: {
         max: 10,

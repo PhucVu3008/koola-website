@@ -17,7 +17,7 @@ import * as adminSiteSettingsController from '../../controllers/adminSiteSetting
  */
 const adminSiteSettingsRoutes: FastifyPluginAsync = async (server) => {
   server.addHook('preHandler', authenticate);
-  server.addHook('preHandler', authorize(['admin', 'editor']));
+  server.addHook('preHandler', authorize(['admin', 'manager', 'editor']));
 
   server.get('/', { handler: adminSiteSettingsController.listSettings });
   server.get('/:key', { handler: adminSiteSettingsController.getSettingByKey });

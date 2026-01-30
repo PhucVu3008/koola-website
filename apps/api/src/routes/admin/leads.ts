@@ -13,7 +13,7 @@ import * as adminLeadController from '../../controllers/adminLeadController';
  */
 const adminLeadsRoutes: FastifyPluginAsync = async (server) => {
   server.addHook('preHandler', authenticate);
-  server.addHook('preHandler', authorize(['admin', 'editor']));
+  server.addHook('preHandler', authorize(['admin', 'manager', 'editor']));
 
   server.get('/', { handler: adminLeadController.listLeads });
   server.patch('/:id/status', { handler: adminLeadController.patchLeadStatus });

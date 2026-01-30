@@ -13,7 +13,7 @@ import * as adminNewsletterSubscriberController from '../../controllers/adminNew
  */
 const adminNewsletterSubscribersRoutes: FastifyPluginAsync = async (server) => {
   server.addHook('preHandler', authenticate);
-  server.addHook('preHandler', authorize(['admin', 'editor']));
+  server.addHook('preHandler', authorize(['admin', 'manager', 'editor']));
 
   server.get('/', { handler: adminNewsletterSubscriberController.listSubscribers });
   server.patch('/:id/status', { handler: adminNewsletterSubscriberController.patchSubscriberStatus });
