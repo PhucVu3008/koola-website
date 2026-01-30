@@ -66,51 +66,74 @@ export const getPostById = async (request: FastifyRequest, reply: FastifyReply) 
  * POST `/v1/admin/posts`
  */
 export const createPost = async (request: FastifyRequest, reply: FastifyReply) => {
-  const body = adminPostCreateSchema.parse(request.body);
+  try {
+    const body = adminPostCreateSchema.parse(request.body);
 
-  const user = request.user as any;
-  const userId = Number(user?.id);
-  if (!userId || Number.isNaN(userId)) {
-    return reply
-      .status(401)
-      .send(errorResponse(ErrorCodes.UNAUTHORIZED, 'Authentication required'));
+    const user = request.user as any;
+    const userId = Number(user?.id);
+    if (!userId || Number.isNaN(userId)) {
+      return reply
+        .status(401)
+        .send(errorResponse(ErrorCodes.UNAUTHORIZED, 'Authentication required'));
+    }
+
+    const id = await adminPostService.createPost({ userId, data: body });
+    return reply.status(201).send(successResponse({ id }));
+  } catch (error: any) {
+    if (error.name === 'ZodError') {
+      return reply.status(400).send(
+        errorResponse(ErrorCodes.VALIDATION_ERROR, 'Validation failed', {
+          issues: error.issues,
+        })
+      );
+    }
+    throw error;
   }
-
-  const id = await adminPostService.createPost({ userId, data: body });
-  return reply.status(201).send(successResponse({ id }));
 };
 
 /**
  * PUT `/v1/admin/posts/:id`
  */
 export const updatePost = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { id } = idParamsSchema.parse(request.params);
-  const body = adminPostUpdateSchema.parse(request.body);
+  try {
+    const { id } = idParamsSchema.parse(request.params);
+    const body = adminPostUpdateSchema.parse(request.body);
 
-  const user = request.user as any;
-  const userId = Number(user?.id);
-  if (!userId || Number.isNaN(userId)) {
-    return reply
-      .status(401)
-      .send(errorResponse(ErrorCodes.UNAUTHORIZED, 'Authentication required'));
+    const user = request.user as any;
+    const userId = Number(user?.id);
+    if (!userId || Number.isNaN(userId)) {
+      return reply
+        .status(401)
+        .send(errorResponse(ErrorCodes.UNAUTHORIZED, 'Authentication required'));
+    }
+
+    // Enforce required core fields for PUT semantics.
+    const required = adminPostCreateSchema.safeParse(body);
+    if (!required.success) {
+      return reply.status(400).send(
+        errorResponse(ErrorCodes.VALIDATION_ERROR, 'Validation failed. Missing required fields.', {
+          issues: required.error.issues,
+          requiredFields: ['locale', 'title', 'slug', 'content_md'],
+        })
+      );
+    }
+
+    const updatedId = await adminPostService.updatePost({ id, userId, data: required.data });
+    if (!updatedId) {
+      return reply.status(404).send(errorResponse(ErrorCodes.NOT_FOUND, 'Post not found'));
+    }
+
+    return reply.send(successResponse({ id: updatedId }));
+  } catch (error: any) {
+    if (error.name === 'ZodError') {
+      return reply.status(400).send(
+        errorResponse(ErrorCodes.VALIDATION_ERROR, 'Validation failed', {
+          issues: error.issues,
+        })
+      );
+    }
+    throw error;
   }
-
-  // Enforce required core fields for PUT semantics.
-  const required = adminPostCreateSchema.safeParse(body);
-  if (!required.success) {
-    return reply.status(400).send(
-      errorResponse(ErrorCodes.VALIDATION_ERROR, 'Invalid request body', {
-        issues: required.error.issues,
-      })
-    );
-  }
-
-  const updatedId = await adminPostService.updatePost({ id, userId, data: required.data });
-  if (!updatedId) {
-    return reply.status(404).send(errorResponse(ErrorCodes.NOT_FOUND, 'Post not found'));
-  }
-
-  return reply.send(successResponse({ id: updatedId }));
 };
 
 /**
