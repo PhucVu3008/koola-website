@@ -7,6 +7,12 @@ import { PageLayout } from '../../components/layout/PageLayout';
 import { getSiteSettings } from '../../src/lib/api/site';
 import { getDictionary, getSupportedLocales } from '../../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../../src/i18n/locales';
+import {
+  generateOrganizationSchema,
+  generateWebSiteSchema,
+  combineSchemas,
+  serializeJsonLd,
+} from '../../src/lib/seo/structuredData';
 
 import '../globals.css';
 
@@ -35,6 +41,12 @@ export async function generateMetadata({
   const languages: Record<string, string> = {};
   for (const l of supported) languages[l] = `/${l}`;
 
+  // Generate structured data schemas
+  const schemas = combineSchemas(
+    generateOrganizationSchema(baseUrl),
+    generateWebSiteSchema(baseUrl, locale)
+  );
+
   return {
     metadataBase: new URL(baseUrl),
     title: {
@@ -59,6 +71,9 @@ export async function generateMetadata({
       title: dict.meta.homeTitle,
       description: dict.meta.homeDescription,
     },
+    other: {
+      'script:ld+json': serializeJsonLd(schemas),
+    },
   };
 }
 
@@ -68,6 +83,7 @@ export async function generateMetadata({
  * Notes:
  * - Server Components for SEO.
  * - Fetches site chrome on the server.
+ * - Admin routes bypass this layout's PageLayout wrapper.
  */
 export default async function LocaleLayout({
   children,

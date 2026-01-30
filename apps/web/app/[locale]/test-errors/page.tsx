@@ -1,9 +1,18 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 
 /**
  * Test page to preview all error pages
  * Only for development - should be removed in production
  */
+
+export const metadata: Metadata = {
+  title: 'Error Pages Test',
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 interface TestErrorsPageProps {
   params: Promise<{ locale: string }>;

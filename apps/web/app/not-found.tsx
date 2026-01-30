@@ -1,35 +1,34 @@
-import type { Metadata } from 'next';
+'use client';
+
+import { usePathname } from 'next/navigation';
 import { DICTIONARIES } from '../src/i18n/generated';
 import { ErrorPageContent } from '../components/errors/ErrorPageContent';
-
-export const dynamic = 'force-dynamic';
+import { extractLocaleFromPath } from '../src/utils/error-context';
 
 /**
- * Global 404 Not Found page.
+ * Global 404 Not Found page with context-aware navigation.
  * 
  * This page is shown when:
  * - A route outside /[locale]/* doesn't exist
  * - The locale prefix is invalid
  * 
- * Defaults to English locale.
+ * Detects locale from pathname and adapts navigation based on context (admin/public).
  */
 
-export const metadata: Metadata = {
-  title: '404 - Page Not Found',
-  description: 'The page you are looking for doesn\'t exist or has been moved.',
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
-
 export default function NotFound() {
-  const dict = DICTIONARIES.en;
+  const pathname = usePathname();
+  const locale = extractLocaleFromPath(pathname);
+  const dict = DICTIONARIES[locale as 'en' | 'vi'] || DICTIONARIES.en;
   
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body>
-        <ErrorPageContent dict={dict} locale="en" errorCode={404} />
+        <ErrorPageContent 
+          dict={dict} 
+          locale={locale} 
+          errorCode={404}
+          pathname={pathname}
+        />
       </body>
     </html>
   );

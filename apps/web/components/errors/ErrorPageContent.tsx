@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import type { Dictionary } from '../../src/i18n/generated';
+import { detectErrorContext, generateErrorNavigation } from '../../src/utils/error-context';
+import { getAdminTranslations } from '../../src/i18n/admin-translations';
 
 export type ErrorCode = 400 | 401 | 403 | 404 | 500 | 502 | 503;
 
@@ -8,10 +10,11 @@ interface ErrorPageContentProps {
   locale: string;
   errorCode: ErrorCode;
   customMessage?: string;
+  pathname?: string; // Optional: auto-detect from window if not provided
 }
 
 /**
- * Universal error page content component.
+ * Universal error page content component with context-aware navigation.
  * 
  * Supports multiple error codes:
  * - 400: Bad Request
@@ -24,11 +27,19 @@ interface ErrorPageContentProps {
  * 
  * Features:
  * - Dynamic content based on error code
+ * - Context-aware navigation (admin vs public)
  * - Smooth animations
  * - Appropriate colors per error type
  * - Localized messages
  */
-export function ErrorPageContent({ dict, locale, errorCode, customMessage }: ErrorPageContentProps) {
+export function ErrorPageContent({ dict, locale, errorCode, customMessage, pathname }: ErrorPageContentProps) {
+  // Detect context (admin or public)
+  const currentPath = pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
+  const context = detectErrorContext(currentPath);
+  
+  // Get admin translations if in admin context
+  const adminDict = context === 'admin' ? getAdminTranslations(locale as 'en' | 'vi') : null;
+  
   // Error-specific configuration (colors and animations only)
   const errorConfig = {
     400: { color: 'yellow', animation: 'animate-[shake_0.5s_ease-in-out]' },
@@ -96,6 +107,32 @@ export function ErrorPageContent({ dict, locale, errorCode, customMessage }: Err
   } as const;
 
   const colors = colorClasses[config.color as keyof typeof colorClasses];
+  
+  // Generate context-aware navigation with properly structured translations
+  const navigation = generateErrorNavigation(
+    context,
+    locale,
+    errorCode,
+    {
+      admin: adminDict ? {
+        dashboard: adminDict.errors.dashboard,
+        services: adminDict.errors.services,
+        settings: adminDict.errors.settings,
+        backToDashboard: adminDict.errors.backToDashboard,
+      } : {
+        dashboard: 'Dashboard',
+        services: 'Manage Services',
+        settings: 'Settings',
+        backToDashboard: 'Back to Dashboard',
+      },
+      public: {
+        home: dict.errors.notFound.homeButton,
+        services: dict.errors.notFound.servicesButton,
+        contact: dict.errors.notFound.contactButton,
+        backToHome: dict.errors.notFound.homeButton,
+      },
+    }
+  );
 
   return (
     <div className="relative isolate overflow-hidden min-h-screen flex items-center bg-white dark:bg-gray-900">
@@ -131,29 +168,22 @@ export function ErrorPageContent({ dict, locale, errorCode, customMessage }: Err
           {/* Action buttons with staggered fade-in animation */}
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-[fadeInUp_0.6s_ease-out_0.6s_both]">
             <Link
-              href={`/${locale}`}
+              href={navigation.home.href}
               className={`group relative rounded-md ${colors.bg} px-6 py-3 text-sm font-semibold text-white shadow-sm ${colors.hoverBg} hover:scale-105 ${colors.focus} focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 transition-all duration-300 ease-out hover:shadow-lg`}
             >
-              <span className="relative z-10">{errorData.homeButton}</span>
+              <span className="relative z-10">{navigation.home.label}</span>
               <div className={`absolute inset-0 rounded-md ${colors.overlay} opacity-0 group-hover:opacity-20 transition-opacity duration-300`}></div>
             </Link>
             
-            {errorCode === 404 && (
-              <>
-                <Link
-                  href={`/${locale}/services`}
-                  className="group relative rounded-md bg-white dark:bg-gray-800 px-6 py-3 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 hover:scale-105 hover:ring-gray-400 dark:hover:ring-gray-600 transition-all duration-300 ease-out hover:shadow-md"
-                >
-                  {dict.errors.notFound.servicesButton}
-                </Link>
-                <Link
-                  href={`/${locale}/contact`}
-                  className="group relative rounded-md bg-white dark:bg-gray-800 px-6 py-3 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 hover:scale-105 hover:ring-gray-400 dark:hover:ring-gray-600 transition-all duration-300 ease-out hover:shadow-md"
-                >
-                  {dict.errors.notFound.contactButton}
-                </Link>
-              </>
-            )}
+            {navigation.secondary && navigation.secondary.length > 0 && navigation.secondary.map((link, idx) => (
+              <Link
+                key={idx}
+                href={link.href}
+                className="group relative rounded-md bg-white dark:bg-gray-800 px-6 py-3 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 hover:scale-105 hover:ring-gray-400 dark:hover:ring-gray-600 transition-all duration-300 ease-out hover:shadow-md"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
