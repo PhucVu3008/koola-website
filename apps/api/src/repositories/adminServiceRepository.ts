@@ -65,6 +65,12 @@ export interface AdminServiceNestedInput {
     answer: string;
     sort_order?: number;
   }>;
+  benefits?: Array<{
+    title: string;
+    description?: string;
+    icon_name?: string;
+    sort_order?: number;
+  }>;
   related_services?: number[];
   related_posts?: number[];
 }
@@ -101,13 +107,14 @@ export const getServiceBundleById = async (id: number) => {
   const service = await queryOne(ServicesCrudSQL.ADMIN_GET_SERVICE_BY_ID, [id]);
   if (!service) return null;
 
-  const [tagIds, categoryIds, deliverables, processSteps, faqs, relatedServices, relatedPosts] =
+  const [tagIds, categoryIds, deliverables, processSteps, faqs, benefits, relatedServices, relatedPosts] =
     await Promise.all([
       query<{ id: number }>(ServicesCrudSQL.ADMIN_GET_SERVICE_TAG_IDS, [id]),
       query<{ id: number }>(ServicesCrudSQL.ADMIN_GET_SERVICE_CATEGORY_IDS, [id]),
       query(ServicesCrudSQL.ADMIN_GET_SERVICE_DELIVERABLES, [id]),
       query(ServicesCrudSQL.ADMIN_GET_SERVICE_PROCESS_STEPS, [id]),
       query(ServicesCrudSQL.ADMIN_GET_SERVICE_FAQS, [id]),
+      query(AdminServicesSQL.GET_SERVICE_BENEFITS, [id]),
       query<{ id: number; sort_order: number }>(
         ServicesCrudSQL.ADMIN_GET_SERVICE_RELATED_SERVICE_IDS,
         [id]
@@ -125,6 +132,7 @@ export const getServiceBundleById = async (id: number) => {
     deliverables,
     process_steps: processSteps,
     faqs,
+    benefits,
     // For now we expose ids-only; sort order is deterministic (array order).
     related_services: relatedServices.map((r) => r.id),
     related_posts: relatedPosts.map((r) => r.id),
@@ -292,6 +300,19 @@ const replaceNested = async (
         f.question,
         f.answer,
         f.sort_order ?? 0,
+      ]);
+    }
+  }
+
+  if (nested.benefits) {
+    await client.query(AdminServicesSQL.DELETE_SERVICE_BENEFITS, [serviceId]);
+    for (const b of nested.benefits) {
+      await client.query(AdminServicesSQL.INSERT_SERVICE_BENEFIT, [
+        serviceId,
+        b.title,
+        b.description ?? null,
+        b.icon_name ?? null,
+        b.sort_order ?? 0,
       ]);
     }
   }

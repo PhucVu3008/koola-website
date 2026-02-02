@@ -212,7 +212,8 @@ export default async function ServiceDetailRoute({
           slug: s.slug,
           title: s.title,
           excerpt: s.excerpt || '',
-          imageUrl: `/services/${s.slug}.jpg`,
+          // Use uploaded hero image from API, fallback to convention-based path
+          imageUrl: s.hero_image_url || `/services/${s.slug}.jpg`,
           type: 'service' as const,
         })).slice(0, 3) || [],
     },

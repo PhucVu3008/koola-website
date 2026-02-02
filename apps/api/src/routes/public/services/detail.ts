@@ -132,6 +132,7 @@ export default async function serviceDetailRoute(fastify: FastifyInstance) {
         slug: row.slug,
         excerpt: row.excerpt,
         heroAssetId: row.hero_asset_id,
+        heroImageUrl: row.hero_image_url,
       })),
       relatedPosts: relatedPostsResult.rows.map((row: any) => ({
         id: row.id,
@@ -140,6 +141,7 @@ export default async function serviceDetailRoute(fastify: FastifyInstance) {
         slug: row.slug,
         excerpt: row.excerpt,
         heroAssetId: row.hero_asset_id,
+        heroImageUrl: row.hero_image_url,
         publishedAt: row.published_at,
       })),
     };

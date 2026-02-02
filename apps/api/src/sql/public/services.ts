@@ -227,9 +227,20 @@ export const GET_SERVICE_BENEFITS = `
  */
 export const GET_SERVICE_RELATED_SERVICES = `
   SELECT 
-    s.id, s.locale, s.title, s.slug, s.excerpt, s.hero_asset_id
+    s.id, 
+    s.locale, 
+    s.title, 
+    s.slug, 
+    s.excerpt, 
+    s.hero_asset_id,
+    -- Construct hero image URL from media_assets
+    CASE
+      WHEN m.id IS NOT NULL THEN CONCAT('/uploads/', m.storage_path)
+      ELSE NULL
+    END as hero_image_url
   FROM services s
   INNER JOIN service_related sr ON s.id = sr.related_service_id
+  LEFT JOIN media_assets m ON s.hero_asset_id = m.id
   WHERE sr.service_id = $1 AND s.locale = $2 AND s.status = 'published'
   ORDER BY sr.sort_order ASC
   LIMIT 3
@@ -249,9 +260,21 @@ export const GET_SERVICE_RELATED_SERVICES = `
  */
 export const GET_SERVICE_RELATED_POSTS = `
   SELECT 
-    p.id, p.locale, p.title, p.slug, p.excerpt, p.hero_asset_id, p.published_at
+    p.id, 
+    p.locale, 
+    p.title, 
+    p.slug, 
+    p.excerpt, 
+    p.hero_asset_id, 
+    p.published_at,
+    -- Construct hero image URL from media_assets
+    CASE
+      WHEN m.id IS NOT NULL THEN CONCAT('/uploads/', m.storage_path)
+      ELSE NULL
+    END as hero_image_url
   FROM posts p
   INNER JOIN service_related_posts srp ON p.id = srp.post_id
+  LEFT JOIN media_assets m ON p.hero_asset_id = m.id
   WHERE srp.service_id = $1 AND p.locale = $2 AND p.status = 'published'
   ORDER BY srp.sort_order ASC
   LIMIT 3

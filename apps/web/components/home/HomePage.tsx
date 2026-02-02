@@ -1,6 +1,7 @@
 import Image from 'next/image';
 
 import { getHomeData, HOME } from '../../src/lib/home/homeData';
+import { getPageBySlug } from '../../src/lib/api/pages';
 import { Section } from '../ui/Section';
 import { RevealOnScroll } from '../ui/RevealOnScroll';
 import { HeroSection } from './HeroSection';
@@ -15,15 +16,45 @@ import { PrimaryCTASection } from './PrimaryCTASection';
 /**
  * Home page composition.
  * 
- * Services section now fetches real data from database instead of static content.
+ * Now loads content from CMS (pages + page_sections).
+ * Falls back to hard-coded content if CMS data is not available.
+ * 
+ * CMS Integration:
+ * - Hero section: section_key='hero'
+ * - Services showcase: section_key='services_showcase'
+ * - Why choose us: section_key='why_choose_us'
+ * - Other sections: Use hard-coded data (capabilities, trusted logos, blog, team, CTA)
  */
 export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {}) {
-  const data = getHomeData(locale);
+  // Load hard-coded data as fallback
+  const fallbackData = getHomeData(locale);
+  
+  // Try to load CMS data
+  let cmsData: Awaited<ReturnType<typeof getPageBySlug>> | null = null;
+  try {
+    cmsData = await getPageBySlug({ slug: 'home', locale });
+  } catch (error) {
+    console.warn('[HomePage] Failed to load CMS data, using fallback:', error);
+  }
+
+  // Helper to get section payload from CMS
+  const getCmsSection = (key: string) => {
+    if (!cmsData) return null;
+    return cmsData.sections.find((s) => s.section_key === key)?.payload;
+  };
+
+  // For now, use hard-coded data for hero (complex structure)
+  // CMS sections can be used for simpler content
+  const heroData = fallbackData.hero;
+  const servicesTitle = ((getCmsSection('services_showcase') as any)?.title as string) || fallbackData.services.title;
+  
+  // Use hard-coded data for sections not managed by CMS yet
+  const data = fallbackData;
 
   return (
     <>
       {/* Hero Section - Full width, no wrapper */}
-      <HeroSection data={data.hero} />
+      <HeroSection data={heroData} />
 
       <div className="space-y-16 py-8">
         <RevealOnScroll delayMs={80} hoverParallax>
@@ -34,7 +65,7 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
 
       <RevealOnScroll delayMs={160} hoverParallax>
         <Section tone="white">
-          <HomeServicesSection locale={locale} title={data.services.title} />
+          <HomeServicesSection locale={locale} title={servicesTitle} />
         </Section>
       </RevealOnScroll>
 

@@ -11,6 +11,8 @@ coverage/
 .vscode/
 .idea/
 .github/
+.next/
+*.tsbuildinfo
 # Docker
 postgres_data/
 api_uploads/

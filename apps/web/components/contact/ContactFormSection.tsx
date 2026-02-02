@@ -3,6 +3,8 @@
 import { useState, type FormEvent } from 'react';
 import { useScrollAnimation } from '../../src/hooks/useScrollAnimation';
 import { createLead } from '../../src/lib/api/leads';
+import { PhoneInput } from '../ui/PhoneInput';
+import type { E164Number } from 'libphonenumber-js/core';
 
 export type ContactFormData = {
   title: string;
@@ -43,6 +45,7 @@ export function ContactFormSection({ data }: ContactFormSectionProps) {
   const [sectionRef, isSectionVisible] = useScrollAnimation<HTMLElement>();
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [phone, setPhone] = useState<E164Number | undefined>();
 
   return (
     <section
@@ -76,7 +79,8 @@ export function ContactFormSection({ data }: ContactFormSectionProps) {
               const email = String(fd.get('email') ?? '').trim();
               const message = String(fd.get('message') ?? '').trim();
               const company = String(fd.get('company') ?? '').trim();
-              const phone = String(fd.get('phone') ?? '').trim();
+              // Phone is managed by state, not FormData
+              const phoneValue = phone || undefined;
 
               if (!name || !email || !message) {
                 setErrorMessage('Please fill in all required fields.');
@@ -90,12 +94,13 @@ export function ContactFormSection({ data }: ContactFormSectionProps) {
                   email,
                   message,
                   company: company || undefined,
-                  phone: phone || undefined,
+                  phone: phoneValue,
                   source: 'web',
                 });
 
                 setStatus('success');
                 form.reset();
+                setPhone(undefined); // Reset phone state
               } catch (err: any) {
                 setErrorMessage(err?.message ?? 'Something went wrong.');
                 setStatus('error');
@@ -154,14 +159,15 @@ export function ContactFormSection({ data }: ContactFormSectionProps) {
               <label className="block text-sm font-medium text-slate-900" htmlFor="phone">
                 {data.phoneLabel}
               </label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                placeholder={data.phonePlaceholder}
-                className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
-                autoComplete="tel"
-              />
+              <div className="mt-2">
+                <PhoneInput
+                  value={phone}
+                  onChange={setPhone}
+                  defaultCountry="VN"
+                  placeholder={data.phonePlaceholder}
+                  id="phone"
+                />
+              </div>
             </div>
 
             {/* Message */}

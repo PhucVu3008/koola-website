@@ -209,6 +209,7 @@ export const HOME_I18N = {
         alt: 'Nhóm làm việc trên laptop',
       },
       backgroundImage: '/home/hero-bg.avif',
+      overlayImage: '/home/hero-bg.png', // Static PNG overlay on top
     },
     capabilities: {
       heading: 'Chúng tôi có đội ngũ đa ngành để đáp ứng mọi thách thức.',
@@ -343,21 +344,21 @@ export const HOME_I18N = {
           title: 'Sức mạnh của UI/UX: Tạo trải nghiệm số hấp dẫn',
           author: 'Ben Taylor',
           date: '15 May 2023',
-          image: '/home/blog-1.jpg',
+          image: '/home/blog-1.png',
         },
         {
           category: 'Phát triển',
           title: 'Phát triển Agile: Chìa khóa của sự linh hoạt',
           author: 'Jane Lewis',
           date: '12 May 2023',
-          image: '/home/blog-2.jpg',
+          image: '/home/blog-2.png',
         },
         {
           category: 'Quản lý',
           title: 'Phát triển ứng dụng Media: Xu hướng 2023',
           author: 'Sarah Mitchell',
           date: '10 May 2023',
-          image: '/home/blog-3.jpg',
+          image: '/home/blog-3.png',
         },
       ],
     },

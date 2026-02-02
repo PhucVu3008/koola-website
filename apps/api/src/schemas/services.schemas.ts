@@ -96,6 +96,17 @@ export const adminServiceCreateSchema = z.object({
       })
     )
     .optional(),
+  benefits: z
+    .array(
+      z.object({
+        title: z.string(),
+        description: z.string().optional(),
+        icon_name: z.string().optional(),
+        sort_order: z.number().default(0),
+      })
+    )
+    .optional(),
+  benefits_subtitle: z.string().nullable().optional(),
   related_services: z.array(z.number()).optional(),
   related_posts: z.array(z.number()).optional(),
 });

@@ -1,0 +1,122 @@
+/**
+ * Custom styles for react-phone-number-input
+ * 
+ * Matches the design system used in the contact form.
+ */
+
+/* Container */
+.phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* Country selector (dropdown) */
+.phone-country-select {
+  flex-shrink: 0;
+  height: 3rem;
+  padding: 0 0.75rem;
+  border: 1px solid rgb(203 213 225); /* slate-300 */
+  border-radius: 0.75rem; /* rounded-xl */
+  background-color: white;
+  font-size: 0.875rem; /* text-sm */
+  color: rgb(15 23 42); /* slate-900 */
+  outline: none;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.phone-country-select:focus {
+  border-color: rgb(59 130 246); /* brand-500 */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.phone-country-select:hover {
+  border-color: rgb(148 163 184); /* slate-400 */
+}
+
+/* Phone number input field */
+.phone-number-input {
+  flex: 1;
+  height: 3rem;
+  padding: 0 1rem;
+  border: 1px solid rgb(203 213 225); /* slate-300 */
+  border-radius: 0.75rem; /* rounded-xl */
+  background-color: white;
+  font-size: 0.875rem; /* text-sm */
+  color: rgb(15 23 42); /* slate-900 */
+  outline: none;
+  transition: all 0.2s;
+}
+
+.phone-number-input:focus {
+  border-color: rgb(59 130 246); /* brand-500 */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.phone-number-input::placeholder {
+  color: rgb(148 163 184); /* slate-400 */
+}
+
+/* Country flag */
+.PhoneInputCountryIcon {
+  width: 1.5rem;
+  height: 1.125rem;
+  border: 1px solid rgb(226 232 240); /* slate-200 */
+  border-radius: 0.125rem;
+}
+
+.PhoneInputCountryIcon--border {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Arrow icon */
+.PhoneInputCountrySelectArrow {
+  width: 0;
+  height: 0;
+  margin-left: 0.375rem;
+  border-left: 0.25rem solid transparent;
+  border-right: 0.25rem solid transparent;
+  border-top: 0.375rem solid rgb(100 116 139); /* slate-500 */
+  opacity: 0.7;
+}
+
+.phone-country-select:hover .PhoneInputCountrySelectArrow {
+  opacity: 1;
+}
+
+/* International icon (when no country selected) */
+.PhoneInputInternationalIconGlobe {
+  opacity: 0.65;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Divider between country and number (if any) */
+.PhoneInputCountry {
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+}
+
+/* Error state (can be applied via wrapper className) */
+.phone-input-wrapper.error .phone-country-select,
+.phone-input-wrapper.error .phone-number-input {
+  border-color: rgb(239 68 68); /* red-500 */
+}
+
+.phone-input-wrapper.error .phone-country-select:focus,
+.phone-input-wrapper.error .phone-number-input:focus {
+  border-color: rgb(239 68 68);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+/* Disabled state */
+.phone-country-select:disabled,
+.phone-number-input:disabled {
+  background-color: rgb(248 250 252); /* slate-50 */
+  color: rgb(148 163 184); /* slate-400 */
+  cursor: not-allowed;
+  opacity: 0.6;
+}

@@ -39,23 +39,44 @@ export default function AdminLayout({ children, locale }: AdminLayoutProps) {
   const pathname = usePathname();
   const [user, setUser] = useState<AdminUser | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  // Set mounted flag after client hydration
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
+    // Only check auth after component is mounted (client-side)
+    if (!mounted) return;
+
+    // Skip auth check if on login page
+    if (pathname?.includes('/login')) {
+      return;
+    }
+
     // Check authentication
     if (!isAuthenticated()) {
-      router.push('/admin/login');
+      // Use replace to avoid adding to history
+      window.location.href = `/admin/${locale}/login`;
       return;
     }
 
     const userData = getStoredUser();
     setUser(userData);
-  }, [router]);
+  }, [router, locale, mounted, pathname]);
 
   const handleLogout = async () => {
     await logoutAdmin();
-    router.push('/admin/login');
+    window.location.href = `/admin/${locale}/login`;
   };
 
+  // If on login page, render children without sidebar
+  if (pathname?.includes('/login')) {
+    return <>{children}</>;
+  }
+
+  // If not authenticated yet, show loading
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">

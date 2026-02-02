@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { Upload } from 'lucide-react';
+import { PhoneInput } from '../ui/PhoneInput';
+import type { E164Number } from 'libphonenumber-js/core';
 
 export type JobApplicationFormData = {
   labels: {
@@ -35,6 +37,7 @@ export function JobApplicationForm({ data }: { data: JobApplicationFormData }) {
   const [fileName, setFileName] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState(false);
+  const [phone, setPhone] = useState<E164Number | undefined>();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -67,6 +70,11 @@ export function JobApplicationForm({ data }: { data: JobApplicationFormData }) {
     setError('');
 
     const formData = new FormData(e.currentTarget);
+    
+    // Add phone from state (managed separately from FormData)
+    if (phone) {
+      formData.set('phone', phone);
+    }
 
     try {
       const response = await fetch(`/api/jobs/${data.jobSlug}/apply?locale=${data.locale}`, {
@@ -82,6 +90,7 @@ export function JobApplicationForm({ data }: { data: JobApplicationFormData }) {
       setSuccess(true);
       (e.target as HTMLFormElement).reset();
       setFileName('');
+      setPhone(undefined); // Reset phone state
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -150,12 +159,12 @@ export function JobApplicationForm({ data }: { data: JobApplicationFormData }) {
         <label htmlFor="phone" className="mb-2 block text-sm font-medium text-slate-700">
           {data.labels.phone} <span className="text-red-500">*</span>
         </label>
-        <input
-          type="tel"
+        <PhoneInput
+          value={phone}
+          onChange={setPhone}
+          defaultCountry="VN"
           id="phone"
-          name="phone"
           required
-          className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
         />
       </div>
 

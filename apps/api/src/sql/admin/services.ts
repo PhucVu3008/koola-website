@@ -130,3 +130,49 @@ export const UPDATE_IMAGES_BY_SLUG_GROUP = `
     updated_at = NOW()
   WHERE slug_group = $3
 `;
+
+/**
+ * GET_SERVICE_BENEFITS
+ * 
+ * Get all benefits for a service ordered by sort_order
+ * 
+ * Parameters:
+ * - $1 service_id
+ */
+export const GET_SERVICE_BENEFITS = `
+  SELECT id, title, description, icon_name, sort_order
+  FROM service_benefits
+  WHERE service_id = $1
+  ORDER BY sort_order ASC
+`;
+
+/**
+ * DELETE_SERVICE_BENEFITS
+ * 
+ * Delete all benefits for a service
+ * Used before inserting updated benefits
+ * 
+ * Parameters:
+ * - $1 service_id
+ */
+export const DELETE_SERVICE_BENEFITS = `
+  DELETE FROM service_benefits
+  WHERE service_id = $1
+`;
+
+/**
+ * INSERT_SERVICE_BENEFIT
+ * 
+ * Insert a new benefit for a service
+ * 
+ * Parameters:
+ * - $1 service_id
+ * - $2 title
+ * - $3 description (nullable)
+ * - $4 icon_name (nullable)
+ * - $5 sort_order
+ */
+export const INSERT_SERVICE_BENEFIT = `
+  INSERT INTO service_benefits (service_id, title, description, icon_name, sort_order)
+  VALUES ($1, $2, $3, $4, $5)
+`;
