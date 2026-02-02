@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -7,15 +8,16 @@ import { getDictionary, getLocaleLabel, getSupportedLocales } from '../src/i18n/
 import { isLocale, type Locale } from '../src/i18n/locales';
 
 /**
- * Marketing site header.
+ * Marketing site header - Fully responsive.
  *
- * Highlights the active route (larger + brand color) to match the reference behavior.
- *
- * i18n:
- * - Paths are locale-prefixed: `/<locale>/...`.
- * - Locale switcher is data-driven from dictionaries.
+ * Features:
+ * - Desktop: Horizontal navigation with locale switcher and CTA button
+ * - Mobile: Hamburger menu with slide-in drawer
+ * - Active route highlighting (brand color)
+ * - i18n support with locale-prefixed paths
  */
 export function SiteHeader({ locale }: { locale: string }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname() ?? '/';
 
   const parts = pathname.split('/').filter(Boolean);
@@ -38,8 +40,13 @@ export function SiteHeader({ locale }: { locale: string }) {
 
   const linkClass = (href: string) =>
     isActive(href)
-      ? 'text-sm font-semibold text-brand-700'
-      : 'text-sm font-medium text-slate-700 hover:text-slate-900';
+      ? 'fluid-text-sm font-semibold text-brand-700'
+      : 'fluid-text-sm font-medium text-slate-700 hover:text-slate-900';
+  
+  const mobileLinkClass = (href: string) =>
+    isActive(href)
+      ? 'block rounded-lg font-semibold text-brand-700 bg-brand-50 transition-colors fluid-text-base'
+      : 'block rounded-lg font-medium text-slate-700 hover:bg-slate-50 transition-colors fluid-text-base';
 
   const switchTo = async (next: string) => {
     const nextLocale = isLocale(next) ? next : 'en';
@@ -100,48 +107,208 @@ export function SiteHeader({ locale }: { locale: string }) {
   const supportedLocales = getSupportedLocales();
 
   return (
-    <header className="w-full bg-white">
-      <div className="container flex h-16 items-center justify-between">
-        <Link href={`/${baseLocale}`} className="text-base font-semibold tracking-tight text-slate-900">
-          KOOLA
-        </Link>
+    <header className="w-full bg-white sticky top-0 z-50 border-b border-slate-100">
+      {/* Full-width background, contained content */}
+      <div className="w-full">
+        <div className="fluid-container">
+          <div className="flex items-center justify-between" style={{ height: 'clamp(3.5rem, 8vh, 4.5rem)' }}>
+            {/* Logo - Fluid size */}
+            <Link 
+              href={`/${baseLocale}`} 
+              className="z-50 font-semibold tracking-tight text-slate-900 fluid-text-base"
+            >
+              KOOLA
+            </Link>
 
-        <nav aria-label="Primary" className="flex items-center gap-8">
-          <Link href={withLocale('/')} className={linkClass('/')}>{dict.nav.home}</Link>
-          <Link href={withLocale('/about')} className={linkClass('/about')}>{dict.nav.about}</Link>
-          <Link href={withLocale('/services')} className={linkClass('/services')}>{dict.nav.services}</Link>
-          <Link href={withLocale('/careers')} className={linkClass('/careers')}>{dict.nav.careers}</Link>
-          <Link href={withLocale('/contact')} className={linkClass('/contact')}>{dict.nav.contact}</Link>
-        </nav>
+            {/* Desktop Navigation - Hidden on mobile */}
+            <nav aria-label="Primary" className="hidden lg:flex items-center fluid-gap-lg">
+              <Link href={withLocale('/')} className={linkClass('/')}>{dict.nav.home}</Link>
+              <Link href={withLocale('/about')} className={linkClass('/about')}>{dict.nav.about}</Link>
+              <Link href={withLocale('/services')} className={linkClass('/services')}>{dict.nav.services}</Link>
+              <Link href={withLocale('/careers')} className={linkClass('/careers')}>{dict.nav.careers}</Link>
+              <Link href={withLocale('/contact')} className={linkClass('/contact')}>{dict.nav.contact}</Link>
+            </nav>
 
-        <div className="flex items-center gap-4">
-          <label className="sr-only" htmlFor="locale-select">
-            Language
-          </label>
-          <select
-            id="locale-select"
-            className="h-9 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-800"
-            value={baseLocale}
-            onChange={async (e) => {
-              const newUrl = await switchTo(e.target.value);
-              window.location.href = newUrl;
-            }}
-          >
-            {supportedLocales.map((l) => (
-              <option key={l} value={l}>
-                {getLocaleLabel(l, baseLocale)}
-              </option>
-            ))}
-          </select>
+            {/* Desktop Actions - Hidden on mobile */}
+            <div className="hidden lg:flex items-center fluid-gap-sm">
+              <label className="sr-only" htmlFor="locale-select">
+                Language
+              </label>
+              <select
+                id="locale-select"
+                className="rounded-full border border-slate-200 bg-white fluid-text-xs font-semibold text-slate-800 transition-colors hover:border-slate-300 fluid-h-sm"
+                style={{ paddingLeft: 'clamp(0.625rem, 2vw, 0.75rem)', paddingRight: 'clamp(0.625rem, 2vw, 0.75rem)' }}
+                value={baseLocale}
+                onChange={async (e) => {
+                  const newUrl = await switchTo(e.target.value);
+                  window.location.href = newUrl;
+                }}
+              >
+                {supportedLocales.map((l) => (
+                  <option key={l} value={l}>
+                    {getLocaleLabel(l, baseLocale)}
+                  </option>
+                ))}
+              </select>
 
-          <Link
-            href={withLocale('/contact')}
-            className="inline-flex h-9 items-center justify-center rounded-full bg-brand-600 px-5 text-xs font-medium text-white transition-colors hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
-          >
-            {dict.nav.scheduleCall}
-          </Link>
+              <Link
+                href={withLocale('/contact')}
+                className="inline-flex items-center justify-center rounded-full bg-brand-600 text-white font-medium transition-colors hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 fluid-h-sm fluid-text-xs"
+                style={{ paddingLeft: 'clamp(0.75rem, 2.5vw, 1.25rem)', paddingRight: 'clamp(0.75rem, 2.5vw, 1.25rem)' }}
+              >
+                {dict.nav.scheduleCall}
+              </Link>
+            </div>
+
+            {/* Mobile Menu Button - Shown on mobile only */}
+            <button
+              type="button"
+              className="lg:hidden z-50 p-2 -mr-2 text-slate-700 hover:text-slate-900"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileMenuOpen}
+            >
+            {mobileMenuOpen ? (
+              // Close Icon (X)
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              // Hamburger Icon
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+            )}
+          </button>
+          </div>
         </div>
       </div>
+
+      {/* Mobile Menu - Slide-in drawer */}
+      <div
+        className={`lg:hidden fixed inset-0 z-40 bg-white transform transition-transform duration-300 ease-in-out ${
+          mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="h-full overflow-y-auto" style={{ 
+          paddingTop: 'clamp(4rem, 15vh, 5rem)', 
+          paddingBottom: 'clamp(1.5rem, 5vh, 2rem)',
+          paddingLeft: 'clamp(1rem, 5vw, 1.5rem)',
+          paddingRight: 'clamp(1rem, 5vw, 1.5rem)'
+        }}>
+          {/* Mobile Navigation */}
+          <nav aria-label="Mobile navigation" style={{ marginBottom: 'clamp(2rem, 8vh, 3rem)' }} className="space-y-2">
+            <Link 
+              href={withLocale('/')} 
+              className={mobileLinkClass('/')}
+              style={{ 
+                paddingTop: 'clamp(0.75rem, 3vw, 1rem)', 
+                paddingBottom: 'clamp(0.75rem, 3vw, 1rem)',
+                paddingLeft: 'clamp(1rem, 4vw, 1.25rem)',
+                paddingRight: 'clamp(1rem, 4vw, 1.25rem)'
+              }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {dict.nav.home}
+            </Link>
+            <Link 
+              href={withLocale('/about')} 
+              className={mobileLinkClass('/about')}
+              style={{ 
+                paddingTop: 'clamp(0.75rem, 3vw, 1rem)', 
+                paddingBottom: 'clamp(0.75rem, 3vw, 1rem)',
+                paddingLeft: 'clamp(1rem, 4vw, 1.25rem)',
+                paddingRight: 'clamp(1rem, 4vw, 1.25rem)'
+              }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {dict.nav.about}
+            </Link>
+            <Link 
+              href={withLocale('/services')} 
+              className={mobileLinkClass('/services')}
+              style={{ 
+                paddingTop: 'clamp(0.75rem, 3vw, 1rem)', 
+                paddingBottom: 'clamp(0.75rem, 3vw, 1rem)',
+                paddingLeft: 'clamp(1rem, 4vw, 1.25rem)',
+                paddingRight: 'clamp(1rem, 4vw, 1.25rem)'
+              }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {dict.nav.services}
+            </Link>
+            <Link 
+              href={withLocale('/careers')} 
+              className={mobileLinkClass('/careers')}
+              style={{ 
+                paddingTop: 'clamp(0.75rem, 3vw, 1rem)', 
+                paddingBottom: 'clamp(0.75rem, 3vw, 1rem)',
+                paddingLeft: 'clamp(1rem, 4vw, 1.25rem)',
+                paddingRight: 'clamp(1rem, 4vw, 1.25rem)'
+              }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {dict.nav.careers}
+            </Link>
+            <Link 
+              href={withLocale('/contact')} 
+              className={mobileLinkClass('/contact')}
+              style={{ 
+                paddingTop: 'clamp(0.75rem, 3vw, 1rem)', 
+                paddingBottom: 'clamp(0.75rem, 3vw, 1rem)',
+                paddingLeft: 'clamp(1rem, 4vw, 1.25rem)',
+                paddingRight: 'clamp(1rem, 4vw, 1.25rem)'
+              }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {dict.nav.contact}
+            </Link>
+          </nav>
+
+          {/* Mobile Actions */}
+          <div className="space-y-4 pt-6 border-t border-slate-200">
+            {/* Locale Selector */}
+            <div>
+              <label htmlFor="mobile-locale-select" className="block fluid-text-sm font-medium text-slate-700 mb-2">
+                {locale === 'vi' ? 'Ngôn ngữ' : 'Language'}
+              </label>
+              <select
+                id="mobile-locale-select"
+                className="w-full rounded-lg border border-slate-200 bg-white px-4 fluid-text-base text-slate-800 transition-colors hover:border-slate-300 fluid-h-md"
+                value={baseLocale}
+                onChange={async (e) => {
+                  const newUrl = await switchTo(e.target.value);
+                  window.location.href = newUrl;
+                }}
+              >
+                {supportedLocales.map((l) => (
+                  <option key={l} value={l}>
+                    {getLocaleLabel(l, baseLocale)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* CTA Button */}
+            <Link
+              href={withLocale('/contact')}
+              className="block w-full flex items-center justify-center rounded-lg bg-brand-600 px-4 fluid-text-base font-medium text-white transition-colors hover:bg-brand-700 fluid-h-md"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {dict.nav.scheduleCall}
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Backdrop overlay for mobile menu */}
+      {mobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-sm"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
     </header>
   );
 }

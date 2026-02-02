@@ -38,7 +38,8 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
 
   return (
     <div 
-      className="relative flex h-[420px] w-full items-center justify-center overflow-hidden"
+      className="relative flex w-full items-center justify-center overflow-hidden"
+      style={{ minHeight: 'clamp(26.25rem, 60vh, 56.25rem)' }}
       onMouseMove={handleMouseMove}
     >
       {/* LAYER 0: Background Gradient Base - MOUSE TRACKING */}
@@ -162,40 +163,82 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-blue-50/5" />
       </div>
 
-      {/* Centered Content - Modern Professional Layout */}
-      <div className="relative z-20 mx-auto max-w-6xl px-6 text-center">
-        {/* Label Badge */}
-        <div className={`inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-1.5 backdrop-blur-sm transition-all duration-1000 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-400" />
-          <span className="text-xs font-medium uppercase tracking-wider text-blue-300">
+      {/* Centered Content - Modern Professional Layout - Truly Fluid */}
+      <div className="relative z-20 fluid-container-wide text-center">
+        {/* Label Badge - Fluid sizing */}
+        <div 
+          className={`inline-flex items-center rounded-full border border-blue-400/30 bg-blue-500/10 backdrop-blur-sm transition-all duration-1000 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          style={{ gap: 'clamp(0.375rem, 1vw, 0.5rem)', padding: 'clamp(0.25rem, 1vw, 0.375rem) clamp(0.75rem, 2vw, 1rem)' }}
+        >
+          <div 
+            className="animate-pulse rounded-full bg-blue-400" 
+            style={{ width: 'clamp(0.25rem, 0.8vw, 0.375rem)', height: 'clamp(0.25rem, 0.8vw, 0.375rem)' }}
+          />
+          <span className="font-medium uppercase tracking-wider text-blue-300 fluid-text-xs">
             {data.label}
           </span>
         </div>
         
-        {/* Main Headline - Brand + Tagline Combined */}
-        <div className={`mt-8 transition-all duration-1000 delay-100 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <h1 className="text-5xl font-bold leading-tight text-white md:text-6xl lg:text-7xl">
+        {/* Main Headline - Truly Fluid Typography */}
+        <div 
+          className={`transition-all duration-1000 delay-100 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          style={{ marginTop: 'clamp(1rem, 3vh, 2rem)' }}
+        >
+          <h1 
+            className="font-bold text-white"
+            style={{ 
+              fontSize: 'clamp(2rem, 6vw, 5rem)', 
+              lineHeight: '1.15',
+              letterSpacing: '-0.02em'
+            }}
+          >
             <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
               {data.headline[0]}
             </span>
             <br />
-            <span className="mt-2 block text-4xl font-light text-slate-200 md:text-5xl lg:text-6xl">
+            <span 
+              className="block font-light text-slate-200"
+              style={{ 
+                fontSize: 'clamp(1.5rem, 4.5vw, 4rem)',
+                marginTop: 'clamp(0.25rem, 1vh, 0.5rem)'
+              }}
+            >
               {data.headline.slice(1).join(' ')}
             </span>
           </h1>
         </div>
         
-        {/* Mission Statement with Icon */}
-        <div className={`mx-auto mt-6 flex max-w-2xl items-center justify-center gap-3 transition-all duration-1000 delay-200 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <div className="h-px w-12 bg-gradient-to-r from-transparent to-blue-400/50" />
-          <p className="text-base font-light leading-relaxed text-slate-300 md:text-lg">
+        {/* Mission Statement with Icon - Fluid padding */}
+        <div 
+          className={`mx-auto flex max-w-2xl items-center justify-center transition-all duration-1000 delay-200 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          style={{ 
+            marginTop: 'clamp(1rem, 2.5vh, 1.5rem)', 
+            gap: 'clamp(0.5rem, 2vw, 0.75rem)',
+            paddingLeft: '1rem',
+            paddingRight: '1rem'
+          }}
+        >
+          <div 
+            className="h-px bg-gradient-to-r from-transparent to-blue-400/50" 
+            style={{ width: 'clamp(2rem, 5vw, 3rem)' }}
+          />
+          <p 
+            className="font-light leading-relaxed text-slate-300"
+            style={{ fontSize: 'clamp(0.875rem, 2vw, 1.125rem)' }}
+          >
             {data.subhead}
           </p>
-          <div className="h-px w-12 bg-gradient-to-l from-transparent to-blue-400/50" />
+          <div 
+            className="h-px bg-gradient-to-l from-transparent to-blue-400/50" 
+            style={{ width: 'clamp(2rem, 5vw, 3rem)' }}
+          />
         </div>
 
-        {/* CTA Buttons - Enhanced Style */}
-        <div className={`mt-10 flex flex-wrap items-center justify-center gap-4 transition-all duration-1000 delay-300 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+        {/* CTA Buttons - Fluid spacing */}
+        <div 
+          className={`flex flex-wrap items-center justify-center transition-all duration-1000 delay-300 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          style={{ marginTop: 'clamp(1.5rem, 4vh, 2.5rem)', gap: 'clamp(0.75rem, 2vw, 1rem)' }}
+        >
           <InteractiveButton href={data.primaryCta.href} variant="primary">
             {data.primaryCta.label}
           </InteractiveButton>
@@ -204,12 +247,31 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
           </InteractiveButton>
         </div>
 
-        {/* Trust Indicator */}
-        <div className={`mt-8 flex items-center justify-center gap-2 text-sm text-slate-400 transition-all duration-1000 delay-400 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-          <svg className="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+        {/* Trust Indicator - Fluid text */}
+        <div 
+          className={`flex items-center justify-center text-slate-400 transition-all duration-1000 delay-400 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          style={{ marginTop: 'clamp(1.25rem, 3vh, 2rem)', gap: 'clamp(0.375rem, 1vw, 0.5rem)' }}
+        >
+          <svg 
+            className="text-blue-400 flex-shrink-0" 
+            style={{ width: 'clamp(1rem, 2.5vw, 1.25rem)', height: 'clamp(1rem, 2.5vw, 1.25rem)' }}
+            fill="currentColor" 
+            viewBox="0 0 20 20"
+          >
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
           </svg>
-          <span>Trusted by 500+ leading organizations worldwide</span>
+          <span 
+            className="hidden sm:inline"
+            style={{ fontSize: 'clamp(0.75rem, 1.5vw, 0.875rem)' }}
+          >
+            Trusted by 500+ leading organizations worldwide
+          </span>
+          <span 
+            className="sm:hidden"
+            style={{ fontSize: 'clamp(0.75rem, 1.5vw, 0.875rem)' }}
+          >
+            Trusted by 500+ organizations
+          </span>
         </div>
       </div>
     </div>

@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Phone Input Styles */
+@import '../styles/phone-input.css';
+
 :root {
   color-scheme: light;
 }
@@ -125,3 +128,109 @@ a {
   }
 }
 
+/* Truly Fluid Container System - No Breakpoints */
+.fluid-container {
+  width: 100%;
+  max-width: min(1600px, 100vw);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1rem, 4vw, 3rem);
+  padding-right: clamp(1rem, 4vw, 3rem);
+}
+
+.fluid-container-wide {
+  width: 100%;
+  max-width: min(1280px, 100vw);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1rem, 4vw, 3rem);
+  padding-right: clamp(1rem, 4vw, 3rem);
+}
+
+/* Fluid Typography - Scale with viewport */
+.fluid-text-xs {
+  font-size: clamp(0.6875rem, 1.8vw + 0.4rem, 0.75rem);
+}
+
+.fluid-text-sm {
+  font-size: clamp(0.8125rem, 2vw + 0.4rem, 0.875rem);
+}
+
+.fluid-text-base {
+  font-size: clamp(0.875rem, 2vw + 0.5rem, 1rem);
+}
+
+.fluid-text-lg {
+  font-size: clamp(1rem, 2.5vw + 0.5rem, 1.125rem);
+}
+
+.fluid-text-xl {
+  font-size: clamp(1.125rem, 3vw + 0.5rem, 1.25rem);
+}
+
+.fluid-text-2xl {
+  font-size: clamp(1.25rem, 3.5vw + 0.6rem, 1.5rem);
+}
+
+.fluid-text-3xl {
+  font-size: clamp(1.5rem, 4vw + 0.7rem, 1.875rem);
+}
+
+.fluid-text-4xl {
+  font-size: clamp(1.875rem, 5vw + 0.8rem, 2.25rem);
+}
+
+.fluid-text-5xl {
+  font-size: clamp(2rem, 6vw + 1rem, 3rem);
+}
+
+/* Fluid Spacing - Smooth scaling */
+.fluid-gap-sm {
+  gap: clamp(0.5rem, 2vw, 1rem);
+}
+
+.fluid-gap-md {
+  gap: clamp(1rem, 3vw, 1.5rem);
+}
+
+.fluid-gap-lg {
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.fluid-gap-xl {
+  gap: clamp(2rem, 5vw, 3rem);
+}
+
+/* Fluid Padding */
+.fluid-p-sm {
+  padding: clamp(0.5rem, 2vw, 1rem);
+}
+
+.fluid-p-md {
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.fluid-p-lg {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.fluid-p-xl {
+  padding: clamp(2rem, 5vw, 3rem);
+}
+
+/* Fluid Height */
+.fluid-h-sm {
+  height: clamp(2rem, 6vh, 2.5rem);
+}
+
+.fluid-h-md {
+  height: clamp(2.5rem, 7vh, 3rem);
+}
+
+.fluid-h-lg {
+  height: clamp(3rem, 8vh, 3.5rem);
+}
+
+.fluid-h-xl {
+  height: clamp(3.5rem, 9vh, 4.5rem);
+}
