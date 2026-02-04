@@ -5,6 +5,7 @@
  */
 
 import { jwtDecode } from 'jwt-decode';
+import { logger, LogContext } from '@/lib/logger';
 
 const ACCESS_TOKEN_KEY = 'koola_admin_access_token';
 const REFRESH_TOKEN_KEY = 'koola_admin_refresh_token';
@@ -110,7 +111,7 @@ export const isTokenExpired = (token: string): boolean => {
     // Add 10 second buffer to avoid edge cases
     return decoded.exp < (currentTime + 10);
   } catch (error) {
-    console.error('[isTokenExpired] Failed to decode token:', error);
+    logger.error('Failed to decode JWT token', error);
     return true; // Treat invalid tokens as expired
   }
 };
@@ -154,8 +155,7 @@ export const loginAdmin = async (email: string, password: string): Promise<Login
   // Force localhost for now (env vars need server restart to load)
   const apiUrl = 'http://localhost:4000';
   
-  console.log('[loginAdmin] API URL:', apiUrl);
-  console.log('[loginAdmin] Attempting login:', { email });
+  logger.debug('Admin login attempt', LogContext.auth(undefined, email));
   
   const response = await fetch(`${apiUrl}/v1/admin/auth/login`, {
     method: 'POST',
@@ -186,13 +186,13 @@ export const loginAdmin = async (email: string, password: string): Promise<Login
 export const refreshAccessToken = async (): Promise<string | null> => {
   const refreshToken = getRefreshToken();
   if (!refreshToken) {
-    console.log('[refreshAccessToken] No refresh token found');
+    logger.debug('No refresh token found for renewal');
     return null;
   }
 
   // Check if refresh token is expired
   if (isTokenExpired(refreshToken)) {
-    console.log('[refreshAccessToken] Refresh token is expired');
+    logger.warn('Refresh token expired, clearing tokens');
     clearAuthTokens();
     return null;
   }
@@ -200,7 +200,7 @@ export const refreshAccessToken = async (): Promise<string | null> => {
   const apiUrl = 'http://localhost:4000';
 
   try {
-    console.log('[refreshAccessToken] Attempting to refresh token...');
+    logger.debug('Attempting to refresh access token');
     
     const response = await fetch(`${apiUrl}/v1/admin/auth/refresh`, {
       method: 'POST',
@@ -211,7 +211,7 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     });
 
     if (!response.ok) {
-      console.log('[refreshAccessToken] Refresh failed, clearing tokens');
+      logger.warn('Token refresh failed, clearing tokens', { status: response.status });
       clearAuthTokens();
       return null;
     }
@@ -219,12 +219,12 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     const result = await response.json();
     const newAccessToken = result.data.accessToken;
     
-    console.log('[refreshAccessToken] Token refreshed successfully');
+    logger.debug('Access token refreshed successfully');
     localStorage.setItem(ACCESS_TOKEN_KEY, newAccessToken);
     
     return newAccessToken;
   } catch (error) {
-    console.error('[refreshAccessToken] Error:', error);
+    logger.error('Failed to refresh token', error);
     clearAuthTokens();
     return null;
   }

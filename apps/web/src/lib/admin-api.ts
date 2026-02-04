@@ -5,6 +5,30 @@
  */
 
 import { getAccessToken, refreshAccessToken, clearAuthTokens } from './admin-auth';
+import type {
+  ServiceCreatePayload,
+  ServiceUpdatePayload,
+  PostCreatePayload,
+  PostUpdatePayload,
+  CategoryCreatePayload,
+  CategoryUpdatePayload,
+  TagCreatePayload,
+  TagUpdatePayload,
+  PageCreatePayload,
+  PageUpdatePayload,
+  PageSectionCreatePayload,
+  PageSectionUpdatePayload,
+  NavItemCreatePayload,
+  NavItemUpdatePayload,
+  SiteSettingUpdatePayload,
+  JobCreatePayload,
+  JobUpdatePayload,
+  UserCreatePayload,
+  UserUpdatePayload,
+  ApiResponse,
+  ApiError,
+  PaginationParams,
+} from '@/types/admin-api.types';
 
 // Use server-side URL for SSR, client-side URL for browser
 const getApiBaseUrl = () => {
@@ -18,24 +42,6 @@ const getApiBaseUrl = () => {
 };
 
 const API_BASE_URL = getApiBaseUrl();
-
-export interface ApiResponse<T = any> {
-  data: T;
-  meta?: {
-    page?: number;
-    pageSize?: number;
-    total?: number;
-    totalPages?: number;
-  };
-}
-
-export interface ApiError {
-  error: {
-    code: string;
-    message: string;
-    details?: any;
-  };
-}
 
 class AdminApiClient {
   private baseUrl: string;
@@ -124,8 +130,8 @@ class AdminApiClient {
 
   // ========== Services ==========
 
-  async listServices(params?: { locale?: string; status?: string; page?: number; pageSize?: number }) {
-    const query = new URLSearchParams(params as any).toString();
+  async listServices(params?: PaginationParams) {
+    const query = new URLSearchParams(params as Record<string, string>).toString();
     return this.request(`/v1/admin/services?${query}`);
   }
 
@@ -133,14 +139,14 @@ class AdminApiClient {
     return this.request(`/v1/admin/services/${id}`);
   }
 
-  async createService(data: any) {
+  async createService(data: ServiceCreatePayload) {
     return this.request('/v1/admin/services', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateService(id: number, data: any) {
+  async updateService(id: number, data: ServiceUpdatePayload) {
     return this.request(`/v1/admin/services/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -179,8 +185,8 @@ class AdminApiClient {
 
   // ========== Posts ==========
 
-  async listPosts(params?: { locale?: string; status?: string; page?: number; pageSize?: number }) {
-    const query = new URLSearchParams(params as any).toString();
+  async listPosts(params?: PaginationParams) {
+    const query = new URLSearchParams(params as Record<string, string>).toString();
     return this.request(`/v1/admin/posts?${query}`);
   }
 
@@ -188,14 +194,14 @@ class AdminApiClient {
     return this.request(`/v1/admin/posts/${id}`);
   }
 
-  async createPost(data: any) {
+  async createPost(data: PostCreatePayload) {
     return this.request('/v1/admin/posts', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updatePost(id: number, data: any) {
+  async updatePost(id: number, data: PostUpdatePayload) {
     return this.request(`/v1/admin/posts/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -211,7 +217,7 @@ class AdminApiClient {
   // ========== Categories ==========
 
   async listCategories(params?: { locale?: string; kind?: string }) {
-    const query = new URLSearchParams(params as any).toString();
+    const query = new URLSearchParams(params as Record<string, string>).toString();
     return this.request(`/v1/admin/categories?${query}`);
   }
 
@@ -219,14 +225,14 @@ class AdminApiClient {
     return this.request(`/v1/admin/categories/${id}`);
   }
 
-  async createCategory(data: any) {
+  async createCategory(data: CategoryCreatePayload) {
     return this.request('/v1/admin/categories', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateCategory(id: number, data: any) {
+  async updateCategory(id: number, data: CategoryUpdatePayload) {
     return this.request(`/v1/admin/categories/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -242,7 +248,7 @@ class AdminApiClient {
   // ========== Tags ==========
 
   async listTags(params?: { locale?: string }) {
-    const query = new URLSearchParams(params as any).toString();
+    const query = new URLSearchParams(params as Record<string, string>).toString();
     return this.request(`/v1/admin/tags?${query}`);
   }
 
@@ -250,14 +256,14 @@ class AdminApiClient {
     return this.request(`/v1/admin/tags/${id}`);
   }
 
-  async createTag(data: any) {
+  async createTag(data: TagCreatePayload) {
     return this.request('/v1/admin/tags', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateTag(id: number, data: any) {
+  async updateTag(id: number, data: TagUpdatePayload) {
     return this.request(`/v1/admin/tags/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -281,14 +287,14 @@ class AdminApiClient {
     return this.request(`/v1/admin/pages/${id}`);
   }
 
-  async createPage(data: any) {
+  async createPage(data: PageCreatePayload) {
     return this.request('/v1/admin/pages', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updatePage(id: number, data: any) {
+  async updatePage(id: number, data: Partial<PageCreatePayload>) {
     return this.request(`/v1/admin/pages/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -306,14 +312,14 @@ class AdminApiClient {
     return this.request(`/v1/admin/pages/${pageId}/sections`);
   }
 
-  async createPageSection(pageId: number, data: any) {
+  async createPageSection(pageId: number, data: PageSectionCreatePayload) {
     return this.request(`/v1/admin/pages/${pageId}/sections`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updatePageSection(pageId: number, sectionId: number, data: any) {
+  async updatePageSection(pageId: number, sectionId: number, data: Partial<PageSectionCreatePayload>) {
     return this.request(`/v1/admin/pages/${pageId}/sections/${sectionId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -337,14 +343,14 @@ class AdminApiClient {
     return this.request(`/v1/admin/nav-items/${id}`);
   }
 
-  async createNavItem(data: any) {
+  async createNavItem(data: NavItemCreatePayload) {
     return this.request('/v1/admin/nav-items', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async updateNavItem(id: number, data: any) {
+  async updateNavItem(id: number, data: NavItemUpdatePayload) {
     return this.request(`/v1/admin/nav-items/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -360,7 +366,7 @@ class AdminApiClient {
   // ========== Site Settings ==========
 
   async listSettings(params?: { locale?: string }) {
-    const query = new URLSearchParams(params as any).toString();
+    const query = new URLSearchParams(params as Record<string, string>).toString();
     return this.request(`/v1/admin/site-settings?${query}`);
   }
 
@@ -369,7 +375,7 @@ class AdminApiClient {
     return this.request(`/v1/admin/site-settings/${key}${query}`);
   }
 
-  async upsertSetting(key: string, data: any) {
+  async upsertSetting(key: string, data: SiteSettingUpdatePayload) {
     return this.request(`/v1/admin/site-settings/${key}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -564,6 +570,91 @@ class AdminApiClient {
   async listRoles() {
     return this.request('/v1/admin/users/roles');
   }
+
+  // ==================== Jobs Management ====================
+
+  /**
+   * Jobs API methods
+   */
+  jobs = {
+    /**
+     * List jobs with filters and pagination
+     */
+    list: async (params: {
+      locale?: string;
+      status?: string;
+      page?: number;
+      pageSize?: number;
+    }): Promise<ApiResponse> => {
+      const query = new URLSearchParams();
+      if (params.locale) query.set('locale', params.locale);
+      if (params.status) query.set('status', params.status);
+      if (params.page) query.set('page', params.page.toString());
+      if (params.pageSize) query.set('pageSize', params.pageSize.toString());
+
+      return this.request(`/v1/admin/jobs?${query}`);
+    },
+
+    /**
+     * Get job by ID
+     */
+    getById: async (id: number): Promise<ApiResponse> => {
+      return this.request(`/v1/admin/jobs/${id}`);
+    },
+
+    /**
+     * Create new job
+     */
+    create: async (data: JobCreatePayload): Promise<ApiResponse> => {
+      return this.request('/v1/admin/jobs', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    /**
+     * Update job
+     */
+    update: async (id: number, data: JobUpdatePayload): Promise<ApiResponse> => {
+      return this.request(`/v1/admin/jobs/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+
+    /**
+     * Delete job
+     */
+    delete: async (id: number): Promise<ApiResponse> => {
+      return this.request(`/v1/admin/jobs/${id}`, {
+        method: 'DELETE',
+      });
+    },
+
+    /**
+     * Get applications for a job
+     */
+    getApplications: async (jobId: number): Promise<ApiResponse> => {
+      return this.request(`/v1/admin/jobs/${jobId}/applications`);
+    },
+
+    /**
+     * Update application status
+     */
+    updateApplicationStatus: async (
+      jobId: number,
+      applicationId: number,
+      status: string
+    ): Promise<ApiResponse> => {
+      return this.request(
+        `/v1/admin/jobs/${jobId}/applications/${applicationId}/status`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify({ status }),
+        }
+      );
+    },
+  };
 }
 
 export const adminApi = new AdminApiClient(API_BASE_URL);
