@@ -11,6 +11,7 @@ import navItemsRoutes from './navItems';
 import siteSettingsRoutes from './siteSettings';
 import pagesRoutes from './pages';
 import mediaRoutes from './media';
+import jobsRoutes from './jobs';
 
 /**
  * Admin routes aggregator.
@@ -49,6 +50,7 @@ const adminRoutes: FastifyPluginAsync = async (server) => {
   await server.register(siteSettingsRoutes, { prefix: '/site-settings' });
   await server.register(pagesRoutes, { prefix: '/pages' });
   await server.register(mediaRoutes, { prefix: '/media' });
+  await server.register(jobsRoutes, { prefix: '/jobs' });
 };
 
 export default adminRoutes;
