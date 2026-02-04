@@ -9,7 +9,10 @@ import path from 'path';
 // Routes
 import publicRoutes from './routes/public';
 import adminRoutes from './routes/admin';
+import monitoringRoutes from './routes/monitoring';
 import { errorHandler } from './middleware/errorHandler';
+import { registerRequestTracing } from './monitoring/requestTracing';
+import { setupDbPerformanceMonitoring } from './monitoring/dbPerformanceMonitor';
 
 /**
  * Build and configure the Fastify server.
@@ -94,18 +97,28 @@ export const buildServer = async () => {
 
   server.log.info(`Static files serving from: ${uploadsPath}`);
 
+  // ==================== Monitoring & Observability ====================
+  
+  // Setup database performance monitoring (connection pool monitoring, slow queries)
+  setupDbPerformanceMonitoring();
+
+  // Register request tracing middleware (correlation IDs, duration tracking)
+  registerRequestTracing(server);
+
+  // ==================== Rate Limiting ====================
+
   // Rate limiting (global default)
   await server.register(rateLimit, {
     max: Number(process.env.RATE_LIMIT_MAX) || 100,
     timeWindow: Number(process.env.RATE_LIMIT_TIMEWINDOW) || 60000, // 1 minute
   });
 
-  // Health check
-  server.get('/health', async () => {
-    return { status: 'ok', timestamp: new Date().toISOString() };
-  });
+  // ==================== Routes ====================
 
-  // Register routes
+  // Monitoring routes (health checks, metrics)
+  await server.register(monitoringRoutes);
+
+  // Register application routes
   await server.register(publicRoutes, { prefix: '/v1' });
   await server.register(adminRoutes, { prefix: '/v1/admin' });
 
