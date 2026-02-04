@@ -29,6 +29,7 @@ import {
   GET_SERVICE_DELIVERABLES,
   GET_SERVICE_PROCESS_STEPS,
   GET_SERVICE_FAQS,
+  GET_SERVICE_BENEFITS,
   GET_SERVICE_RELATED_SERVICES,
   GET_SERVICE_RELATED_POSTS,
 } from '../../../sql/public/services';
@@ -64,6 +65,7 @@ export default async function serviceDetailRoute(fastify: FastifyInstance) {
       deliverablesResult,
       processStepsResult,
       faqsResult,
+      benefitsResult,
       relatedServicesResult,
       relatedPostsResult,
     ] = await Promise.all([
@@ -72,6 +74,7 @@ export default async function serviceDetailRoute(fastify: FastifyInstance) {
       pool.query(GET_SERVICE_DELIVERABLES, [serviceId]),
       pool.query(GET_SERVICE_PROCESS_STEPS, [serviceId]),
       pool.query(GET_SERVICE_FAQS, [serviceId]),
+      pool.query(GET_SERVICE_BENEFITS, [serviceId]),
       pool.query(GET_SERVICE_RELATED_SERVICES, [serviceId, locale]),
       pool.query(GET_SERVICE_RELATED_POSTS, [serviceId, locale]),
     ]);
@@ -86,7 +89,11 @@ export default async function serviceDetailRoute(fastify: FastifyInstance) {
         excerpt: service.excerpt,
         contentMd: service.content_md,
         heroAssetId: service.hero_asset_id,
+        heroImageUrl: service.hero_image_url,
         ogAssetId: service.og_asset_id,
+        ogImageUrl: service.og_image_url,
+        iconName: service.icon_name,
+        benefitsSubtitle: service.benefits_subtitle,
         status: service.status,
         publishedAt: service.published_at,
         seoTitle: service.seo_title,
@@ -123,6 +130,13 @@ export default async function serviceDetailRoute(fastify: FastifyInstance) {
         id: row.id,
         question: row.question,
         answer: row.answer,
+        sortOrder: row.sort_order,
+      })),
+      benefits: benefitsResult.rows.map((row: any) => ({
+        id: row.id,
+        title: row.title,
+        description: row.description,
+        iconName: row.icon_name,
         sortOrder: row.sort_order,
       })),
       relatedServices: relatedServicesResult.rows.map((row: any) => ({

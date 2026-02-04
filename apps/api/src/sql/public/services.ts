@@ -101,7 +101,8 @@ export const COUNT_SERVICES = `
  */
 export const GET_SERVICE_BY_SLUG = `
   SELECT 
-    s.id, s.locale, s.title, s.slug, s.slug_group, s.excerpt, s.content_md, s.benefits_subtitle,
+    s.id, s.locale, s.title, s.slug, s.slug_group, s.excerpt, s.content_md, 
+    s.icon_name, s.benefits_subtitle,
     s.hero_asset_id, s.og_asset_id, s.status, s.published_at,
     s.seo_title, s.seo_description, s.canonical_url, s.sort_order,
     s.created_at, s.updated_at,

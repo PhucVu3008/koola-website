@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { logger } from '../src/lib/logger';
 
 import { getDictionary, getLocaleLabel, getSupportedLocales } from '../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../src/i18n/locales';
@@ -72,7 +73,7 @@ export function SiteHeader({ locale }: { locale: string }) {
           }
         }
       } catch (error) {
-        console.error('Failed to map service slug:', error);
+        logger.warn('Failed to map service slug', { fromSlug: currentSlug, fromLocale: currentLocale, toLocale: nextLocale, error });
       }
     }
     
@@ -94,7 +95,7 @@ export function SiteHeader({ locale }: { locale: string }) {
           }
         }
       } catch (error) {
-        console.error('Failed to map job slug:', error);
+        logger.warn('Failed to map job slug', { fromSlug: currentSlug, fromLocale: currentLocale, toLocale: nextLocale, error });
       }
     }
     

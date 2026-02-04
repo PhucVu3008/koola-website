@@ -1,5 +1,7 @@
 import * as adminServiceRepository from '../repositories/adminServiceRepository';
 import { buildPaginationMeta } from '../db';
+import { NotFoundError, ValidationError } from '../utils/errors';
+import { ErrorMessages } from '../utils/errorMessages';
 
 /**
  * Admin Services service layer.
@@ -7,6 +9,7 @@ import { buildPaginationMeta } from '../db';
  * Responsibilities:
  * - Orchestrate repository calls for admin service management.
  * - Keep business logic out of controllers.
+ * - Throw typed errors (NotFoundError, ValidationError, etc.) for proper error handling.
  */
 
 export interface AdminServiceListQuery {
@@ -69,6 +72,8 @@ export const createService = async (input: {
       seo_description: data.seo_description,
       canonical_url: data.canonical_url,
       sort_order: data.sort_order ?? 0,
+      benefits_subtitle: data.benefits_subtitle ?? null,
+      icon_name: data.icon_name ?? null,
       created_by: userId,
     },
     {
@@ -77,6 +82,7 @@ export const createService = async (input: {
       deliverables: data.deliverables,
       process_steps: data.process_steps,
       faqs: data.faqs,
+      benefits: data.benefits,
       related_services: data.related_services,
       related_posts: data.related_posts,
     }
@@ -106,6 +112,8 @@ export const updateService = async (input: {
       content_md: data.content_md,
       hero_asset_id: data.hero_asset_id,
       og_asset_id: data.og_asset_id,
+      icon_name: data.icon_name ?? null,
+      benefits_subtitle: data.benefits_subtitle ?? null,
       status: data.status,
       published_at: data.published_at ?? null,
       seo_title: data.seo_title,
@@ -120,6 +128,7 @@ export const updateService = async (input: {
       deliverables: data.deliverables,
       process_steps: data.process_steps,
       faqs: data.faqs,
+      benefits: data.benefits,
       related_services: data.related_services,
       related_posts: data.related_posts,
     }
@@ -155,14 +164,14 @@ export const syncTranslation = async (input: {
   // Get source service
   const sourceBundle = await adminServiceRepository.getServiceBundleById(id);
   if (!sourceBundle?.service) {
-    throw new Error('Source service not found');
+    throw new NotFoundError(ErrorMessages.RESOURCE_NOT_FOUND('Service', id));
   }
   
   const sourceService = sourceBundle.service;
   const sourceLocale = sourceService.locale;
   
   if (sourceLocale === targetLocale) {
-    throw new Error('Target locale must be different from source locale');
+    throw new ValidationError(ErrorMessages.INVALID_OPERATION('Target locale must be different from source locale'));
   }
   
   // Import translation service
@@ -274,7 +283,7 @@ export const syncImagesAcrossLocales = async (id: number, userId: number): Promi
   // Get the service
   const bundle = await adminServiceRepository.getServiceBundleById(id);
   if (!bundle?.service) {
-    throw new Error('Service not found');
+    throw new NotFoundError(ErrorMessages.RESOURCE_NOT_FOUND('Service', id));
   }
   
   const service = bundle.service;

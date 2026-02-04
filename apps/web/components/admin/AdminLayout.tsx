@@ -21,6 +21,7 @@ import {
   LogOut,
   User,
   Users,
+  Briefcase,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -120,6 +121,11 @@ export default function AdminLayout({ children, locale }: AdminLayoutProps) {
       name: locale === 'vi' ? 'Điều hướng' : 'Navigation',
       href: `/admin/${locale}/navigation`,
       icon: NavIcon,
+    },
+    {
+      name: locale === 'vi' ? 'Tuyển dụng' : 'Jobs',
+      href: `/admin/${locale}/jobs`,
+      icon: Briefcase,
     },
     {
       name: locale === 'vi' ? 'Người dùng' : 'Users',

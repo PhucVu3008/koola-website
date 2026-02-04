@@ -14,22 +14,25 @@
  * - $6 content_md
  * - $7 hero_asset_id (nullable)
  * - $8 og_asset_id (nullable)
- * - $9 status (content_status)
- * - $10 published_at (nullable timestamptz)
- * - $11 seo_title (nullable)
- * - $12 seo_description (nullable)
- * - $13 canonical_url (nullable)
- * - $14 sort_order
- * - $15 created_by (user id)
+ * - $9 icon_name (nullable)
+ * - $10 benefits_subtitle (nullable)
+ * - $11 status (content_status)
+ * - $12 published_at (nullable timestamptz)
+ * - $13 seo_title (nullable)
+ * - $14 seo_description (nullable)
+ * - $15 canonical_url (nullable)
+ * - $16 sort_order
+ * - $17 created_by (user id)
  */
 export const CREATE_SERVICE = `
   INSERT INTO services (
     locale, title, slug, slug_group, excerpt, content_md,
-    hero_asset_id, og_asset_id, status, published_at,
+    hero_asset_id, og_asset_id, icon_name, benefits_subtitle,
+    status, published_at,
     seo_title, seo_description, canonical_url, sort_order,
     created_by
   )
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
   RETURNING id
 `;
 
@@ -47,13 +50,15 @@ export const CREATE_SERVICE = `
  * - $6 content_md
  * - $7 hero_asset_id
  * - $8 og_asset_id
- * - $9 status
- * - $10 published_at
- * - $11 seo_title
- * - $12 seo_description
- * - $13 canonical_url
- * - $14 sort_order
- * - $15 updated_by
+ * - $9 icon_name
+ * - $10 benefits_subtitle
+ * - $11 status
+ * - $12 published_at
+ * - $13 seo_title
+ * - $14 seo_description
+ * - $15 canonical_url
+ * - $16 sort_order
+ * - $17 updated_by
  */
 export const UPDATE_SERVICE = `
   UPDATE services
@@ -65,13 +70,15 @@ export const UPDATE_SERVICE = `
     content_md = $6,
     hero_asset_id = $7,
     og_asset_id = $8,
-    status = $9,
-    published_at = $10,
-    seo_title = $11,
-    seo_description = $12,
-    canonical_url = $13,
-    sort_order = $14,
-    updated_by = $15,
+    icon_name = $9,
+    benefits_subtitle = $10,
+    status = $11,
+    published_at = $12,
+    seo_title = $13,
+    seo_description = $14,
+    canonical_url = $15,
+    sort_order = $16,
+    updated_by = $17,
     updated_at = NOW()
   WHERE id = $1
   RETURNING id

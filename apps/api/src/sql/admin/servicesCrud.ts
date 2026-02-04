@@ -30,7 +30,7 @@
 export const ADMIN_LIST_SERVICES = `
   SELECT 
     s.id, s.locale, s.title, s.slug, s.slug_group, s.excerpt, s.content_md,
-    s.hero_asset_id, s.og_asset_id,
+    s.hero_asset_id, s.og_asset_id, s.icon_name, s.benefits_subtitle,
     s.status, s.published_at,
     s.seo_title, s.seo_description, s.canonical_url,
     s.sort_order,
@@ -87,7 +87,7 @@ export const ADMIN_COUNT_SERVICES = `
 export const ADMIN_GET_SERVICE_BY_ID = `
   SELECT 
     id, locale, title, slug, slug_group, excerpt, content_md,
-    hero_asset_id, og_asset_id,
+    hero_asset_id, og_asset_id, icon_name, benefits_subtitle,
     status, published_at,
     seo_title, seo_description, canonical_url,
     sort_order,

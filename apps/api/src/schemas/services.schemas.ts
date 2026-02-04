@@ -60,6 +60,7 @@ export const adminServiceCreateSchema = z.object({
   content_md: z.string().min(1),
   hero_asset_id: z.number().optional(),
   og_asset_id: z.number().optional(),
+  icon_name: z.string().optional(),
   status: z.enum(['draft', 'published', 'archived']).default('draft'),
   published_at: z.string().optional(),
   seo_title: z.string().optional(),

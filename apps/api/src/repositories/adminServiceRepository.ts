@@ -33,6 +33,8 @@ export interface AdminServiceCreateRow {
   content_md: string;
   hero_asset_id?: number;
   og_asset_id?: number;
+  icon_name?: string;
+  benefits_subtitle?: string | null;
   status: 'draft' | 'published' | 'archived';
   published_at?: string | null;
   seo_title?: string;
@@ -134,8 +136,9 @@ export const getServiceBundleById = async (id: number) => {
     faqs,
     benefits,
     // For now we expose ids-only; sort order is deterministic (array order).
-    related_services: relatedServices.map((r) => r.id),
-    related_posts: relatedPosts.map((r) => r.id),
+    // CRITICAL: Ensure IDs are numbers, not strings (pg driver may return strings)
+    related_services: relatedServices.map((r) => Number(r.id)),
+    related_posts: relatedPosts.map((r) => Number(r.id)),
   };
 };
 
@@ -156,6 +159,8 @@ export const createServiceWithNested = async (
       row.content_md,
       row.hero_asset_id ?? null,
       row.og_asset_id ?? null,
+      row.icon_name ?? null,
+      row.benefits_subtitle ?? null,
       row.status,
       row.published_at ?? null,
       row.seo_title ?? null,
@@ -190,6 +195,8 @@ export const updateServiceWithNested = async (
         row.content_md,
         row.hero_asset_id ?? null,
         row.og_asset_id ?? null,
+        row.icon_name ?? null,
+        row.benefits_subtitle ?? null,
         row.status,
         row.published_at ?? null,
         row.seo_title ?? null,

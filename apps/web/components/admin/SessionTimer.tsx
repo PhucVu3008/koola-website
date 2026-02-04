@@ -10,6 +10,7 @@
 import { useEffect, useState } from 'react';
 import { getAccessToken, getTokenTimeRemaining, isTokenExpired, refreshAccessToken } from '@/lib/admin-auth';
 import { Clock, AlertCircle } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface SessionTimerProps {
   locale: 'en' | 'vi';
@@ -44,7 +45,7 @@ export function SessionTimer({ locale, onSessionExpired }: SessionTimerProps) {
       if (remaining < 120 && remaining > 0) {
         refreshAccessToken().then(newToken => {
           if (newToken) {
-            console.log('[SessionTimer] Token auto-refreshed');
+            logger.debug('Token auto-refreshed by SessionTimer');
           }
         });
       }
