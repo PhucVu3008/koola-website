@@ -50,13 +50,16 @@ export function RelatedItemsSelector({
     return true;
   });
 
-  const selectedItems = availableItems.filter((item) =>
-    selectedIds.includes(item.id)
-  );
+  const selectedItems = availableItems.filter((item) => {
+    // CRITICAL: Ensure type safety - convert both to numbers for comparison
+    const itemIdNum = typeof item.id === 'string' ? parseInt(item.id, 10) : item.id;
+    return selectedIds.includes(itemIdNum);
+  });
 
-  const unselectedItems = filteredItems.filter(
-    (item) => !selectedIds.includes(item.id)
-  );
+  const unselectedItems = filteredItems.filter((item) => {
+    const itemIdNum = typeof item.id === 'string' ? parseInt(item.id, 10) : item.id;
+    return !selectedIds.includes(itemIdNum);
+  });
 
   const handleToggleItem = (id: number) => {
     if (selectedIds.includes(id)) {
@@ -95,7 +98,9 @@ export function RelatedItemsSelector({
             Selected ({selectedItems.length}/{maxItems})
           </label>
           <div className="space-y-2">
-            {selectedItems.map((item) => (
+            {selectedItems.map((item) => {
+              const itemIdNum = typeof item.id === 'string' ? parseInt(item.id, 10) : item.id;
+              return (
               <div
                 key={item.id}
                 className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-4 py-3"
@@ -121,14 +126,15 @@ export function RelatedItemsSelector({
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleRemoveItem(item.id)}
+                  onClick={() => handleRemoveItem(itemIdNum)}
                   className="text-red-600 hover:text-red-700 hover:bg-red-100 p-1 rounded transition-colors flex-shrink-0"
                   title={`Remove ${typeLabelSingular}`}
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
-            ))}
+            );
+            })}
           </div>
         </div>
       )}
@@ -165,12 +171,14 @@ export function RelatedItemsSelector({
                   </div>
                 ) : (
                   <div className="divide-y divide-gray-200">
-                    {unselectedItems.map((item) => (
+                    {unselectedItems.map((item) => {
+                      const itemIdNum = typeof item.id === 'string' ? parseInt(item.id, 10) : item.id;
+                      return (
                       <button
                         key={item.id}
                         type="button"
                         onClick={() => {
-                          handleToggleItem(item.id);
+                          handleToggleItem(itemIdNum);
                           if (selectedIds.length + 1 >= maxItems) {
                             setIsOpen(false);
                             setSearchTerm('');
@@ -199,7 +207,8 @@ export function RelatedItemsSelector({
                         </div>
                         <ExternalLink className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                       </button>
-                    ))}
+                    );
+                    })}
                   </div>
                 )}
               </div>

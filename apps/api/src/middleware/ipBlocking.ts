@@ -46,7 +46,7 @@ export const checkIPBlocking = async (
   reply: FastifyReply
 ) => {
   const ipAddress = getClientIP(request);
-  const userAgent = request.headers['user-agent'] || 'unknown';
+  // const userAgent = request.headers['user-agent'] || 'unknown'; // Currently unused
 
   // Get failed attempts in last N minutes
   const { failed_count } = await loginAttemptRepository.getFailedAttemptsByIP(

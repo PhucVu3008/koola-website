@@ -13,6 +13,7 @@ import { adminApi } from '@/lib/admin-api';
 import { Save, X, Loader2, AlertCircle, Plus, ChevronDown } from 'lucide-react';
 import ImageUploader from './ImageUploader';
 import IconPicker from './IconPicker';
+import { logger, LogContext } from '@/lib/logger';
 import { TranslationSyncModal } from './TranslationSyncModal';
 import { BenefitsEditor, type Benefit } from './BenefitsEditor';
 import { RelatedItemsSelector } from './RelatedItemsSelector';
@@ -55,10 +56,21 @@ export function ServiceForm({ serviceId, locale, mode }: ServiceFormProps) {
   // Benefits and related items state
   const [benefits, setBenefits] = useState<Benefit[]>([]);
   const [benefitsSubtitle, setBenefitsSubtitle] = useState('');
-  const [relatedServiceIds, setRelatedServiceIds] = useState<number[]>([]);
-  const [relatedPostIds, setRelatedPostIds] = useState<number[]>([]);
+  const [relatedServiceIds, setRelatedServiceIdsInternal] = useState<number[]>([]);
+  const [relatedPostIds, setRelatedPostIdsInternal] = useState<number[]>([]);
   const [availableServices, setAvailableServices] = useState<any[]>([]);
   const [availablePosts, setAvailablePosts] = useState<any[]>([]);
+  
+  // Validation wrappers to ensure only numbers
+  const setRelatedServiceIds = (ids: number[]) => {
+    const validIds = ids.filter((id): id is number => typeof id === 'number' && !isNaN(id));
+    setRelatedServiceIdsInternal(validIds);
+  };
+  
+  const setRelatedPostIds = (ids: number[]) => {
+    const validIds = ids.filter((id): id is number => typeof id === 'number' && !isNaN(id));
+    setRelatedPostIdsInternal(validIds);
+  };
   
   const [formData, setFormData] = useState<ServiceFormData>({
     title: '',
@@ -104,7 +116,7 @@ export function ServiceForm({ serviceId, locale, mode }: ServiceFormProps) {
       const posts = (postsResponse.data as any[]) || [];
       setAvailablePosts(posts);
     } catch (err) {
-      console.error('Failed to load available items:', err);
+      logger.error('Failed to load available items for service form', err, LogContext.admin('load', 'services'));
     }
   };
 
@@ -115,8 +127,6 @@ export function ServiceForm({ serviceId, locale, mode }: ServiceFormProps) {
       // API returns { data: [...services], meta: {...} }
       const services = (response.data as any) || [];
       
-      console.log('Loaded services for slug groups:', services.length);
-      
       // Extract unique slug groups
       const uniqueSlugGroups = Array.from(
         new Set(
@@ -126,10 +136,9 @@ export function ServiceForm({ serviceId, locale, mode }: ServiceFormProps) {
         )
       ) as string[];
       
-      console.log('Unique slug groups:', uniqueSlugGroups);
       setSlugGroups(uniqueSlugGroups.sort());
     } catch (err) {
-      console.error('Failed to load slug groups:', err);
+      logger.error('Failed to load slug groups', err);
     }
   };
 
@@ -161,9 +170,15 @@ export function ServiceForm({ serviceId, locale, mode }: ServiceFormProps) {
       
       setFormData(newFormData);
       
-      // Load benefits
-      if (responseData.benefits) {
-        setBenefits(responseData.benefits);
+      // Load benefits - transform by removing id field
+      if (responseData.benefits && Array.isArray(responseData.benefits)) {
+        const transformedBenefits = responseData.benefits.map((b: any) => ({
+          title: b.title || '',
+          description: b.description || '',
+          icon_name: b.icon_name || 'check-circle',
+          sort_order: b.sort_order || 0,
+        }));
+        setBenefits(transformedBenefits);
       }
       
       // Load benefits subtitle
@@ -171,14 +186,20 @@ export function ServiceForm({ serviceId, locale, mode }: ServiceFormProps) {
         setBenefitsSubtitle(serviceData.benefits_subtitle);
       }
       
-      // Load related services
-      if (responseData.related_services) {
-        setRelatedServiceIds(responseData.related_services);
+      // Load related services - transform to number array
+      if (responseData.related_services && Array.isArray(responseData.related_services)) {
+        const ids = responseData.related_services
+          .map((id: any) => typeof id === 'string' ? parseInt(id, 10) : id)
+          .filter((id: number) => !isNaN(id));
+        setRelatedServiceIds(ids);
       }
       
-      // Load related posts
-      if (responseData.related_posts) {
-        setRelatedPostIds(responseData.related_posts);
+      // Load related posts - transform to number array
+      if (responseData.related_posts && Array.isArray(responseData.related_posts)) {
+        const ids = responseData.related_posts
+          .map((id: any) => typeof id === 'string' ? parseInt(id, 10) : id)
+          .filter((id: number) => !isNaN(id));
+        setRelatedPostIds(ids);
       }
       
     } catch (err: any) {
@@ -295,7 +316,7 @@ export function ServiceForm({ serviceId, locale, mode }: ServiceFormProps) {
           try {
             await adminApi.syncServiceImages(serviceId);
           } catch (syncError) {
-            console.error('Failed to sync images:', syncError);
+            logger.error('Failed to sync images across locales', syncError, LogContext.admin('sync', 'service-images', serviceId));
             // Don't fail the whole operation if image sync fails
           }
         }

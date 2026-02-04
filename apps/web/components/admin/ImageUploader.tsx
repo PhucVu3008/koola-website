@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react';
 import { adminApi } from '@/lib/admin-api';
+import { logger } from '@/lib/logger';
 
 interface ImageUploaderProps {
   value: string; // asset_id or URL
@@ -68,7 +69,7 @@ export default function ImageUploader({
       
       setPreview(imageUrl);
     } catch (err: any) {
-      console.error('Failed to load image:', err);
+      logger.error('Failed to load image preview', err, { assetId });
       setPreview('');
     } finally {
       setLoading(false);
@@ -102,7 +103,7 @@ export default function ImageUploader({
       const response = await adminApi.uploadMedia(formData);
       const uploadedAsset = response.data;
 
-      console.log('[ImageUploader] Upload response:', uploadedAsset);
+      logger.debug('Image uploaded successfully', { assetId: uploadedAsset?.id });
 
       // Update state
       onChange(uploadedAsset.id.toString());
@@ -114,7 +115,7 @@ export default function ImageUploader({
         ? uploadedAsset.url 
         : `${apiBaseUrl}${uploadedAsset.url || ''}`;
       
-      console.log('[ImageUploader] Preview URL:', imageUrl);
+      logger.debug('Image preview loaded', { assetId: uploadedAsset.id });
       setPreview(imageUrl);
     } catch (err: any) {
       setError(err.message || 'Failed to upload image');
@@ -168,7 +169,7 @@ export default function ImageUploader({
             alt="Preview"
             className="w-full h-48 object-cover rounded-lg border-2 border-gray-200"
             onError={(e) => {
-              console.error('[ImageUploader] Image failed to load:', preview);
+              logger.error('Image failed to load', new Error('Image load error'), { url: preview });
               e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23ddd" width="100" height="100"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3EError%3C/text%3E%3C/svg%3E';
             }}
           />
