@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { ZodError } from 'zod';
 import { AppError } from '../utils/errors';
 import { ErrorCodes, errorResponse } from '../utils/response';
+import { isDatabaseError, mapDatabaseError } from '../utils/dbErrorMapper';
 
 /**
  * Global Fastify error handler.
@@ -11,6 +12,7 @@ import { ErrorCodes, errorResponse } from '../utils/response';
  *   `{ error: { code, message, details? } }`
  * - Convert Zod validation errors into 400 `VALIDATION_ERROR`.
  * - Convert JWT failures into 401 `UNAUTHORIZED`.
+ * - Convert database errors into appropriate AppError instances.
  * - Map known application errors (`AppError`) into stable HTTP + error code.
  * - Avoid leaking sensitive details in production.
  */
@@ -19,7 +21,18 @@ export const errorHandler = (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
-  request.log.error(error);
+  // Log error with full request context
+  request.log.error({
+    error: error.message,
+    stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+    requestId: request.id,
+    userId: (request.user as any)?.id,
+    method: request.method,
+    url: request.url,
+    query: request.query,
+    // Sanitize body to avoid logging passwords/tokens
+    body: sanitizeBody(request.body),
+  });
 
   // 1) Zod validation errors -> 400 VALIDATION_ERROR.
   const maybeZodError = error as any;
@@ -39,7 +52,17 @@ export const errorHandler = (
       );
   }
 
-  // 2) Known AppError -> map directly.
+  // 2) Database errors -> map to AppError.
+  if (isDatabaseError(error)) {
+    const appError = mapDatabaseError(error);
+    return reply
+      .status(appError.statusCode)
+      .send(
+        errorResponse(appError.code, appError.message, appError.details)
+      );
+  }
+
+  // 3) Known AppError -> map directly.
   if (error instanceof AppError) {
     return reply
       .status(error.statusCode)
@@ -52,7 +75,7 @@ export const errorHandler = (
       );
   }
 
-  // 3) CORS or infrastructural errors.
+  // 4) CORS or infrastructural errors.
   const errAny = error as any;
   if (errAny?.code === 'CORS_NOT_ALLOWED') {
     return reply
@@ -60,7 +83,7 @@ export const errorHandler = (
       .send(errorResponse(ErrorCodes.FORBIDDEN, 'CORS origin not allowed'));
   }
 
-  // 4) Fastify JWT errors.
+  // 5) Fastify JWT errors.
   const jwtErrorCodes = new Set([
     'FST_JWT_NO_AUTHORIZATION_IN_HEADER',
     'FST_JWT_AUTHORIZATION_TOKEN_INVALID',
@@ -74,7 +97,7 @@ export const errorHandler = (
       .send(errorResponse(ErrorCodes.UNAUTHORIZED, 'Invalid or expired token'));
   }
 
-  // 5) Default: INTERNAL (standard contract).
+  // 6) Default: INTERNAL (standard contract).
   const isProd = process.env.NODE_ENV === 'production';
 
   return reply
@@ -85,4 +108,28 @@ export const errorHandler = (
         isProd ? 'An error occurred' : error.message
       )
     );
+};
+
+/**
+ * Sanitize request body for logging.
+ * Remove sensitive fields like passwords, tokens, etc.
+ *
+ * @param body - Request body object
+ * @returns Sanitized body safe for logging
+ */
+const sanitizeBody = (body: any): any => {
+  if (!body || typeof body !== 'object') {
+    return body;
+  }
+
+  const sanitized = { ...body };
+  const sensitiveFields = ['password', 'token', 'secret', 'api_key', 'apiKey'];
+
+  for (const field of sensitiveFields) {
+    if (field in sanitized) {
+      sanitized[field] = '[REDACTED]';
+    }
+  }
+
+  return sanitized;
 };

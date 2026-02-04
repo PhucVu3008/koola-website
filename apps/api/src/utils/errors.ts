@@ -72,8 +72,8 @@ export class ForbiddenError extends AppError {
  * 409 - Conflict (duplicate, constraint violation at the application level).
  */
 export class ConflictError extends AppError {
-  constructor(message: string = 'Resource already exists') {
-    super(409, 'CONFLICT', message);
+  constructor(message: string = 'Resource already exists', details?: any) {
+    super(409, 'CONFLICT', message, details);
     this.name = 'ConflictError';
   }
 }
@@ -85,8 +85,8 @@ export class ConflictError extends AppError {
  * them to 500; use this only when you need to enforce a specific safe message.
  */
 export class InternalError extends AppError {
-  constructor(message: string = 'Internal server error') {
-    super(500, 'INTERNAL_ERROR', message);
+  constructor(message: string = 'Internal server error', details?: any) {
+    super(500, 'INTERNAL_ERROR', message, details);
     this.name = 'InternalError';
   }
 }
