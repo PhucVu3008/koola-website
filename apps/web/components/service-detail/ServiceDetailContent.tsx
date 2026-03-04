@@ -52,22 +52,22 @@ export function ServiceDetailContent({ data }: { data: ServiceDetailContentData 
     .trim();
 
   return (
-    <article ref={ref} className="space-y-8">
-      {/* Highlight Line - Enhanced */}
+    <article ref={ref} className="space-y-6 sm:space-y-8">
+      {/* Highlight Line - Enhanced + Responsive */}
       <div
-        className={`flex items-start gap-4 rounded-2xl border border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 p-6 transition-all duration-700 ${
+        className={`flex items-start gap-3 sm:gap-4 rounded-xl sm:rounded-2xl border border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 sm:p-6 transition-all duration-700 ${
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
-        <div className="mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg">
-          <Lightbulb className="h-6 w-6 text-white" />
+        <div className="mt-0.5 flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg">
+          <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
         </div>
-        <p className="pt-2 text-lg font-semibold leading-relaxed text-slate-900">{data.highlightTitle}</p>
+        <p className="pt-1 sm:pt-2 text-base sm:text-lg font-semibold leading-relaxed text-slate-900">{data.highlightTitle}</p>
       </div>
 
-      {/* Cover Image - Enhanced */}
+      {/* Cover Image - Enhanced + Responsive */}
       <div
-        className={`relative aspect-[16/9] overflow-hidden rounded-3xl bg-slate-100 shadow-xl transition-all duration-700 delay-100 ${
+        className={`relative aspect-[16/9] overflow-hidden rounded-2xl sm:rounded-3xl bg-slate-100 shadow-lg sm:shadow-xl transition-all duration-700 delay-100 ${
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
@@ -75,19 +75,19 @@ export function ServiceDetailContent({ data }: { data: ServiceDetailContentData 
         <div className="absolute inset-0 ring-1 ring-inset ring-slate-900/10" />
       </div>
 
-      {/* Markdown Content - Enhanced */}
+      {/* Markdown Content - Enhanced + Responsive */}
       <div
-        className={`prose prose-lg prose-slate max-w-none transition-all duration-700 delay-200 ${
+        className={`prose prose-sm sm:prose-base lg:prose-lg prose-slate max-w-none transition-all duration-700 delay-200 ${
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
-            h2: ({ node, ...props }) => <h2 className="text-3xl font-bold text-slate-900 lg:text-4xl mb-6 mt-8" {...props} />,
-            h3: ({ node, ...props }) => <h3 className="text-2xl font-bold text-slate-900 mb-4 mt-6" {...props} />,
-            h4: ({ node, ...props }) => <h4 className="text-xl font-semibold text-slate-900 mb-3 mt-4" {...props} />,
-            p: ({ node, ...props }) => <p className="text-lg leading-relaxed text-slate-700 mb-5" {...props} />,
+            h2: ({ node, ...props }) => <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-4 sm:mb-6 mt-6 sm:mt-8" {...props} />,
+            h3: ({ node, ...props }) => <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-3 sm:mb-4 mt-4 sm:mt-6" {...props} />,
+            h4: ({ node, ...props }) => <h4 className="text-lg sm:text-xl font-semibold text-slate-900 mb-2 sm:mb-3 mt-3 sm:mt-4" {...props} />,
+            p: ({ node, ...props }) => <p className="text-base sm:text-lg leading-relaxed text-slate-700 mb-4 sm:mb-5" {...props} />,
             ul: ({ node, ...props }) => <ul className="space-y-2 my-4 list-disc list-inside" {...props} />,
             ol: ({ node, ...props }) => <ol className="space-y-2 my-4 list-decimal list-inside" {...props} />,
             li: ({ node, ...props }) => <li className="text-lg text-slate-700" {...props} />,
@@ -102,21 +102,21 @@ export function ServiceDetailContent({ data }: { data: ServiceDetailContentData 
         </ReactMarkdown>
       </div>
 
-      {/* Bottom CTAs - Enhanced */}
+      {/* Bottom CTAs - Enhanced + Responsive */}
       <div
-        className={`flex flex-wrap gap-4 border-t border-slate-200 pt-8 transition-all duration-700 delay-300 ${
+        className={`flex flex-col sm:flex-row gap-3 sm:gap-4 border-t border-slate-200 pt-6 sm:pt-8 transition-all duration-700 delay-300 ${
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
         <Link
           href={data.ctaSecondary.href}
-          className="inline-flex items-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-7 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-emerald-500 hover:bg-slate-50 hover:shadow-md"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-6 sm:px-7 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-emerald-500 hover:bg-slate-50 hover:shadow-md"
         >
           {data.ctaSecondary.label}
         </Link>
         <Link
           href={data.ctaPrimary.href}
-          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-7 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:scale-105"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 sm:px-7 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:scale-105"
         >
           {data.ctaPrimary.label}
         </Link>

@@ -38,17 +38,17 @@ export function ServiceDetailPage({ data, locale }: { data: ServiceDetailPageDat
       {/* Hero Banner */}
       <ServiceDetailHero data={data.hero} />
 
-      {/* Add spacing for overlapping hero card */}
-      <div className="h-24" />
+      {/* Add spacing for overlapping hero card - Responsive */}
+      <div className="h-16 sm:h-24" />
 
-      {/* Two-column layout: Content + Sidebar */}
-      <section className="bg-white py-16">
-        <div className="container">
-          <div className="grid gap-12 lg:grid-cols-[1fr_360px]">
+      {/* Two-column layout: Content + Sidebar - Responsive */}
+      <section className="bg-white py-8 sm:py-16">
+        <div className="container px-4 sm:px-6">
+          <div className="grid gap-8 sm:gap-12 lg:grid-cols-[1fr_360px]">
             {/* Main Content (Left) */}
             <ServiceDetailContent data={data.content} />
 
-            {/* Sidebar (Right) */}
+            {/* Sidebar (Right) - Stack below on mobile */}
             <ServiceDetailSidebar data={data.sidebar} />
           </div>
         </div>

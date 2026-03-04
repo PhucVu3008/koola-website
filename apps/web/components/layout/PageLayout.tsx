@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import { SiteFooter } from '../SiteFooter';
 import { SiteHeader } from '../SiteHeader';
+import { MobileBottomNav } from '../MobileBottomNav';
 import type { SiteSettingsPayload } from '../../src/lib/api/site';
 
 /**
@@ -24,6 +25,7 @@ export function PageLayout({
       <SiteHeader locale={locale} />
       <main className="w-full">{children as React.ReactNode}</main>
       {site ? <SiteFooter locale={locale} site={site} /> : null}
+      <MobileBottomNav locale={locale} />
     </div>
   );
 }

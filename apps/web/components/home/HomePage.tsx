@@ -56,48 +56,51 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
       {/* Hero Section - Full width, no wrapper */}
       <HeroSection data={heroData} />
 
-      <div className="space-y-16 py-8">
-        <RevealOnScroll delayMs={80} hoverParallax>
+      {/* Main Content - Add container with padding to prevent horizontal overflow */}
+      <div className="fluid-container">
+        <div className="space-y-16 py-8">
+          <RevealOnScroll delayMs={80} hoverParallax>
+            <Section tone="white">
+              <CapabilityHighlights data={data.capabilities} />
+            </Section>
+          </RevealOnScroll>
+
+        <RevealOnScroll delayMs={160} hoverParallax>
           <Section tone="white">
-            <CapabilityHighlights data={data.capabilities} />
+            <HomeServicesSection locale={locale} title={servicesTitle} />
           </Section>
         </RevealOnScroll>
 
-      <RevealOnScroll delayMs={160} hoverParallax>
-        <Section tone="white">
-          <HomeServicesSection locale={locale} title={servicesTitle} />
-        </Section>
-      </RevealOnScroll>
+        <RevealOnScroll delayMs={240} hoverParallax>
+          <Section tone="muted" className="rounded-3xl py-16">
+            <TrustedLogos data={data.trusted} />
+          </Section>
+        </RevealOnScroll>
 
-      <RevealOnScroll delayMs={240} hoverParallax>
-        <Section tone="muted" className="rounded-3xl py-16">
-          <TrustedLogos data={data.trusted} />
-        </Section>
-      </RevealOnScroll>
+        <RevealOnScroll delayMs={320} hoverParallax>
+          <Section tone="white">
+            <ValuePropositionSlider data={data.valueProps} />
+          </Section>
+        </RevealOnScroll>
 
-      <RevealOnScroll delayMs={320} hoverParallax>
-        <Section tone="white">
-          <ValuePropositionSlider data={data.valueProps} />
-        </Section>
-      </RevealOnScroll>
+        <RevealOnScroll delayMs={400} hoverParallax>
+          <Section tone="white">
+            <BlogPreviewGrid data={data.blog} />
+          </Section>
+        </RevealOnScroll>
 
-      <RevealOnScroll delayMs={400} hoverParallax>
-        <Section tone="white">
-          <BlogPreviewGrid data={data.blog} />
-        </Section>
-      </RevealOnScroll>
+        <RevealOnScroll delayMs={480} hoverParallax>
+          <Section tone="white">
+            <TeamRolesPreview data={data.team} />
+          </Section>
+        </RevealOnScroll>
 
-      <RevealOnScroll delayMs={480} hoverParallax>
-        <Section tone="white">
-          <TeamRolesPreview data={data.team} />
-        </Section>
-      </RevealOnScroll>
-
-      <RevealOnScroll delayMs={560} hoverParallax>
-        <Section tone="brand" className="rounded-3xl py-16 text-white">
-          <PrimaryCTASection data={data.primaryCta} />
-        </Section>
-      </RevealOnScroll>
+        <RevealOnScroll delayMs={560} hoverParallax>
+          <Section tone="brand" className="rounded-3xl py-16 text-white">
+            <PrimaryCTASection data={data.primaryCta} />
+          </Section>
+        </RevealOnScroll>
+        </div>
       </div>
     </>
   );

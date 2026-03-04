@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 import { InteractiveButton } from '../ui/InteractiveButton';
+import { useMediaQuery } from '../../src/hooks/useMediaQuery';
 
 export type HeroSectionData = {
   label: string;
@@ -20,16 +21,26 @@ export type HeroSectionData = {
  * Home hero section with animated rainbow gradient particles,
  * DNA helix effect, and mouse-interactive stars.
  * Full-width background design with centered content.
+ * 
+ * Mobile Optimizations:
+ * - Reduced particle effects on mobile for better performance
+ * - Simplified animations on small screens
+ * - Larger touch targets for CTAs (52px height)
+ * - Responsive height using fluid-h-hero
  */
 export function HeroSection({ data }: { data: HeroSectionData }) {
   const [mounted, setMounted] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
+  const { isMobile, isMobileOrTablet } = useMediaQuery();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Disable mouse tracking on mobile for performance
+    if (isMobileOrTablet) return;
+    
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
@@ -38,23 +49,24 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
 
   return (
     <div 
-      className="relative flex w-full items-center justify-center overflow-hidden"
-      style={{ minHeight: 'clamp(26.25rem, 60vh, 56.25rem)' }}
+      className="relative flex w-full items-center justify-center overflow-hidden fluid-h-hero"
       onMouseMove={handleMouseMove}
     >
-      {/* LAYER 0: Background Gradient Base - MOUSE TRACKING */}
+      {/* LAYER 0: Background Gradient Base - MOUSE TRACKING (desktop only) */}
       <div 
         className="absolute inset-0 z-0 transition-all duration-700 ease-out"
         style={{
-          background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, 
-            rgba(30, 41, 59, 0.7) 0%, 
-            rgba(15, 23, 42, 0.85) 30%,
-            rgba(2, 6, 23, 0.95) 60%,
-            rgba(0, 0, 0, 1) 100%)`,
+          background: isMobileOrTablet 
+            ? 'linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 50%, rgba(2, 6, 23, 0.95) 100%)'
+            : `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, 
+                rgba(30, 41, 59, 0.7) 0%, 
+                rgba(15, 23, 42, 0.85) 30%,
+                rgba(2, 6, 23, 0.95) 60%,
+                rgba(0, 0, 0, 1) 100%)`,
         }}
       />
 
-      {/* LAYER 1: AVIF Background Image - MOUSE TRACKING */}
+      {/* LAYER 1: AVIF Background Image - MOUSE TRACKING (desktop only) */}
       {data.backgroundImage && (
         <div className="absolute inset-0 z-[1]">
           <Image
@@ -63,19 +75,26 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
             fill
             className="object-cover"
             priority
-            quality={90}
+            quality={isMobile ? 75 : 90}
+            sizes="100vw"
           />
-          {/* Dynamic overlay following mouse - ONLY on AVIF */}
-          <div 
-            className="absolute inset-0 transition-all duration-1000"
-            style={{
-              background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, 
-                rgba(59, 130, 246, 0.5) 0%, 
-                rgba(147, 51, 234, 0.35) 25%,
-                rgba(236, 72, 153, 0.25) 50%,
-                transparent 70%)`,
-            }}
-          />
+          {/* Dynamic overlay following mouse - ONLY on desktop */}
+          {!isMobileOrTablet && (
+            <div 
+              className="absolute inset-0 transition-all duration-1000"
+              style={{
+                background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, 
+                  rgba(59, 130, 246, 0.5) 0%, 
+                  rgba(147, 51, 234, 0.35) 25%,
+                  rgba(236, 72, 153, 0.25) 50%,
+                  transparent 70%)`,
+              }}
+            />
+          )}
+          {/* Static overlay on mobile for performance */}
+          {isMobileOrTablet && (
+            <div className="absolute inset-0 bg-gradient-to-b from-blue-500/20 via-purple-500/15 to-transparent" />
+          )}
         </div>
       )}
 
@@ -93,32 +112,46 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
         </div>
       )}
 
-      {/* Animated Rainbow Gradient Orbs - Auto Float */}
+      {/* Animated Rainbow Gradient Orbs - Reduced on mobile */}
       <div className="absolute inset-0 z-10 overflow-visible pointer-events-none">
         {/* Large Blue→Purple Orb - Top Left */}
         <div 
-          className="absolute left-[-5%] top-[-5%] h-[500px] w-[500px] animate-[float_20s_ease-in-out_infinite] rounded-full bg-gradient-to-br from-blue-400/50 via-purple-500/35 to-transparent blur-3xl"
+          className={`absolute left-[-5%] top-[-5%] rounded-full bg-gradient-to-br from-blue-400/50 via-purple-500/35 to-transparent blur-3xl ${isMobileOrTablet ? '' : 'animate-[float_20s_ease-in-out_infinite]'}`}
+          style={{ 
+            height: isMobile ? '300px' : '500px',
+            width: isMobile ? '300px' : '500px',
+          }}
         />
         
         {/* Medium Purple→Pink Orb - Top Right */}
         <div 
-          className="absolute right-[-8%] top-[5%] h-[400px] w-[400px] animate-[float_25s_ease-in-out_infinite_3s] rounded-full bg-gradient-to-br from-purple-400/45 via-pink-400/30 to-transparent blur-3xl"
+          className={`absolute right-[-8%] top-[5%] rounded-full bg-gradient-to-br from-purple-400/45 via-pink-400/30 to-transparent blur-3xl ${isMobileOrTablet ? '' : 'animate-[float_25s_ease-in-out_infinite_3s]'}`}
+          style={{ 
+            height: isMobile ? '250px' : '400px',
+            width: isMobile ? '250px' : '400px',
+          }}
         />
         
-        {/* Small Cyan→Orange Orb - Bottom */}
-        <div 
-          className="absolute bottom-[5%] left-[25%] h-[350px] w-[350px] animate-[float_18s_ease-in-out_infinite_5s] rounded-full bg-gradient-to-br from-cyan-400/50 via-orange-400/35 to-transparent blur-3xl"
-        />
+        {/* Small Cyan→Orange Orb - Bottom (desktop only) */}
+        {!isMobile && (
+          <div 
+            className="absolute bottom-[5%] left-[25%] h-[350px] w-[350px] animate-[float_18s_ease-in-out_infinite_5s] rounded-full bg-gradient-to-br from-cyan-400/50 via-orange-400/35 to-transparent blur-3xl"
+          />
+        )}
         
-        {/* DNA Helix Effect - Two rotating gradients */}
-        <div 
-          className="absolute left-1/4 top-1/4 h-[600px] w-2 animate-[spin_30s_linear_infinite] bg-gradient-to-b from-transparent via-blue-300/20 to-transparent"
-        />
-        <div 
-          className="absolute right-1/4 top-1/4 h-[600px] w-2 animate-[spin_30s_linear_infinite_reverse] bg-gradient-to-b from-transparent via-pink-300/20 to-transparent"
-        />
+        {/* DNA Helix Effect - Desktop only for performance */}
+        {!isMobileOrTablet && (
+          <>
+            <div 
+              className="absolute left-1/4 top-1/4 h-[600px] w-2 animate-[spin_30s_linear_infinite] bg-gradient-to-b from-transparent via-blue-300/20 to-transparent"
+            />
+            <div 
+              className="absolute right-1/4 top-1/4 h-[600px] w-2 animate-[spin_30s_linear_infinite_reverse] bg-gradient-to-b from-transparent via-pink-300/20 to-transparent"
+            />
+          </>
+        )}
 
-        {/* Interactive Star Particles - 8 stars with different colors */}
+        {/* Interactive Star Particles - Reduced count on mobile */}
         {/* Top layer stars */}
         <div 
           className="absolute left-[15%] top-[10%] h-1 w-1 animate-pulse rounded-full bg-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
@@ -131,28 +164,32 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
           className="absolute right-[20%] top-[15%] h-1 w-1 animate-pulse rounded-full bg-pink-400 shadow-[0_0_10px_rgba(244,114,182,0.5)]"
           style={{ animationDelay: '1s' }}
         />
-        <div 
-          className="absolute right-[10%] top-[40%] h-1.5 w-1.5 animate-pulse rounded-full bg-orange-400 shadow-[0_0_12px_rgba(251,146,60,0.5)]"
-          style={{ animationDelay: '1.5s' }}
-        />
         
-        {/* Bottom layer stars */}
-        <div 
-          className="absolute bottom-[20%] left-[25%] h-1 w-1 animate-pulse rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)]"
-          style={{ animationDelay: '0.3s' }}
-        />
-        <div 
-          className="absolute bottom-[35%] left-[45%] h-1.5 w-1.5 animate-pulse rounded-full bg-teal-400 shadow-[0_0_12px_rgba(45,212,191,0.5)]"
-          style={{ animationDelay: '0.8s' }}
-        />
-        <div 
-          className="absolute bottom-[25%] right-[30%] h-1 w-1 animate-pulse rounded-full bg-rose-400 shadow-[0_0_10px_rgba(251,113,133,0.5)]"
-          style={{ animationDelay: '1.2s' }}
-        />
-        <div 
-          className="absolute bottom-[10%] right-[15%] h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.5)]"
-          style={{ animationDelay: '1.8s' }}
-        />
+        {/* Bottom layer stars - Desktop only */}
+        {!isMobile && (
+          <>
+            <div 
+              className="absolute right-[10%] top-[40%] h-1.5 w-1.5 animate-pulse rounded-full bg-orange-400 shadow-[0_0_12px_rgba(251,146,60,0.5)]"
+              style={{ animationDelay: '1.5s' }}
+            />
+            <div 
+              className="absolute bottom-[20%] left-[25%] h-1 w-1 animate-pulse rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)]"
+              style={{ animationDelay: '0.3s' }}
+            />
+            <div 
+              className="absolute bottom-[35%] left-[45%] h-1.5 w-1.5 animate-pulse rounded-full bg-teal-400 shadow-[0_0_12px_rgba(45,212,191,0.5)]"
+              style={{ animationDelay: '0.8s' }}
+            />
+            <div 
+              className="absolute bottom-[25%] right-[30%] h-1 w-1 animate-pulse rounded-full bg-rose-400 shadow-[0_0_10px_rgba(251,113,133,0.5)]"
+              style={{ animationDelay: '1.2s' }}
+            />
+            <div 
+              className="absolute bottom-[10%] right-[15%] h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.5)]"
+              style={{ animationDelay: '1.8s' }}
+            />
+          </>
+        )}
 
         {/* Radial glow - static rainbow effect */}
         <div 
@@ -234,9 +271,9 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
           />
         </div>
 
-        {/* CTA Buttons - Fluid spacing */}
+        {/* CTA Buttons - Fluid spacing, stack on mobile */}
         <div 
-          className={`flex flex-wrap items-center justify-center transition-all duration-1000 delay-300 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          className={`flex flex-col sm:flex-row items-stretch sm:items-center justify-center transition-all duration-1000 delay-300 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
           style={{ marginTop: 'clamp(1.5rem, 4vh, 2.5rem)', gap: 'clamp(0.75rem, 2vw, 1rem)' }}
         >
           <InteractiveButton href={data.primaryCta.href} variant="primary">
@@ -247,7 +284,7 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
           </InteractiveButton>
         </div>
 
-        {/* Trust Indicator - Fluid text */}
+        {/* Trust Indicator - Fluid text, shorter on mobile */}
         <div 
           className={`flex items-center justify-center text-slate-400 transition-all duration-1000 delay-400 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
           style={{ marginTop: 'clamp(1.25rem, 3vh, 2rem)', gap: 'clamp(0.375rem, 1vw, 0.5rem)' }}
@@ -257,20 +294,15 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
             style={{ width: 'clamp(1rem, 2.5vw, 1.25rem)', height: 'clamp(1rem, 2.5vw, 1.25rem)' }}
             fill="currentColor" 
             viewBox="0 0 20 20"
+            aria-hidden="true"
           >
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
           </svg>
           <span 
-            className="hidden sm:inline"
-            style={{ fontSize: 'clamp(0.75rem, 1.5vw, 0.875rem)' }}
+            className="text-center"
+            style={{ fontSize: 'clamp(0.75rem, 1.8vw, 0.875rem)' }}
           >
-            Trusted by 500+ leading organizations worldwide
-          </span>
-          <span 
-            className="sm:hidden"
-            style={{ fontSize: 'clamp(0.75rem, 1.5vw, 0.875rem)' }}
-          >
-            Trusted by 500+ organizations
+            {isMobile ? 'Trusted by 500+ organizations' : 'Trusted by 500+ leading organizations worldwide'}
           </span>
         </div>
       </div>

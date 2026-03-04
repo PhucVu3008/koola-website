@@ -27,7 +27,7 @@ export type ServiceDetailHeroData = {
 
 export function ServiceDetailHero({ data }: { data: ServiceDetailHeroData }) {
   return (
-    <section className="relative h-[600px] w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 pb-24">
+    <section className="relative h-[500px] sm:h-[600px] w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 pb-16 sm:pb-24">
       {/* Background Image */}
       <div className="absolute inset-0 overflow-hidden">
         <Image src={data.backgroundImage} alt={data.title} fill className="object-cover opacity-40" priority />
@@ -38,13 +38,13 @@ export function ServiceDetailHero({ data }: { data: ServiceDetailHeroData }) {
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-blue-500/10" />
       </div>
 
-      {/* Content Card - Overlapping bottom-left */}
-      <div className="container relative h-full px-6">
-        <div className="absolute bottom-0 left-6 w-full max-w-3xl translate-y-20 animate-fade-in-up rounded-3xl bg-white p-10 shadow-2xl lg:p-12">
+      {/* Content Card - Responsive overlapping */}
+      <div className="container relative h-full px-4 sm:px-6">
+        <div className="absolute bottom-0 left-4 right-4 sm:left-6 sm:right-auto w-auto sm:w-full sm:max-w-3xl translate-y-12 sm:translate-y-20 animate-fade-in-up rounded-2xl sm:rounded-3xl bg-white p-6 sm:p-10 lg:p-12 shadow-2xl">
           {/* Breadcrumbs */}
-          <nav className="mb-5 flex items-center gap-2 text-sm text-slate-500">
+          <nav className="mb-3 sm:mb-5 flex items-center gap-2 text-xs sm:text-sm text-slate-500 overflow-x-auto">
             {data.breadcrumbs.map((item, index) => (
-              <span key={index} className="flex items-center gap-2">
+              <span key={index} className="flex items-center gap-2 whitespace-nowrap">
                 {index > 0 && <span className="text-slate-300">/</span>}
                 {item.href ? (
                   <Link href={item.href} className="transition-colors hover:text-emerald-600">
@@ -57,23 +57,23 @@ export function ServiceDetailHero({ data }: { data: ServiceDetailHeroData }) {
             ))}
           </nav>
 
-          {/* Title */}
-          <h1 className="mb-5 text-4xl font-bold leading-tight text-slate-900 lg:text-5xl">{data.title}</h1>
+          {/* Title - Responsive */}
+          <h1 className="mb-3 sm:mb-5 text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight text-slate-900">{data.title}</h1>
 
-          {/* Excerpt */}
-          <p className="mb-8 text-lg leading-relaxed text-slate-600">{data.excerpt}</p>
+          {/* Excerpt - Responsive */}
+          <p className="mb-6 sm:mb-8 text-base sm:text-lg leading-relaxed text-slate-600">{data.excerpt}</p>
 
-          {/* CTAs - Right aligned */}
-          <div className="flex flex-wrap gap-4 lg:justify-end">
+          {/* CTAs - Stack on mobile, right aligned on desktop */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:justify-end">
             <Link
               href={data.ctaSecondary.href}
-              className="inline-flex items-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-7 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-emerald-500 hover:bg-slate-50 hover:shadow-md"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-6 sm:px-7 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-emerald-500 hover:bg-slate-50 hover:shadow-md"
             >
               {data.ctaSecondary.label}
             </Link>
             <Link
               href={data.ctaPrimary.href}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-7 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 sm:px-7 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:scale-105"
             >
               {data.ctaPrimary.label}
             </Link>

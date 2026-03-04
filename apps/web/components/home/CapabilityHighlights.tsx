@@ -49,7 +49,8 @@ export function CapabilityHighlights({
     <div className="space-y-10">
       <p className="text-center text-sm font-medium text-slate-700">{data.heading}</p>
 
-      <div className="grid grid-cols-3 gap-8">
+      {/* Mobile: 1 cột, Tablet: 2 cột, Desktop: 3 cột */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
         {data.items.map((it) => (
           <InteractiveCard key={it.title}>
             <Card className="flex h-full flex-col p-7">

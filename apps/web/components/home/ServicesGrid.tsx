@@ -67,7 +67,8 @@ export function ServicesGrid({ data, locale }: ServicesGridProps) {
         </h2>
       </div>
 
-      <div className="grid grid-cols-3 gap-7">
+      {/* Mobile: 1 cột, Tablet: 2 cột, Desktop: 3 cột */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7">
         {data.items.map((it) => (
           <Link 
             key={it.slug} 

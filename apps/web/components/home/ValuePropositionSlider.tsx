@@ -59,6 +59,25 @@ export function ValuePropositionSlider({
 }) {
   const [index, setIndex] = useState(0);
   const total = data.items.length;
+  
+  // Responsive: số items hiển thị tùy màn hình
+  const [itemsPerPage, setItemsPerPage] = useState(3); // default desktop
+
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (window.innerWidth < 640) {
+        setItemsPerPage(1); // mobile
+      } else if (window.innerWidth < 1024) {
+        setItemsPerPage(2); // tablet
+      } else {
+        setItemsPerPage(3); // desktop
+      }
+    };
+    
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
 
   // Drive a light, premium transition when users navigate.
   const [anim, setAnim] = useState<'idle' | 'in' | 'out'>('idle');
@@ -70,7 +89,7 @@ export function ValuePropositionSlider({
   }, []);
 
   const go = (nextIndex: number) => {
-    const clamped = Math.max(0, Math.min(total - 3, nextIndex));
+    const clamped = Math.max(0, Math.min(total - itemsPerPage, nextIndex));
     if (clamped === index) return;
 
     const nextDir: -1 | 1 = clamped > index ? 1 : -1;
@@ -92,20 +111,19 @@ export function ValuePropositionSlider({
 
   // Keep state sane if data length changes.
   useEffect(() => {
-    setIndex((v: number) => Math.max(0, Math.min(Math.max(0, total - 3), v)));
-  }, [total]);
+    setIndex((v: number) => Math.max(0, Math.min(Math.max(0, total - itemsPerPage), v)));
+  }, [total, itemsPerPage]);
 
   const windowItems = useMemo(() => {
     const start = index;
-    return [0, 1, 2]
-      .map((offset) => data.items[start + offset])
+    return Array.from({ length: itemsPerPage }, (_, offset) => data.items[start + offset])
       .filter(
         (it): it is { icon: string; title: string; description: string } => Boolean(it),
       );
-  }, [data.items, index]);
+  }, [data.items, index, itemsPerPage]);
 
   const canPrev = index > 0;
-  const canNext = index < total - 3;
+  const canNext = index < total - itemsPerPage;
 
   const gridAnimClass =
     anim === 'idle'
@@ -127,8 +145,9 @@ export function ValuePropositionSlider({
       </div>
 
       <div className="relative">
+        {/* Mobile: 1 cột, Tablet: 2 cột, Desktop: 3 cột */}
         <div
-          className={`grid grid-cols-3 gap-7 transition-[opacity,transform] duration-200 ease-out will-change-[opacity,transform] ${gridAnimClass}`}
+          className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7 transition-[opacity,transform] duration-200 ease-out will-change-[opacity,transform] ${gridAnimClass}`}
         >
           {windowItems.map((it) => (
             <div 

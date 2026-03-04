@@ -19,7 +19,8 @@ export function CompanyTimeline({ data }: { data: CompanyTimelineData }) {
     <div>
       <div className="text-sm font-semibold text-slate-900">{data.label}</div>
 
-      <div className="mt-6 grid grid-cols-3 gap-6">
+      {/* Mobile: 1 cột, Tablet: 2 cột, Desktop: 3 cột */}
+      <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {data.items.map((it) => (
           <Card key={it.year} className="p-6">
             <div className="text-xs font-semibold text-brand-700">{it.year}</div>

@@ -30,10 +30,15 @@ type ButtonAsLinkProps = CommonProps &
  * Interactive button with mouse-tracking gradient overlay.
  * 
  * Features:
- * - Dynamic gradient follows cursor position on hover
+ * - Dynamic gradient follows cursor position on hover (desktop)
  * - Smooth transitions for hover/unhover states
  * - Supports both button and link rendering (via href prop)
  * - Maintains existing Button API for easy replacement
+ * 
+ * Mobile Optimizations:
+ * - Minimum 52px touch target height
+ * - Active state feedback for touch interactions
+ * - Disabled mouse tracking on touch devices
  */
 export function InteractiveButton(props: ButtonAsButtonProps | ButtonAsLinkProps) {
   const { variant = 'primary', className, children } = props;
@@ -54,20 +59,21 @@ export function InteractiveButton(props: ButtonAsButtonProps | ButtonAsLinkProps
   };
 
   const base =
-    'relative inline-flex items-center justify-center rounded-full font-medium transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 overflow-hidden fluid-h-sm fluid-text-sm';
+    'relative inline-flex items-center justify-center rounded-full font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 overflow-hidden active:scale-[0.97] fluid-text-base';
 
   const paddingStyle = {
-    paddingLeft: 'clamp(1rem, 3vw, 1.5rem)',
-    paddingRight: 'clamp(1rem, 3vw, 1.5rem)',
+    paddingLeft: 'clamp(1.25rem, 4vw, 2rem)',
+    paddingRight: 'clamp(1.25rem, 4vw, 2rem)',
+    minHeight: '52px', // Touch-friendly height (Material Design standard)
   };
 
   // Variant classes - slightly adjusted for gradient overlay
   const variantClass =
     variant === 'primary'
-      ? 'bg-brand-600 text-white hover:bg-brand-700'
+      ? 'bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800'
       : variant === 'secondary'
-        ? 'border border-slate-200 bg-white text-slate-900 hover:bg-slate-50'
-        : 'bg-transparent text-slate-900 hover:bg-slate-100';
+        ? 'border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 active:bg-white/30'
+        : 'bg-transparent text-slate-900 hover:bg-slate-100 active:bg-slate-200';
 
   const cls = cx(base, variantClass, className);
 

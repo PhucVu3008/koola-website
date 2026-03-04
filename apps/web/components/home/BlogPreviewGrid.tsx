@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 import { Card } from '../ui/Card';
 import { InteractiveCard } from '../ui/InteractiveCard';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 export type BlogPreviewGridData = {
   title: string;
@@ -22,6 +22,25 @@ export type BlogPreviewGridData = {
  */
 export function BlogPreviewGrid({ data }: { data: BlogPreviewGridData }) {
   const [index, setIndex] = useState(0);
+  
+  // Responsive: số items hiển thị tùy màn hình
+  const [itemsPerPage, setItemsPerPage] = useState(3); // default desktop
+
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (window.innerWidth < 640) {
+        setItemsPerPage(1); // mobile
+      } else if (window.innerWidth < 1024) {
+        setItemsPerPage(2); // tablet
+      } else {
+        setItemsPerPage(3); // desktop
+      }
+    };
+    
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
 
   const [anim, setAnim] = useState<'idle' | 'in' | 'out'>('idle');
   const [dir, setDir] = useState<-1 | 1>(1);
@@ -31,7 +50,7 @@ export function BlogPreviewGrid({ data }: { data: BlogPreviewGridData }) {
     return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
   }, []);
 
-  const maxStart = Math.max(0, data.items.length - 3);
+  const maxStart = Math.max(0, data.items.length - itemsPerPage);
 
   const go = (nextIndex: number) => {
     const clamped = Math.max(0, Math.min(maxStart, nextIndex));
@@ -53,14 +72,18 @@ export function BlogPreviewGrid({ data }: { data: BlogPreviewGridData }) {
     }, 140);
   };
 
+  // Keep state sane if data length changes
+  useEffect(() => {
+    setIndex((v: number) => Math.max(0, Math.min(maxStart, v)));
+  }, [maxStart]);
+
   const windowItems = useMemo(() => {
     const start = index;
-    return [0, 1, 2]
-      .map((offset) => data.items[start + offset])
+    return Array.from({ length: itemsPerPage }, (_, offset) => data.items[start + offset])
       .filter(
         (it): it is BlogPreviewGridData['items'][number] => Boolean(it),
       );
-  }, [data.items, index]);
+  }, [data.items, index, itemsPerPage]);
 
   const canPrev = index > 0;
   const canNext = index < maxStart;
@@ -82,8 +105,9 @@ export function BlogPreviewGrid({ data }: { data: BlogPreviewGridData }) {
         <h2 className="text-2xl font-semibold text-slate-900">{data.title}</h2>
       </div>
 
+      {/* Mobile: 1 cột, Tablet: 2 cột, Desktop: 3 cột */}
       <div
-        className={`grid grid-cols-3 gap-7 transition-[opacity,transform] duration-200 ease-out will-change-[opacity,transform] ${gridAnimClass}`}
+        className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7 transition-[opacity,transform] duration-200 ease-out will-change-[opacity,transform] ${gridAnimClass}`}
       >
         {windowItems.map((it) => (
           <InteractiveCard key={it.title} className="hover:translate-y-0 hover:scale-100">

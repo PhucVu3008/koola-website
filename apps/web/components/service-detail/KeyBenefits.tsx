@@ -28,18 +28,18 @@ export type KeyBenefitsData = {
 
 export function KeyBenefits({ data }: { data: KeyBenefitsData }) {
   return (
-    <section className="bg-gradient-to-b from-slate-50 to-white py-24">
-      <div className="container px-6">
-        {/* Section Header - Enhanced */}
-        <div className="mb-20 text-center">
-          <h2 className="mb-4 text-4xl font-bold text-slate-900 lg:text-5xl">{data.title}</h2>
+    <section className="bg-gradient-to-b from-slate-50 to-white py-12 sm:py-16 lg:py-24">
+      <div className="container px-4 sm:px-6">
+        {/* Section Header - Enhanced + Responsive */}
+        <div className="mb-10 sm:mb-16 lg:mb-20 text-center">
+          <h2 className="mb-3 sm:mb-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900">{data.title}</h2>
           {data.subtitle && (
-            <p className="mx-auto max-w-3xl text-xl leading-relaxed text-slate-600">{data.subtitle}</p>
+            <p className="mx-auto max-w-3xl text-base sm:text-lg lg:text-xl leading-relaxed text-slate-600">{data.subtitle}</p>
           )}
         </div>
 
-        {/* Benefits Grid */}
-        <div className="grid gap-8 md:grid-cols-3">
+        {/* Benefits Grid - Responsive: 1 col mobile, 2 cols tablet, 3 cols desktop */}
+        <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {data.items.map((item, index) => (
             <BenefitCard key={index} item={item} delay={index * 150} />
           ))}
@@ -80,7 +80,7 @@ function BenefitCard({ item, delay }: { item: KeyBenefitItem; delay: number }) {
       ref={ref}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group relative overflow-hidden rounded-3xl border-2 border-slate-200 bg-white p-8 shadow-lg transition-all duration-700 hover:border-emerald-500 hover:shadow-2xl hover:scale-105 ${
+      className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-slate-200 bg-white p-6 sm:p-8 shadow-lg transition-all duration-700 hover:border-emerald-500 hover:shadow-2xl hover:scale-105 ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
       }`}
     >
@@ -93,19 +93,19 @@ function BenefitCard({ item, delay }: { item: KeyBenefitItem; delay: number }) {
 
       {/* Content */}
       <div className="relative z-10">
-        {/* Dynamic Icon */}
-        <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-blue-600 shadow-lg">
+        {/* Dynamic Icon - Responsive */}
+        <div className="mb-4 sm:mb-5 inline-flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-500 to-blue-600 shadow-lg">
           {(() => {
             const iconName = item.icon || 'Zap';
             const IconComponent = (LucideIcons as any)[iconName] || LucideIcons.Zap;
-            return <IconComponent className="h-7 w-7 text-white" strokeWidth={2.5} />;
+            return <IconComponent className="h-6 w-6 sm:h-7 sm:w-7 text-white" strokeWidth={2.5} />;
           })()}
         </div>
 
-        <h3 className="mb-4 text-2xl font-bold text-slate-900 transition-colors group-hover:text-emerald-600">
+        <h3 className="mb-3 sm:mb-4 text-xl sm:text-2xl font-bold text-slate-900 transition-colors group-hover:text-emerald-600">
           {item.title}
         </h3>
-        <p className="leading-relaxed text-slate-600">{item.description}</p>
+        <p className="text-sm sm:text-base leading-relaxed text-slate-600">{item.description}</p>
       </div>
     </div>
   );

@@ -57,8 +57,8 @@ export function CareersNewsPreview({ data }: { data: CareersNewsPreviewData }) {
         <h2 className="text-2xl font-semibold text-slate-900">{data.title}</h2>
       </div>
 
-      {/* Blog Cards Grid */}
-      <div className="grid grid-cols-3 gap-6">
+      {/* Blog Cards Grid - Mobile: 1 cột, Tablet: 2 cột, Desktop: 3 cột */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {data.posts.slice(0, 3).map((post) => (
           <a
             key={post.id}

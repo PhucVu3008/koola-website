@@ -14,7 +14,7 @@
 - **Auth**: JWT + Refresh Tokens (bcrypt)
 - **API**: RESTful JSON
 
-### Frontend (Coming soon)
+### Frontend
 - **Framework**: Next.js 14+ (App Router)
 - **Rendering**: SSG/ISR preferred, SSR when needed
 - **Styling**: Tailwind CSS / CSS Modules
