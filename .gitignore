@@ -5,7 +5,7 @@ build/
 .env
 .env.local
 *.log
-.DS_Store
+**/.DS_Store
 uploads/
 coverage/
 .vscode/
@@ -13,7 +13,22 @@ coverage/
 .github/
 .next/
 *.tsbuildinfo
-# Docker
+
+# Docker volumes
 postgres_data/
 api_uploads/
 pgadmin_data/
+
+# Root-level seed / scratch SQL files (keep migrations/ only)
+seed*.sql
+db.sql
+
+# Design / reference files
+figma.txt
+erd.png
+SUMMARY.txt
+
+# Manual test scripts & HTTP client files
+apps/api/tests/api.http
+apps/api/tests/*.sh
+apps/web/tests/*.sh
