@@ -19,7 +19,7 @@ export function ServicesMidQuote({ data }: { data: ServicesMidQuoteData }) {
       <div className="container px-4 sm:px-6">
         <div className="grid grid-cols-1 gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           {/* Left: Image - full width mobile, fixed height desktop */}
-          <div className="relative">
+          <div className="relative min-w-0">
             {/* Decorative pixel blocks - hidden on mobile to avoid overflow */}
             <div className="absolute left-0 top-0 z-20 hidden sm:grid grid-cols-3 gap-2 -translate-x-6 -translate-y-6">
               <div className="h-4 w-4 animate-pulse rounded-sm bg-blue-500" style={{ animationDelay: '0ms' }} />
@@ -44,16 +44,16 @@ export function ServicesMidQuote({ data }: { data: ServicesMidQuoteData }) {
           </div>
 
           {/* Right: Quote Block - responsive padding */}
-          <div className="relative animate-fade-in-up">
-            <div className="relative rounded-2xl sm:rounded-3xl border-2 border-emerald-500/30 bg-white p-6 sm:p-8 lg:p-12 shadow-lg">
+          <div className="relative min-w-0 animate-fade-in-up">
+            <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-emerald-500/30 bg-white p-5 sm:p-8 lg:p-12 shadow-lg">
               {/* Top-left accent */}
               <div className="absolute left-0 top-0 h-16 w-16 sm:h-20 sm:w-20 rounded-tl-2xl sm:rounded-tl-3xl border-l-4 border-t-4 border-emerald-500/40" />
               
-              <blockquote className="space-y-4 sm:space-y-6">
-                <p className="text-xl sm:text-2xl font-semibold leading-tight text-slate-900">
+              <blockquote className="space-y-3 sm:space-y-6">
+                <p className="break-words text-base sm:text-xl lg:text-2xl font-semibold leading-snug text-slate-900">
                   {data.headline}
                 </p>
-                <p className="text-sm sm:text-base leading-relaxed text-slate-600">
+                <p className="break-words text-sm leading-relaxed text-slate-600">
                   {data.paragraph}
                 </p>
               </blockquote>
