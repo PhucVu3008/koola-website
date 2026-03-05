@@ -33,7 +33,7 @@ export function CareersHeroSection({ data }: { data: CareersHeroSectionData }) {
 
   return (
     <div 
-      className="relative h-[420px] w-full overflow-hidden"
+      className="relative h-[280px] sm:h-[340px] lg:h-[420px] w-full overflow-hidden"
       onMouseMove={handleMouseMove}
     >
       {/* Background Image with Overlay */}
@@ -153,12 +153,12 @@ export function CareersHeroSection({ data }: { data: CareersHeroSectionData }) {
           }}
         >
           {/* Title with gradient effect */}
-          <h1 className={`text-4xl font-bold text-white transition-all duration-1000 md:text-5xl ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+          <h1 className={`text-2xl sm:text-4xl lg:text-5xl font-bold text-white transition-all duration-1000 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
             {data.title}
           </h1>
           
           {/* Subtitle */}
-          <p className={`text-lg font-light text-white/95 transition-all duration-1000 delay-200 md:text-xl ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+          <p className={`text-sm sm:text-lg font-light text-white/95 transition-all duration-1000 delay-200 sm:text-xl ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
             {data.subtitle}
           </p>
 

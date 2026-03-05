@@ -21,7 +21,7 @@ export type ServicesPageData = {
  */
 export function ServicesPage({ data, locale }: { data: ServicesPageData; locale: string }) {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-20 lg:pb-0">
       {/* Hero Banner */}
       <ServicesHero data={data.hero} />
 
@@ -31,8 +31,8 @@ export function ServicesPage({ data, locale }: { data: ServicesPageData; locale:
       {/* Mid-page Quote */}
       <ServicesMidQuote data={data.midQuote} />
 
-      {/* CTA Banner - Dark background matching reference */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-800 via-slate-900 to-black py-24">
+      {/* CTA Banner - Dark background */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-800 via-slate-900 to-black py-12 sm:py-16 lg:py-24">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)]" />

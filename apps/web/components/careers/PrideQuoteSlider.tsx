@@ -44,18 +44,18 @@ export function PrideQuoteSlider({ data }: { data: PrideQuoteSliderData }) {
         isSectionVisible ? 'animate-fade-in-up' : 'opacity-0'
       }`}
     >
-      <div className="mx-auto max-w-6xl px-8">
-        <div className="grid grid-cols-2 items-center gap-16">
+      <div className="mx-auto max-w-6xl px-4 sm:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 sm:gap-16">
           {/* Left: Title */}
           <div>
-            <h2 className="whitespace-pre-line text-4xl font-bold text-white">
+            <h2 className="whitespace-pre-line text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
               {data.title}
             </h2>
           </div>
 
           {/* Right: Quote Card */}
-          <div className="relative">
-            <div className="rounded-2xl bg-white p-8 shadow-xl transition-all duration-500">
+          <div className="relative px-4 sm:px-0">
+            <div className="rounded-2xl bg-white p-5 sm:p-8 shadow-xl transition-all duration-500">
               {/* Quote */}
               <blockquote className="text-base leading-relaxed text-slate-700">
                 "{currentSlide.quote}"
@@ -109,8 +109,8 @@ export function PrideQuoteSlider({ data }: { data: PrideQuoteSliderData }) {
             </div>
 
             {/* Decorative Elements */}
-            <div className="absolute -right-4 -top-4 h-16 w-16 rounded-2xl bg-yellow-400 opacity-80" />
-            <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-xl bg-pink-400 opacity-80" />
+            <div className="hidden sm:block absolute -right-4 -top-4 h-16 w-16 rounded-2xl bg-yellow-400 opacity-80" />
+            <div className="hidden sm:block absolute -bottom-4 -left-4 h-16 w-16 rounded-xl bg-pink-400 opacity-80" />
           </div>
         </div>
       </div>

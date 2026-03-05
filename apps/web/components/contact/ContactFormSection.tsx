@@ -66,7 +66,7 @@ export function ContactFormSection({ data }: ContactFormSectionProps) {
 
           {/* Form */}
           <form
-            className="space-y-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
+            className="space-y-6 rounded-2xl border border-slate-200 bg-white p-5 sm:p-8 shadow-sm"
             onSubmit={async (e: FormEvent<HTMLFormElement>) => {
               e.preventDefault();
               setErrorMessage(null);

@@ -27,7 +27,7 @@ export function ServicesHero({ data }: { data: ServicesHeroData }) {
 
   return (
     <section 
-      className="relative h-[420px] w-full overflow-hidden rounded-b-[42px] bg-gradient-to-br from-emerald-700 via-teal-600 to-cyan-600"
+      className="relative h-[300px] sm:h-[360px] lg:h-[420px] w-full overflow-hidden rounded-b-[28px] sm:rounded-b-[42px] bg-gradient-to-br from-emerald-700 via-teal-600 to-cyan-600"
       onMouseMove={handleMouseMove}
     >
       {/* Background Image */}
@@ -182,17 +182,17 @@ export function ServicesHero({ data }: { data: ServicesHeroData }) {
       </div>
 
       {/* Content with subtle parallax */}
-      <div className="container relative z-10 flex h-full items-center px-6">
+      <div className="container relative z-10 flex h-full items-center px-4 sm:px-6">
         <div 
           className="max-w-2xl animate-fade-in-up transition-transform duration-300"
           style={{
             transform: `translate(${(mousePosition.x - 50) / 80}px, ${(mousePosition.y - 50) / 80}px)`,
           }}
         >
-          <div className="mb-4 inline-block rounded-full border border-amber-400/40 bg-amber-500/20 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-amber-300 backdrop-blur-sm">
+          <div className="mb-3 sm:mb-4 inline-block rounded-full border border-amber-400/40 bg-amber-500/20 px-3 sm:px-4 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium uppercase tracking-wider text-amber-300 backdrop-blur-sm">
             {data.label}
           </div>
-          <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">{data.title}</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight text-white">{data.title}</h1>
         </div>
       </div>
     </section>

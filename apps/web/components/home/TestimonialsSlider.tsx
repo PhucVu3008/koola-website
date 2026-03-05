@@ -77,23 +77,23 @@ export function TestimonialsSlider({ data }: { data: TestimonialsSliderData }) {
         : 'opacity-100 translate-x-0';
 
   return (
-    <div className="grid grid-cols-2 items-center gap-12">
+    <div className="grid grid-cols-1 gap-6 sm:gap-8 sm:grid-cols-2 sm:items-center sm:gap-12">
       <div>
-        <h2 className="text-3xl font-semibold leading-tight text-slate-900">
+        <h2 className="text-2xl sm:text-3xl font-semibold leading-tight text-slate-900">
           {data.title}
           <br />
           {data.subtitle}
         </h2>
-        <p className="mt-4 max-w-md text-sm leading-6 text-slate-500">{data.helper}</p>
+        <p className="mt-3 sm:mt-4 max-w-md text-sm leading-6 text-slate-500">{data.helper}</p>
       </div>
 
       <div>
         <Card
-          className={`relative p-7 transition-[opacity,transform] duration-200 ease-out will-change-[opacity,transform] ${cardAnimClass}`}
+          className={`relative p-5 sm:p-7 transition-[opacity,transform] duration-200 ease-out will-change-[opacity,transform] ${cardAnimClass}`}
         >
           <Stars count={item.stars} />
-          <p className="mt-4 text-sm leading-6 text-slate-700">{item.quote}</p>
-          <div className="mt-5 flex items-center gap-3">
+          <p className="mt-3 sm:mt-4 text-sm leading-6 text-slate-700">{item.quote}</p>
+          <div className="mt-4 sm:mt-5 flex items-center gap-3">
             <div className="h-9 w-9 rounded-full bg-slate-200" aria-hidden />
             <div className="text-sm font-semibold text-slate-900">{item.name}</div>
           </div>

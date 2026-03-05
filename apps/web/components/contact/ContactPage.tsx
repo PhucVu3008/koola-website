@@ -22,7 +22,7 @@ export type ContactPageProps = {
  */
 export function ContactPage({ data }: ContactPageProps) {
   return (
-    <div className="bg-white">
+    <div className="bg-white pb-20 lg:pb-0">
       {/* Hero Banner */}
       <ContactHeroSection data={data.hero} />
 

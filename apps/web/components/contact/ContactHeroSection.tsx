@@ -131,7 +131,7 @@ export function ContactHeroSection({ data }: ContactHeroSectionProps) {
       </div>
 
       {/* Content with subtle parallax effect */}
-      <div className="relative z-10 px-6 py-24 md:py-32">
+      <div className="relative z-10 px-4 sm:px-6 py-14 sm:py-24 md:py-32">
         <div className="mx-auto max-w-screen-xl">
           <div 
             className="mx-auto max-w-3xl text-center"
@@ -141,7 +141,7 @@ export function ContactHeroSection({ data }: ContactHeroSectionProps) {
             }}
           >
             {/* Title with staggered animation */}
-            <h1 className={`text-4xl font-bold tracking-tight text-white transition-all duration-1000 md:text-5xl lg:text-6xl ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+            <h1 className={`text-3xl sm:text-4xl font-bold tracking-tight text-white transition-all duration-1000 md:text-5xl lg:text-6xl ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
               {data.title}
             </h1>
             

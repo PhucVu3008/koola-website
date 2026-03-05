@@ -26,11 +26,11 @@ export function CultureValuesSection({ data }: { data: CultureValuesSectionData 
   return (
     <section 
       ref={sectionRef}
-      className={`mx-auto max-w-6xl py-16 px-8 transition-all duration-700 ${
+      className={`mx-auto max-w-6xl py-10 sm:py-16 px-4 sm:px-8 transition-all duration-700 ${
         isSectionVisible ? 'animate-fade-in-up' : 'opacity-0'
       }`}
     >
-      <div className="grid grid-cols-2 items-start gap-16">
+      <div className="grid grid-cols-1 lg:grid-cols-2 items-start gap-8 sm:gap-16">
         {/* Left: Title + Bullets */}
         <div>
           <h2 className="mb-8 text-2xl font-semibold text-slate-900">
@@ -89,7 +89,7 @@ export function CultureValuesSection({ data }: { data: CultureValuesSectionData 
             animationFillMode: 'both'
           }}
         >
-          <div className="relative h-[400px] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 transition-transform duration-300 hover:scale-[1.02]">
+          <div className="relative h-[240px] sm:h-[320px] lg:h-[400px] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 transition-transform duration-300 hover:scale-[1.02]">
             <Image
               src={data.imageUrl}
               alt={data.imageAlt}

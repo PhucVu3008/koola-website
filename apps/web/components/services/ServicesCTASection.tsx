@@ -16,15 +16,15 @@ export type ServicesCTASectionData = {
 export function ServicesCTASection({ data }: { data: ServicesCTASectionData }) {
   return (
     <div className="relative">
-      <div className="mx-auto max-w-4xl text-center">
-        <h2 className="text-3xl font-semibold leading-tight text-white">{data.title}</h2>
+      <div className="mx-auto max-w-4xl text-center px-4 sm:px-6">
+        <h2 className="text-2xl sm:text-3xl font-semibold leading-tight text-white">{data.title}</h2>
         {data.subtitle && (
-          <p className="mt-6 text-base leading-relaxed text-white/90">{data.subtitle}</p>
+          <p className="mt-4 sm:mt-6 text-sm sm:text-base leading-relaxed text-white/90">{data.subtitle}</p>
         )}
-        <div className="mt-8 flex justify-center">
+        <div className="mt-6 sm:mt-8 flex justify-center">
           <Link 
             href={data.ctaHref || '/contact'}
-            className="inline-flex h-12 min-w-[200px] items-center justify-center rounded-full bg-white px-8 text-base font-semibold text-slate-900 shadow-lg shadow-white/20 transition-all duration-300 hover:scale-105 hover:bg-white/95 hover:shadow-xl hover:shadow-white/30"
+            className="inline-flex h-11 sm:h-12 min-w-[160px] sm:min-w-[200px] items-center justify-center rounded-full bg-white px-6 sm:px-8 text-sm sm:text-base font-semibold text-slate-900 shadow-lg shadow-white/20 transition-all duration-300 hover:scale-105 hover:bg-white/95 hover:shadow-xl hover:shadow-white/30"
           >
             {data.ctaLabel}
           </Link>
@@ -32,14 +32,14 @@ export function ServicesCTASection({ data }: { data: ServicesCTASectionData }) {
       </div>
 
       {data.image && (
-        <div className="mt-12 flex justify-center">
-          <div className="w-full max-w-4xl overflow-hidden rounded-[42px] bg-white/10">
+        <div className="mt-8 sm:mt-12 flex justify-center px-4 sm:px-6">
+          <div className="w-full max-w-4xl overflow-hidden rounded-2xl sm:rounded-[42px] bg-white/10">
             <Image
               src={data.image}
               alt="Team collaboration"
               width={1200}
               height={600}
-              className="h-[320px] w-full object-cover"
+              className="h-[200px] sm:h-[260px] lg:h-[320px] w-full object-cover"
               quality={95}
               unoptimized
               priority

@@ -75,7 +75,7 @@ export function CareersPage({ pageData, jobs, locale, dict }: CareersPageProps) 
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-white pb-20 lg:pb-0">
       {/* Hero Banner */}
       <CareersHeroSection data={heroData} />
 

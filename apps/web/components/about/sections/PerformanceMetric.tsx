@@ -81,17 +81,18 @@ export function PerformanceMetric({ data }: { data: PerformanceMetricData }) {
   const offset = c * (1 - currentPct / 100);
 
   return (
-    <div ref={ref} className="grid grid-cols-2 items-center gap-16">
+    <div ref={ref} className="grid grid-cols-1 gap-8 sm:gap-10 sm:grid-cols-2 sm:items-center sm:gap-16">
       <div>
-        <p className="max-w-xl text-sm leading-7 text-slate-500">{data.description}</p>
+        <p className="text-sm leading-7 text-slate-500 sm:max-w-xl">{data.description}</p>
       </div>
 
-      <div className="flex justify-start">
-        <div className="relative h-[120px] w-[120px]">
+      {/* Circular progress - centered on mobile */}
+      <div className="flex justify-center sm:justify-start">
+        <div className="relative h-[110px] w-[110px] sm:h-[120px] sm:w-[120px]">
           <svg viewBox="0 0 120 120" className="h-full w-full" aria-label={`${currentPct}%`}>
             {/* Background circle */}
             <circle cx="60" cy="60" r={r} fill="none" stroke="rgba(15,23,42,0.08)" strokeWidth="10" />
-            {/* Animated progress circle - no CSS transition, animated via state */}
+            {/* Animated progress circle */}
             <circle
               cx="60"
               cy="60"
@@ -106,7 +107,7 @@ export function PerformanceMetric({ data }: { data: PerformanceMetricData }) {
             />
           </svg>
           <div className="absolute inset-0 grid place-items-center">
-            <div className="text-3xl font-semibold text-brand-700 tabular-nums">
+            <div className="text-2xl sm:text-3xl font-semibold text-brand-700 tabular-nums">
               {currentPct}%
             </div>
           </div>
