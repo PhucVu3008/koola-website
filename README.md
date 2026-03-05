@@ -1,12 +1,9 @@
-# KOOLA Website 
-
+# KOOLA Website Project
 
 ## 🏗️ Kiến trúc dự án
 
-
-## 🚀 Tech Stack
-
 ### Backend
+
 - **Framework**: Fastify 4.x
 - **Database**: PostgreSQL 16 (raw SQL only, NO ORM)
 - **Language**: TypeScript
@@ -15,30 +12,26 @@
 - **API**: RESTful JSON
 
 ### Frontend
+
 - **Framework**: Next.js 14+ (App Router)
 - **Rendering**: SSG/ISR preferred, SSR when needed
 - **Styling**: Tailwind CSS / CSS Modules
 - **SEO**: Metadata API, Sitemap, Robots, JSON-LD
 
-## 🐳 Quick Start với Docker
+## 🐳 Quick Start
 
-### 1. Clone repository
+### 1. Clone repository (không dùng Docker)
 ```bash
 git clone <repo-url>
 cd koola-website
 ```
 
-### 2. Start all services
+### 2. Start all services (dùng Docker)
 ```bash
 docker-compose up -d
 ```
 
-### 3. Seed database (first time only)
-```bash
-docker exec -i koola-postgres psql -U koola_user -d koola_db < seed.sql
-```
-
-### 4. Verify everything is running
+### 3. Verify everything is running
 ```bash
 # Check container status
 docker-compose ps
@@ -47,7 +40,7 @@ docker-compose ps
 curl http://localhost:4000/v1/services?locale=en
 ```
 
-Services sẽ chạy tại:
+Services:
 - **API Backend**: http://localhost:4000
 - **PostgreSQL**: localhost:5432
 - **PgAdmin**: http://localhost:5050
@@ -168,25 +161,6 @@ JWT-based với refresh token pattern.
   }
 }
 ```
-
-## 🎯 Project Status
-
-### ✅ Completed
-- [x] Database schema design
-- [x] Backend project structure
-- [x] Public API endpoints
-- [x] Authentication system
-- [x] Docker Compose setup
-- [x] Seed data for development
-
-### 🚧 TODO
-- [ ] Admin CRUD endpoints
-- [ ] File upload handling
-- [ ] JWT middleware & authorization
-- [ ] Role-based access control
-- [ ] Frontend (Next.js)
-- [ ] Tests
-- [ ] API documentation (Swagger)
 
 ## 🛠️ Development Guidelines
 
