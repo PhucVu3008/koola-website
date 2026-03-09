@@ -1,33 +1,10 @@
-/**
- * Admin Media Routes
- * 
- * POST /v1/admin/media - Upload media file
- * GET /v1/admin/media - List media assets
- * GET /v1/admin/media/:id - Get media by ID
- * DELETE /v1/admin/media/:id - Delete media
- */
-
 import { FastifyInstance } from 'fastify';
 import * as adminMediaController from '../../controllers/adminMediaController';
+import { adminMediaSchemas } from '../../swagger/schemas';
 
 export default async function adminMediaRoutes(server: FastifyInstance) {
-  // Upload media file (multipart/form-data)
-  server.post('/', { 
-    handler: adminMediaController.uploadMedia 
-  });
-
-  // List media assets (with pagination)
-  server.get('/', { 
-    handler: adminMediaController.listMedia 
-  });
-
-  // Get media by ID
-  server.get('/:id', { 
-    handler: adminMediaController.getMediaById 
-  });
-
-  // Delete media
-  server.delete('/:id', { 
-    handler: adminMediaController.deleteMedia 
-  });
+  server.post('/', { schema: adminMediaSchemas.upload, handler: adminMediaController.uploadMedia });
+  server.get('/', { schema: adminMediaSchemas.list, handler: adminMediaController.listMedia });
+  server.get('/:id', { schema: adminMediaSchemas.getById, handler: adminMediaController.getMediaById });
+  server.delete('/:id', { schema: adminMediaSchemas.delete, handler: adminMediaController.deleteMedia });
 }

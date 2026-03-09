@@ -26,10 +26,11 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { metrics } from '../monitoring/MetricsCollector';
 import { healthCheck } from '../monitoring/HealthCheck';
-import { 
-  getSlowQueryLogs, 
-  getQueryPatternAnalysis 
+import {
+  getSlowQueryLogs,
+  getQueryPatternAnalysis
 } from '../monitoring/dbPerformanceMonitor';
+import { healthSchemas } from '../swagger/schemas';
 
 /**
  * Convert metrics snapshot to Prometheus text format.
@@ -161,7 +162,7 @@ const monitoringRoutes: FastifyPluginAsync = async (server) => {
    * Basic liveness check (K8s liveness probe).
    * Always returns 200 if process is alive.
    */
-  server.get('/health', async (_request, reply) => {
+  server.get('/health', { schema: healthSchemas.liveness }, async (_request, reply) => {
     const result = await healthCheck.liveness();
     return reply.status(200).send(result);
   });
@@ -172,7 +173,7 @@ const monitoringRoutes: FastifyPluginAsync = async (server) => {
    * Readiness check (K8s readiness probe).
    * Returns 200 if ready to serve traffic, 503 if not ready.
    */
-  server.get('/health/ready', async (_request, reply) => {
+  server.get('/health/ready', { schema: healthSchemas.readiness }, async (_request, reply) => {
     const result = await healthCheck.readiness();
     const statusCode = result.ready ? 200 : 503;
     return reply.status(statusCode).send(result);
@@ -184,7 +185,7 @@ const monitoringRoutes: FastifyPluginAsync = async (server) => {
    * Detailed health report with component status.
    * Returns 200 if healthy, 200 if degraded, 503 if unhealthy.
    */
-  server.get('/health/full', async (_request, reply) => {
+  server.get('/health/full', { schema: healthSchemas.full }, async (_request, reply) => {
     const result = await healthCheck.full();
     const statusCode = result.status === 'unhealthy' ? 503 : 200;
     return reply.status(statusCode).send(result);
@@ -198,7 +199,7 @@ const monitoringRoutes: FastifyPluginAsync = async (server) => {
    * Prometheus-compatible metrics in text format.
    * Use this with Prometheus scraper.
    */
-  server.get('/metrics', async (_request, reply) => {
+  server.get('/metrics', { schema: healthSchemas.metrics }, async (_request, reply) => {
     const snapshot = metrics.getSnapshot();
     const prometheusText = toPrometheusFormat(snapshot);
     
@@ -213,7 +214,7 @@ const monitoringRoutes: FastifyPluginAsync = async (server) => {
    * Complete metrics snapshot in JSON format.
    * Use for custom monitoring dashboards.
    */
-  server.get('/metrics/json', async (_request, reply) => {
+  server.get('/metrics/json', { schema: healthSchemas.metricsJson }, async (_request, reply) => {
     const snapshot = metrics.getSnapshot();
     return reply.send({
       data: snapshot,
@@ -230,7 +231,7 @@ const monitoringRoutes: FastifyPluginAsync = async (server) => {
    * Database-specific performance metrics.
    * Includes slow queries and query pattern analysis.
    */
-  server.get('/metrics/db', async (_request, reply) => {
+  server.get('/metrics/db', { schema: healthSchemas.metricsDb }, async (_request, reply) => {
     const slowQueries = getSlowQueryLogs(50);
     const queryPatterns = getQueryPatternAnalysis(20);
     const snapshot = metrics.getSnapshot();
@@ -288,7 +289,7 @@ const monitoringRoutes: FastifyPluginAsync = async (server) => {
    * - metric: Metric name (e.g., 'http.requests', 'db.query_time')
    * - window: Time window in milliseconds (default: 1 hour)
    */
-  server.get('/metrics/timeseries', async (request, reply) => {
+  server.get('/metrics/timeseries', { schema: healthSchemas.timeseries }, async (request, reply) => {
     const query = request.query as { metric?: string; window?: string };
     const metric = query.metric || 'http.requests';
     const window = query.window ? parseInt(query.window, 10) : 60 * 60 * 1000;
@@ -315,7 +316,7 @@ const monitoringRoutes: FastifyPluginAsync = async (server) => {
    * Query params:
    * - window: Time window in milliseconds (default: 1 minute)
    */
-  server.get('/metrics/aggregated', async (request, reply) => {
+  server.get('/metrics/aggregated', { schema: healthSchemas.aggregated }, async (request, reply) => {
     const query = request.query as { window?: string };
     const window = query.window ? parseInt(query.window, 10) : 60 * 1000;
 

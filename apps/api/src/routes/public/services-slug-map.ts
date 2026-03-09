@@ -1,15 +1,9 @@
-/**
- * GET /v1/services/slug-map?from_slug=X&from_locale=Y&to_locale=Z
- *
- * Returns the equivalent slug in a different locale for service detail pages.
- * Used for locale switching.
- */
-
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 
 import * as serviceRepository from '../../repositories/serviceRepository';
 import { successResponse, errorResponse } from '../../utils/response';
+import { serviceSchemas } from '../../swagger/schemas';
 
 const querySchema = z.object({
   from_slug: z.string().min(1),
@@ -18,7 +12,7 @@ const querySchema = z.object({
 });
 
 export default async function (fastify: FastifyInstance) {
-  fastify.get('/slug-map', async (request, reply) => {
+  fastify.get('/slug-map', { schema: serviceSchemas.slugMap }, async (request, reply) => {
     const parsed = querySchema.safeParse(request.query);
 
     if (!parsed.success) {

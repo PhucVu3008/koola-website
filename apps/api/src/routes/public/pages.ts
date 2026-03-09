@@ -4,28 +4,14 @@ import { pageSlugParamsSchema, pageQuerySchema } from '../../schemas';
 import * as SQL from '../../sql/queries';
 import { ErrorCodes, errorResponse, successResponse } from '../../utils/response';
 import aboutRoutes from './about';
+import { pageSchemas } from '../../swagger/schemas';
 
-/**
- * Public Pages routes.
- *
- * Mounted at: `/v1/pages`
- *
- * Endpoint:
- * - `GET /:slug?locale=en` -> returns `{ page, sections[] }`
- *
- * Validation:
- * - Path params and querystring are validated with Zod.
- *
- * Errors:
- * - 404 `NOT_FOUND` when page does not exist.
- */
 const pagesRoutes: FastifyPluginAsync = async (server) => {
-  // About page extra endpoints
   await server.register(aboutRoutes, { prefix: '/about' });
 
-  // Get page by slug
   server.get<{ Params: { slug: string }; Querystring: { locale?: string } }>(
     '/:slug',
+    { schema: pageSchemas.getBySlug },
     async (request, reply) => {
       const { slug } = pageSlugParamsSchema.parse(request.params);
       const { locale } = pageQuerySchema.parse(request.query);

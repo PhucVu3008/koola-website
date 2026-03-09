@@ -3,16 +3,10 @@ import { query, queryOne } from '../../../db';
 import { pageQuerySchema } from '../../../schemas';
 import * as SQL from '../../../sql/queries';
 import { ErrorCodes, errorResponse, successResponse } from '../../../utils/response';
+import { pageSchemas } from '../../../swagger/schemas';
 
-/**
- * Careers page aggregation routes.
- *
- * Mounted at: `/v1/pages/careers`
- * Endpoint:
- * - `GET /aggregate?locale=en`
- */
 const careersRoutes: FastifyPluginAsync = async (server) => {
-  server.get('/aggregate', async (request, reply) => {
+  server.get('/aggregate', { schema: pageSchemas.careersAggregate }, async (request, reply) => {
     const { locale } = pageQuerySchema.parse(request.query);
 
     const page = await queryOne(SQL.GET_PAGE_BY_SLUG, ['careers', locale]);

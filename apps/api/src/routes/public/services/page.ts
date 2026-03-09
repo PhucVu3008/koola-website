@@ -1,16 +1,10 @@
 import { FastifyPluginAsync } from 'fastify';
 import { pool } from '../../../db';
 import { successResponse } from '../../../utils/response';
+import { serviceSchemas } from '../../../swagger/schemas';
 
-/**
- * Services page aggregate endpoint.
- *
- * Returns hero, midQuote, and CTA data for the services listing page.
- *
- * GET /v1/services/page?locale=en
- */
 const servicesPageRoutes: FastifyPluginAsync = async (server) => {
-  server.get('/page', async (request, reply) => {
+  server.get('/page', { schema: serviceSchemas.page }, async (request, reply) => {
     const { locale = 'en' } = request.query as { locale?: string };
 
     // Fetch services page content from page_sections

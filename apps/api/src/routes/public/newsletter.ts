@@ -7,23 +7,11 @@ import {
 } from '../../schemas';
 import * as SQL from '../../sql/queries';
 import { ErrorCodes, errorResponse, successResponse } from '../../utils/response';
+import { newsletterSchemas } from '../../swagger/schemas';
 
-/**
- * Public Newsletter routes.
- *
- * Mounted at: `/v1/newsletter`
- *
- * Endpoints:
- * - `POST /subscribe`   -> create/update a newsletter subscriber
- * - `POST /unsubscribe` -> unsubscribe by email
- *
- * Security:
- * - Both endpoints are public and rate limited.
- * - All SQL is parameterized.
- */
 const newsletterRoutes: FastifyPluginAsync = async (server) => {
-  // Subscribe to newsletter
   server.post<{ Body: NewsletterSubscribeInput }>('/subscribe', {
+    schema: newsletterSchemas.subscribe,
     config: {
       rateLimit: {
         max: 3,
@@ -49,8 +37,7 @@ const newsletterRoutes: FastifyPluginAsync = async (server) => {
     },
   });
 
-  // Unsubscribe from newsletter
-  server.post('/unsubscribe', async (request, reply) => {
+  server.post('/unsubscribe', { schema: newsletterSchemas.unsubscribe }, async (request, reply) => {
     const data = newsletterUnsubscribeSchema.parse(request.body);
 
     const result = await queryOne(SQL.UNSUBSCRIBE_NEWSLETTER, [data.email]);

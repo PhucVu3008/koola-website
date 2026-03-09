@@ -4,6 +4,8 @@ import jwt from '@fastify/jwt';
 import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
 import fastifyStatic from '@fastify/static';
+import swagger from '@fastify/swagger';
+import swaggerUi from '@fastify/swagger-ui';
 import path from 'path';
 
 // Routes
@@ -111,6 +113,62 @@ export const buildServer = async () => {
   await server.register(rateLimit, {
     max: Number(process.env.RATE_LIMIT_MAX) || 100,
     timeWindow: Number(process.env.RATE_LIMIT_TIMEWINDOW) || 60000, // 1 minute
+  });
+
+  // ==================== Swagger / OpenAPI ====================
+
+  await server.register(swagger, {
+    openapi: {
+      info: {
+        title: 'KOOLA API',
+        description: 'KOOLA website API — public & admin endpoints',
+        version: '1.0.0',
+      },
+      servers: [
+        { url: '/', description: 'Current server' },
+      ],
+      tags: [
+        { name: 'Health', description: 'Health checks & metrics' },
+        { name: 'Services', description: 'Public services endpoints' },
+        { name: 'Posts', description: 'Public blog posts' },
+        { name: 'Pages', description: 'Public CMS pages' },
+        { name: 'Jobs', description: 'Public job listings' },
+        { name: 'Leads', description: 'Contact form submissions' },
+        { name: 'Newsletter', description: 'Newsletter subscriptions' },
+        { name: 'Navigation', description: 'Site navigation' },
+        { name: 'Site', description: 'Site settings' },
+        { name: 'Admin Auth', description: 'Admin authentication' },
+        { name: 'Admin Users', description: 'User management' },
+        { name: 'Admin Services', description: 'Service management' },
+        { name: 'Admin Posts', description: 'Post management' },
+        { name: 'Admin Categories', description: 'Category management' },
+        { name: 'Admin Tags', description: 'Tag management' },
+        { name: 'Admin Leads', description: 'Lead management' },
+        { name: 'Admin Newsletter', description: 'Newsletter subscriber management' },
+        { name: 'Admin Nav', description: 'Navigation management' },
+        { name: 'Admin Site Settings', description: 'Site settings management' },
+        { name: 'Admin Pages', description: 'Page management' },
+        { name: 'Admin Media', description: 'Media uploads' },
+        { name: 'Admin Jobs', description: 'Job management' },
+      ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
+      },
+    },
+  });
+
+  await server.register(swaggerUi, {
+    routePrefix: '/api-docs',
+    uiConfig: {
+      docExpansion: 'list',
+      deepLinking: true,
+    },
   });
 
   // ==================== Routes ====================

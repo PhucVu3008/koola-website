@@ -1,25 +1,17 @@
 import { FastifyPluginAsync } from 'fastify';
 import { authenticate, authorize } from '../../middleware/auth';
 import * as adminTaxonomyController from '../../controllers/adminTaxonomyController';
+import { adminTagSchemas } from '../../swagger/schemas';
 
-/**
- * Admin Tags routes.
- *
- * Mounted at: `/v1/admin/tags`
- *
- * Security:
- * - Requires a valid access token (JWT) via `authenticate`.
- * - Requires role `admin` or `editor` via `authorize([...])`.
- */
 const adminTagsRoutes: FastifyPluginAsync = async (server) => {
   server.addHook('preHandler', authenticate);
   server.addHook('preHandler', authorize(['admin', 'manager', 'editor']));
 
-  server.get('/', { handler: adminTaxonomyController.listTags });
-  server.get('/:id', { handler: adminTaxonomyController.getTagById });
-  server.post('/', { handler: adminTaxonomyController.createTag });
-  server.put('/:id', { handler: adminTaxonomyController.updateTag });
-  server.delete('/:id', { handler: adminTaxonomyController.deleteTag });
+  server.get('/', { schema: adminTagSchemas.list, handler: adminTaxonomyController.listTags });
+  server.get('/:id', { schema: adminTagSchemas.getById, handler: adminTaxonomyController.getTagById });
+  server.post('/', { schema: adminTagSchemas.create, handler: adminTaxonomyController.createTag });
+  server.put('/:id', { schema: adminTagSchemas.update, handler: adminTaxonomyController.updateTag });
+  server.delete('/:id', { schema: adminTagSchemas.delete, handler: adminTaxonomyController.deleteTag });
 };
 
 export default adminTagsRoutes;

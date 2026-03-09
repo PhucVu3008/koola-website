@@ -8,23 +8,10 @@ import {
 } from '../../schemas';
 import * as SQL from '../../sql/queries';
 import { ErrorCodes, errorResponse, successResponse } from '../../utils/response';
+import { jobSchemas } from '../../swagger/schemas';
 
-/**
- * Public Jobs routes.
- *
- * Mounted at: `/v1/jobs`
- *
- * Endpoints:
- * - `GET /?locale=en&status=published` -> list jobs
- * - `GET /:slug?locale=en` -> job detail
- *
- * Notes:
- * - Query/params are validated with Zod.
- * - Only published jobs are expected to be exposed by default.
- */
 const jobsRoutes: FastifyPluginAsync = async (server) => {
-  // List jobs
-  server.get('/', async (request, reply) => {
+  server.get('/', { schema: jobSchemas.list }, async (request, reply) => {
     const { locale, status } = jobListQuerySchema.parse(request.query);
 
     const jobs = await query(SQL.LIST_JOBS, [locale, status]);
@@ -32,9 +19,9 @@ const jobsRoutes: FastifyPluginAsync = async (server) => {
     return reply.send(successResponse(jobs));
   });
 
-  // Get job by slug
   server.get<{ Params: { slug: string }; Querystring: { locale?: string } }>(
     '/:slug',
+    { schema: jobSchemas.getBySlug },
     async (request, reply) => {
       const { slug } = jobSlugParamsSchema.parse(request.params);
       const { locale } = jobSlugQuerySchema.parse(request.query);
@@ -51,13 +38,13 @@ const jobsRoutes: FastifyPluginAsync = async (server) => {
     }
   );
 
-  // Submit job application
-  server.post<{ 
-    Params: { slug: string }; 
+  server.post<{
+    Params: { slug: string };
     Querystring: { locale?: string };
     Body: unknown;
   }>(
     '/:slug/apply',
+    { schema: jobSchemas.apply },
     async (request, reply) => {
       const { slug } = jobSlugParamsSchema.parse(request.params);
       const { locale } = jobSlugQuerySchema.parse(request.query);
@@ -99,8 +86,7 @@ const jobsRoutes: FastifyPluginAsync = async (server) => {
     }
   );
 
-  // Slug map endpoint for locale switching
-  server.get('/slug-map', async (request, reply) => {
+  server.get('/slug-map', { schema: jobSchemas.slugMap }, async (request, reply) => {
     const query = request.query as { from_slug?: string; from_locale?: string; to_locale?: string };
     
     if (!query.from_slug || !query.from_locale || !query.to_locale) {
