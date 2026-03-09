@@ -4,6 +4,7 @@ export type ServiceListItem = {
   id: number;
   locale: string;
   slug: string;
+  slug_group?: string | null;
   title: string;
   excerpt?: string | null;
   hero_image_url?: string | null; // URL to uploaded hero image

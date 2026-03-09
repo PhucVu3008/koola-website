@@ -65,7 +65,7 @@ export default async function ServicesPageRoute({
       title: pageData.cta.title,
       ctaLabel: pageData.cta.buttonLabel,
       ctaHref: `/${locale}/contact`,
-      image: pageData.cta.backgroundImage,
+      image: pageData.cta.image,
     },
   };
 

@@ -77,6 +77,8 @@ export async function generateMetadata({
       );
     }
 
+    const ogImageSlug = data.service.slug_group || slug;
+
     return {
       title: `${data.service.title} — KOOLA`,
       description: data.service.excerpt || '',
@@ -86,7 +88,7 @@ export async function generateMetadata({
         type: 'article',
         images: [
           {
-            url: `${baseUrl}/services/${slug}.jpg`,
+            url: `${baseUrl}/services/${ogImageSlug}.jpg`,
             width: 1200,
             height: 630,
             alt: data.service.title,
@@ -97,7 +99,7 @@ export async function generateMetadata({
         card: 'summary_large_image',
         title: data.service.title,
         description: data.service.excerpt || '',
-        images: [`${baseUrl}/services/${slug}.jpg`],
+        images: [`${baseUrl}/services/${ogImageSlug}.jpg`],
       },
       other: {
         'script:ld+json': serializeJsonLd(schemas),
@@ -126,11 +128,13 @@ export default async function ServiceDetailRoute({
   // serviceData is guaranteed non-null after this point
   const data = serviceData!;
 
+  // Use slug_group (English slug) for fallback image paths
+  const imageSlug = data.service.slug_group || slug;
+
   // Transform API data into component props
   const pageData = {
     hero: {
-      // Use uploaded hero image from admin, fallback to convention-based path
-      backgroundImage: data.service.hero_image_url || `/services/${slug}-hero.jpg`,
+      backgroundImage: data.service.hero_image_url || `/services/${imageSlug}.jpg`,
       breadcrumbs: [
         { label: dict.serviceDetail.breadcrumbs.home, href: `/${locale}` },
         { label: dict.serviceDetail.breadcrumbs.services, href: `/${locale}/services` },
@@ -149,8 +153,7 @@ export default async function ServiceDetailRoute({
     },
     content: {
       highlightTitle: data.service.excerpt || dict.serviceDetail.content.highlightPrefix,
-      // Use uploaded hero image for cover as well, fallback to convention-based path
-      coverImage: data.service.hero_image_url || `/services/${slug}-cover.jpg`,
+      coverImage: data.service.hero_image_url || `/services/${imageSlug}.jpg`,
       heading: data.service.title,
       content: data.service.content_md || data.service.excerpt || '', // Pass full markdown content as string
       ctaPrimary: {
@@ -212,8 +215,7 @@ export default async function ServiceDetailRoute({
           slug: s.slug,
           title: s.title,
           excerpt: s.excerpt || '',
-          // Use uploaded hero image from API, fallback to convention-based path
-          imageUrl: s.hero_image_url || `/services/${s.slug}.jpg`,
+          imageUrl: s.hero_image_url || `/services/${s.slug_group || s.slug}.jpg`,
           type: 'service' as const,
         })).slice(0, 3) || [],
     },

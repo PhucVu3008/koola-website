@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { ServicesPage } from '../../../components/services';
+
+export const dynamic = 'force-dynamic';
 import { getServices, getServicesPage } from '../../../src/lib/api/services';
 import { getDictionary } from '../../../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../../../src/i18n/locales';
@@ -52,9 +54,8 @@ export default async function ServicesPageRoute({
         id: item.id,
         slug: item.slug,
         title: item.title,
-        // Use uploaded image URL from admin, fallback to convention-based path
-        // Use relative path so Next.js can proxy via rewrites
-        imageUrl: item.hero_image_url || `/services/${item.slug}.jpg`,
+        // Use uploaded image URL from admin, fallback to slug_group (English slug) for image path
+        imageUrl: item.hero_image_url || `/services/${item.slug_group || item.slug}.jpg`,
         order: index + 1,
       })),
     },

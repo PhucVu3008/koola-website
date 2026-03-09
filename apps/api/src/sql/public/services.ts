@@ -23,7 +23,7 @@
  */
 export const LIST_SERVICES = `
   SELECT 
-    s.id, s.locale, s.title, s.slug, s.excerpt, s.hero_asset_id, s.icon_name,
+    s.id, s.locale, s.title, s.slug, s.slug_group, s.excerpt, s.hero_asset_id, s.icon_name,
     s.status, s.published_at, s.sort_order, s.created_at,
     -- Construct hero image URL from media_assets
     CASE 
@@ -228,11 +228,12 @@ export const GET_SERVICE_BENEFITS = `
  */
 export const GET_SERVICE_RELATED_SERVICES = `
   SELECT 
-    s.id, 
-    s.locale, 
-    s.title, 
-    s.slug, 
-    s.excerpt, 
+    s.id,
+    s.locale,
+    s.title,
+    s.slug,
+    s.slug_group,
+    s.excerpt,
     s.hero_asset_id,
     -- Construct hero image URL from media_assets
     CASE
