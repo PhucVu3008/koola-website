@@ -5,14 +5,7 @@ import { getDictionary } from '../../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../../src/i18n/locales';
 import { getPageBySlug } from '../../src/lib/api/pages';
 
-/**
- * Home page (locale-prefixed route).
- *
- * SEO:
- * - Pre-rendered for each locale for fast, indexable HTML.
- * - Loads metadata from CMS if available, falls back to i18n dictionary.
- */
-export const dynamic = 'force-static';
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,

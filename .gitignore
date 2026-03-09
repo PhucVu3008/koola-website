@@ -4,6 +4,9 @@ dist/
 build/
 .env
 .env.local
+.env.production.local
+apps/api/.env.production
+apps/web/.env.production
 *.log
 **/.DS_Store
 uploads/

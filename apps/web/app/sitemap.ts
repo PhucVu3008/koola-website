@@ -3,6 +3,8 @@ import type { MetadataRoute } from 'next';
 import { getServices } from '../src/lib/api/services';
 import { getSupportedLocales } from '../src/i18n/getDictionary';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Sitemap generator.
  *

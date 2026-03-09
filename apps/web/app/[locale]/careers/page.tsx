@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 
 import { CareersPage } from '../../../components/careers';
 import { getCareersPage, getFeaturedJobs } from '../../../src/lib/api/careers';
+
+export const dynamic = 'force-dynamic';
 import { isLocale, type Locale } from '../../../src/i18n/locales';
 import { getDictionary } from '../../../src/i18n/getDictionary';
 

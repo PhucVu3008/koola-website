@@ -1,9 +1,13 @@
+# Ignore root node_modules (API dùng workspace riêng)
 node_modules
+# KHÔNG ignore apps/web/node_modules — cần cho Dockerfile.web build
+!apps/web/node_modules
 npm-debug.log
 .git
 .gitignore
 .env
 .env.*
+!apps/web/.env.production
 !.env.example
 *.md
 !README.md

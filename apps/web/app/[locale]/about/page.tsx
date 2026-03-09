@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { AboutPage } from '../../../components/about';
+
+export const dynamic = 'force-dynamic';
 import { getAboutPage } from '../../../src/lib/api/about';
 import { isLocale, type Locale } from '../../../src/i18n/locales';
 import { getDictionary } from '../../../src/i18n/getDictionary';
