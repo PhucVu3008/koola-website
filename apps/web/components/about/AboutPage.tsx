@@ -4,7 +4,6 @@ import { AboutIntroSection, type AboutIntroSectionData } from './sections/AboutI
 import { OurStorySection, type OurStorySectionData } from './sections/OurStorySection';
 import { MilestoneHighlight, type MilestoneHighlightData } from './sections/MilestoneHighlight';
 import { TeamRolesPreview, type TeamRolesPreviewData } from '../home/TeamRolesPreview';
-import { TrustedLogos, type TrustedLogosData } from '../home/TrustedLogos';
 import { TestimonialsSlider, type TestimonialsSliderData } from '../home/TestimonialsSlider';
 import { CompanyTimeline, type CompanyTimelineData } from './sections/CompanyTimeline';
 import { PerformanceMetric, type PerformanceMetricData } from './sections/PerformanceMetric';
@@ -15,7 +14,6 @@ export type AboutPageData = {
   story: OurStorySectionData | null;
   milestone: MilestoneHighlightData | null;
   team: TeamRolesPreviewData | null;
-  trusted: TrustedLogosData | null;
   testimonials: TestimonialsSliderData | null;
   timeline: CompanyTimelineData | null;
   performance: PerformanceMetricData | null;
@@ -40,7 +38,6 @@ export function AboutPage({ data }: { data: AboutPageData }) {
   const story = assertSection('about_story', data.story);
   const milestone = assertSection('about_milestone', data.milestone);
   const team = assertSection('about_team_roles', data.team);
-  const trusted = assertSection('about_trusted', data.trusted);
   const testimonials = assertSection('about_testimonials', data.testimonials);
   const timeline = assertSection('about_timeline', data.timeline);
   const performance = assertSection('about_performance', data.performance);
@@ -69,12 +66,6 @@ export function AboutPage({ data }: { data: AboutPageData }) {
       <RevealOnScroll delayMs={280} hoverParallax>
         <Section tone="white">
           <TeamRolesPreview data={team} />
-        </Section>
-      </RevealOnScroll>
-
-      <RevealOnScroll delayMs={360} hoverParallax>
-        <Section tone="white">
-          <TrustedLogos data={trusted} />
         </Section>
       </RevealOnScroll>
 

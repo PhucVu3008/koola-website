@@ -65,7 +65,6 @@ export type AboutPagePayload = {
   story: AboutStoryPayload;
   milestone: AboutMilestonePayload;
   team: AboutTeamRolesPayload;
-  trusted: AboutTrustedPayload;
   testimonials: AboutTestimonialsPayload;
   timeline: AboutTimelinePayload;
   performance: AboutPerformancePayload;

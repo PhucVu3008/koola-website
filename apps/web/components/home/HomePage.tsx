@@ -7,7 +7,6 @@ import { RevealOnScroll } from '../ui/RevealOnScroll';
 import { HeroSection } from './HeroSection';
 import { CapabilityHighlights } from './CapabilityHighlights';
 import { HomeServicesSection } from './HomeServicesSection';
-import { TrustedLogos } from './TrustedLogos';
 import { ValuePropositionSlider } from './ValuePropositionSlider';
 import { BlogPreviewGrid } from './BlogPreviewGrid';
 import { TeamRolesPreview } from './TeamRolesPreview';
@@ -45,7 +44,11 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
 
   // For now, use hard-coded data for hero (complex structure)
   // CMS sections can be used for simpler content
-  const heroData = fallbackData.hero;
+  const heroData = {
+    ...fallbackData.hero,
+    primaryCta: { ...fallbackData.hero.primaryCta, href: `/${locale}${fallbackData.hero.primaryCta.href}` },
+    secondaryCta: { ...fallbackData.hero.secondaryCta, href: `/${locale}${fallbackData.hero.secondaryCta.href}` },
+  };
   const servicesTitle = ((getCmsSection('services_showcase') as any)?.title as string) || fallbackData.services.title;
   
   // Use hard-coded data for sections not managed by CMS yet
@@ -71,12 +74,6 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
           </Section>
         </RevealOnScroll>
 
-        <RevealOnScroll delayMs={240} hoverParallax>
-          <Section tone="muted" className="rounded-3xl py-16">
-            <TrustedLogos data={data.trusted} />
-          </Section>
-        </RevealOnScroll>
-
         <RevealOnScroll delayMs={320} hoverParallax>
           <Section tone="white">
             <ValuePropositionSlider data={data.valueProps} />
@@ -91,13 +88,13 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
 
         <RevealOnScroll delayMs={480} hoverParallax>
           <Section tone="white">
-            <TeamRolesPreview data={data.team} />
+            <TeamRolesPreview data={{ ...data.team, ctaHref: `/${locale}/contact` }} />
           </Section>
         </RevealOnScroll>
 
         <RevealOnScroll delayMs={560} hoverParallax>
           <Section tone="brand" className="rounded-3xl py-16 text-white">
-            <PrimaryCTASection data={data.primaryCta} />
+            <PrimaryCTASection data={{ ...data.primaryCta, ctaHref: `/${locale}/contact` }} />
           </Section>
         </RevealOnScroll>
         </div>

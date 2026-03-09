@@ -82,12 +82,6 @@ export const HOME = {
       },
     ],
   },
-  trusted: {
-    title: 'Trusted by Leading Organizations',
-    subtitle: 'Our 4,000+ team helps your vision come to life.',
-    ctaLabel: 'Get a free quote',
-    logos: ['jnj', 'microsoft', 'google', 'slack', 'lg'],
-  },
   testimonials: {
     title: "We've stopped counting.",
     subtitle: 'Over 500 brands count on us.',
@@ -274,12 +268,6 @@ export const HOME_I18N = {
           icon: 'cloud',
         },
       ],
-    },
-    trusted: {
-      title: 'Được tin dùng bởi các tổ chức hàng đầu',
-      subtitle: 'Đội ngũ 4.000+ của chúng tôi giúp biến tầm nhìn thành hiện thực.',
-      ctaLabel: 'Nhận báo giá miễn phí',
-      logos: ['jnj', 'microsoft', 'google', 'slack', 'lg'],
     },
     testimonials: {
       title: 'Chúng tôi đã ngừng đếm.',
