@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -48,7 +48,7 @@ export default async function AdminRootLayout({
     <html lang={locale}>
       <body suppressHydrationWarning>
         <AdminLayout locale={locale as Locale}>
-          {children}
+          {children as any}
         </AdminLayout>
       </body>
     </html>

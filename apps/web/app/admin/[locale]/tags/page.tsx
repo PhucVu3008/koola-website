@@ -37,7 +37,7 @@ export default function AdminTagsPage() {
     e.preventDefault();
 
     try {
-      const data = { ...formData, locale };
+      const data = { ...formData, locale: locale as 'en' | 'vi' };
 
       if (editingId) {
         await adminApi.updateTag(editingId, data);

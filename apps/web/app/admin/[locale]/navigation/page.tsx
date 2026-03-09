@@ -41,7 +41,7 @@ export default function AdminNavigationPage() {
     e.preventDefault();
 
     try {
-      const data = { ...formData, locale };
+      const data = { ...formData, locale: locale as 'en' | 'vi', placement: formData.placement as 'header' | 'footer' };
 
       if (editingId) {
         await adminApi.updateNavItem(editingId, data);

@@ -152,8 +152,7 @@ export const getTokenTimeRemaining = (token: string): number => {
  * Login admin user
  */
 export const loginAdmin = async (email: string, password: string): Promise<LoginResponse> => {
-  // Force localhost for now (env vars need server restart to load)
-  const apiUrl = 'http://localhost:4000';
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
   
   logger.debug('Admin login attempt', LogContext.auth(undefined, email));
   
@@ -197,7 +196,7 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     return null;
   }
 
-  const apiUrl = 'http://localhost:4000';
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
 
   try {
     logger.debug('Attempting to refresh access token');
@@ -235,7 +234,7 @@ export const refreshAccessToken = async (): Promise<string | null> => {
  */
 export const logoutAdmin = async (): Promise<void> => {
   const refreshToken = getRefreshToken();
-  const apiUrl = 'http://localhost:4000';
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
 
   if (refreshToken) {
     try {
