@@ -114,6 +114,17 @@ a {
 }
 
 /* Hero section animated background */
+
+/* Floating contact button ringing animation */
+@keyframes ring {
+  0%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-10deg); }
+  30% { transform: rotate(8deg); }
+  40% { transform: rotate(-6deg); }
+  50% { transform: rotate(0deg); }
+}
+
 @keyframes float {
   0%, 100% {
     transform: translate(0, 0) scale(1);

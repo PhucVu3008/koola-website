@@ -3,11 +3,12 @@ import type { ReactNode } from 'react';
 import { SiteFooter } from '../SiteFooter';
 import { SiteHeader } from '../SiteHeader';
 import { MobileBottomNav } from '../MobileBottomNav';
+import { FloatingContactButton } from '../FloatingContactButton';
 import type { SiteSettingsPayload } from '../../src/lib/api/site';
 
 /**
  * PageLayout provides a consistent desktop container + site chrome.
- * 
+ *
  * Used for public marketing pages only.
  * Admin pages use separate AdminLayout (located at /admin/[locale]/*).
  */
@@ -26,6 +27,7 @@ export function PageLayout({
       <main className="w-full">{children as React.ReactNode}</main>
       {site ? <SiteFooter locale={locale} site={site} /> : null}
       <MobileBottomNav locale={locale} />
+      <FloatingContactButton locale={locale} />
     </div>
   );
 }
