@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { logger } from '../src/lib/logger';
 
 import { getDictionary, getLocaleLabel, getSupportedLocales } from '../src/i18n/getDictionary';
@@ -19,7 +19,9 @@ import { isLocale, type Locale } from '../src/i18n/locales';
  */
 export function SiteHeader({ locale }: { locale: string }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isSwitching, setIsSwitching] = useState(false);
   const pathname = usePathname() ?? '/';
+  const router = useRouter();
 
   const parts = pathname.split('/').filter(Boolean);
   const fromPath = parts[0];
@@ -59,13 +61,13 @@ export function SiteHeader({ locale }: { locale: string }) {
     if (newParts.length >= 3 && newParts[1] === 'services') {
       const currentSlug = newParts[2];
       const currentLocale = isLocale(newParts[0]) ? newParts[0] : baseLocale;
-      
+
       try {
         // Call API to get translated slug
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000'}/v1/services/slug-map?from_slug=${currentSlug}&from_locale=${currentLocale}&to_locale=${nextLocale}`
         );
-        
+
         if (response.ok) {
           const data = await response.json();
           if (data.data?.to_slug) {
@@ -75,6 +77,8 @@ export function SiteHeader({ locale }: { locale: string }) {
       } catch (error) {
         logger.warn('Failed to map service slug', { fromSlug: currentSlug, fromLocale: currentLocale, toLocale: nextLocale, error });
       }
+      // If slug mapping failed, go to services list instead of keeping wrong slug
+      return `/${nextLocale}/services`;
     }
     
     // Check if we're on a job detail page: /[locale]/careers/[slug]
@@ -140,9 +144,16 @@ export function SiteHeader({ locale }: { locale: string }) {
                 className="rounded-full border border-slate-200 bg-white fluid-text-xs font-semibold text-slate-800 transition-colors hover:border-slate-300 fluid-h-sm"
                 style={{ paddingLeft: 'clamp(0.625rem, 2vw, 0.75rem)', paddingRight: 'clamp(0.625rem, 2vw, 0.75rem)' }}
                 value={baseLocale}
+                disabled={isSwitching}
                 onChange={async (e) => {
-                  const newUrl = await switchTo(e.target.value);
-                  window.location.href = newUrl;
+                  if (isSwitching) return;
+                  setIsSwitching(true);
+                  try {
+                    const newUrl = await switchTo(e.target.value);
+                    router.push(newUrl);
+                  } finally {
+                    setIsSwitching(false);
+                  }
                 }}
               >
                 {supportedLocales.map((l) => (
@@ -277,9 +288,17 @@ export function SiteHeader({ locale }: { locale: string }) {
                 id="mobile-locale-select"
                 className="w-full rounded-lg border border-slate-200 bg-white px-4 fluid-text-base text-slate-800 transition-colors hover:border-slate-300 fluid-h-md"
                 value={baseLocale}
+                disabled={isSwitching}
                 onChange={async (e) => {
-                  const newUrl = await switchTo(e.target.value);
-                  window.location.href = newUrl;
+                  if (isSwitching) return;
+                  setIsSwitching(true);
+                  try {
+                    const newUrl = await switchTo(e.target.value);
+                    router.push(newUrl);
+                    setMobileMenuOpen(false);
+                  } finally {
+                    setIsSwitching(false);
+                  }
                 }}
               >
                 {supportedLocales.map((l) => (
