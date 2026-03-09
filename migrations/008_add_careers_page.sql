@@ -51,7 +51,7 @@ BEGIN
       'slides', jsonb_build_array(
         jsonb_build_object(
           'quote', 'Koola provides an excellent environment for long-term development, as it highly values and encourages a culture of mutual learning and sharing.',
-          'authorName', 'Annie Hu',
+          'authorName', 'Annie Harrison',
           'authorRole', 'Senior QA'
         ),
         jsonb_build_object(
