@@ -11,7 +11,7 @@
 
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import * as LucideIcons from 'lucide-react';
 
 export type KeyBenefitItem = {
@@ -50,39 +50,15 @@ export function KeyBenefits({ data }: { data: KeyBenefitsData }) {
 }
 
 function BenefitCard({ item, delay }: { item: KeyBenefitItem; delay: number }) {
-  const [isVisible, setIsVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => {
-              setIsVisible(true);
-            }, delay);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, [delay]);
 
   return (
     <div
       ref={ref}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-slate-200 bg-white p-6 sm:p-8 shadow-lg transition-all duration-700 hover:border-emerald-500 hover:shadow-2xl hover:scale-105 ${
-        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
-      }`}
+      className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-slate-200 bg-white p-6 sm:p-8 shadow-lg transition-all duration-700 hover:border-emerald-500 hover:shadow-2xl hover:scale-105"
     >
       {/* Gradient accent on hover */}
       <div

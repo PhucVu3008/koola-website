@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { useScrollAnimation } from '../../src/hooks/useScrollAnimation';
 import { createLead } from '../../src/lib/api/leads';
 import { PhoneInput } from '../ui/PhoneInput';
 import type { E164Number } from 'libphonenumber-js/core';
@@ -42,15 +41,13 @@ export type ContactFormSectionProps = {
  * - i18n support
  */
 export function ContactFormSection({ data }: ContactFormSectionProps) {
-  const [sectionRef, isSectionVisible] = useScrollAnimation<HTMLElement>();
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [phone, setPhone] = useState<E164Number | undefined>();
 
   return (
     <section
-      ref={sectionRef}
-      className={`px-6 py-12 ${isSectionVisible ? 'animate-fade-in-up' : 'opacity-0'}`}
+      className="px-6 py-12"
     >
       <div className="mx-auto max-w-screen-xl">
         <div className="mx-auto max-w-2xl">

@@ -184,7 +184,7 @@ export function ServicesHero({ data }: { data: ServicesHeroData }) {
       {/* Content with subtle parallax */}
       <div className="container relative z-10 flex h-full items-center px-4 sm:px-6">
         <div 
-          className="max-w-2xl animate-fade-in-up transition-transform duration-300"
+          className="max-w-2xl transition-transform duration-300"
           style={{
             transform: `translate(${(mousePosition.x - 50) / 80}px, ${(mousePosition.y - 50) / 80}px)`,
           }}

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 export type ServiceGridItem = {
   id: number;
@@ -58,37 +58,13 @@ function ServiceCard({
   delay: number;
 }) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLAnchorElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => {
-              setIsVisible(true);
-            }, delay);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, [delay]);
 
   return (
     <Link
       ref={ref}
       href={`/${locale}/services/${item.slug}`}
-      className={`group relative block h-[220px] sm:h-[280px] lg:h-[320px] overflow-hidden rounded-xl sm:rounded-2xl shadow-lg transition-all duration-700 ${
-        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-      }`}
+      className="group relative block h-[220px] sm:h-[280px] lg:h-[320px] overflow-hidden rounded-xl sm:rounded-2xl shadow-lg transition-all duration-700"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

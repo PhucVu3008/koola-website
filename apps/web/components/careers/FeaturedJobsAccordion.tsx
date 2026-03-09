@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useScrollAnimation, useStaggeredAnimation } from '../../src/hooks/useScrollAnimation';
-
 export type FeaturedJobData = {
   id: number;
   title: string;
@@ -48,18 +46,14 @@ export function FeaturedJobsAccordion({ data }: { data: FeaturedJobsAccordionDat
   const [expandedId, setExpandedId] = useState<number | null>(
     data.jobs.length > 0 ? data.jobs[0].id : null
   );
-  const [sectionRef, isSectionVisible] = useScrollAnimation<HTMLElement>();
 
   const toggleJob = (id: number) => {
     setExpandedId(expandedId === id ? null : id);
   };
 
   return (
-    <section 
-      ref={sectionRef}
-      className={`mx-auto max-w-5xl px-4 sm:px-6 py-10 sm:py-12 transition-all duration-700 ${
-        isSectionVisible ? 'animate-fade-in-up' : 'opacity-0'
-      }`}
+    <section
+      className="mx-auto max-w-5xl px-4 sm:px-6 py-10 sm:py-12"
     >
       {/* Section Header */}
       <div className="mb-6 sm:mb-8 flex flex-wrap items-center justify-between gap-3">
@@ -79,21 +73,11 @@ export function FeaturedJobsAccordion({ data }: { data: FeaturedJobsAccordionDat
           const isExpanded = expandedId === job.id;
           const responsibilities = parseBullets(job.responsibilities_md);
           const qualifications = parseBullets(job.requirements_md);
-          
-          // Staggered animation hook
-          const [jobRef, isJobVisible, delay] = useStaggeredAnimation<HTMLDivElement>(index, 0.2, 0.1);
 
           return (
             <div
               key={job.id}
-              ref={jobRef}
-              className={`overflow-hidden rounded-xl border border-slate-200 bg-white transition-all duration-700 hover:shadow-md ${
-                isJobVisible ? 'animate-fade-in-up' : 'opacity-0'
-              }`}
-              style={{ 
-                animationDelay: isJobVisible ? `${delay}s` : undefined,
-                animationFillMode: 'both'
-              }}
+              className="overflow-hidden rounded-xl border border-slate-200 bg-white transition-all hover:shadow-md"
             >
               {/* Accordion Header */}
               <button

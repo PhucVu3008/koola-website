@@ -44,7 +44,7 @@ export function ServicesMidQuote({ data }: { data: ServicesMidQuoteData }) {
           </div>
 
           {/* Right: Quote Block - responsive padding */}
-          <div className="relative min-w-0 animate-fade-in-up">
+          <div className="relative min-w-0">
             <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-emerald-500/30 bg-white p-5 sm:p-8 lg:p-12 shadow-lg">
               {/* Top-left accent */}
               <div className="absolute left-0 top-0 h-16 w-16 sm:h-20 sm:w-20 rounded-tl-2xl sm:rounded-tl-3xl border-l-4 border-t-4 border-emerald-500/40" />

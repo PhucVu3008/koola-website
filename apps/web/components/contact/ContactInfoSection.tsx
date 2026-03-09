@@ -1,7 +1,6 @@
 'use client';
 
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
-import { useScrollAnimation } from '../../src/hooks/useScrollAnimation';
 
 export type ContactInfoData = {
   title: string;
@@ -26,8 +25,6 @@ export type ContactInfoSectionProps = {
  * Uses scroll-triggered animation.
  */
 export function ContactInfoSection({ data }: ContactInfoSectionProps) {
-  const [sectionRef, isSectionVisible] = useScrollAnimation<HTMLElement>();
-
   const contactItems = [
     {
       icon: Mail,
@@ -57,8 +54,7 @@ export function ContactInfoSection({ data }: ContactInfoSectionProps) {
 
   return (
     <section
-      ref={sectionRef}
-      className={`px-6 py-12 ${isSectionVisible ? 'animate-fade-in-up' : 'opacity-0'}`}
+      className="px-6 py-12"
     >
       <div className="mx-auto max-w-screen-xl">
         <h2 className="mb-8 text-2xl font-semibold text-slate-900 md:text-3xl">

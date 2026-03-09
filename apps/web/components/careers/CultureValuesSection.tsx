@@ -1,8 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { useScrollAnimation, useStaggeredAnimation } from '../../src/hooks/useScrollAnimation';
-
 export type CultureBullet = {
   title: string;
   body: string;
@@ -20,15 +18,9 @@ export type CultureValuesSectionData = {
  * Two-column: bullet list left, image right
  */
 export function CultureValuesSection({ data }: { data: CultureValuesSectionData }) {
-  const [sectionRef, isSectionVisible] = useScrollAnimation<HTMLElement>();
-  const [imageRef, isImageVisible] = useScrollAnimation<HTMLDivElement>();
-
   return (
-    <section 
-      ref={sectionRef}
-      className={`mx-auto max-w-6xl py-10 sm:py-16 px-4 sm:px-8 transition-all duration-700 ${
-        isSectionVisible ? 'animate-fade-in-up' : 'opacity-0'
-      }`}
+    <section
+      className="mx-auto max-w-6xl py-10 sm:py-16 px-4 sm:px-8"
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 items-start gap-8 sm:gap-16">
         {/* Left: Title + Bullets */}
@@ -39,20 +31,10 @@ export function CultureValuesSection({ data }: { data: CultureValuesSectionData 
 
           <div className="space-y-6">
             {data.bullets.map((bullet, idx) => {
-              // Staggered animation for each bullet
-              const [bulletRef, isBulletVisible, delay] = useStaggeredAnimation<HTMLDivElement>(idx, 0.2, 0.15);
-              
               return (
-                <div 
+                <div
                   key={idx}
-                  ref={bulletRef}
-                  className={`flex gap-3 transition-all duration-700 ${
-                    isBulletVisible ? 'animate-fade-in-up' : 'opacity-0'
-                  }`}
-                  style={{ 
-                    animationDelay: isBulletVisible ? `${delay}s` : undefined,
-                    animationFillMode: 'both'
-                  }}
+                  className="flex gap-3"
                 >
                 {/* Decorative Emoji/Icon */}
                 <div className="mt-0.5 flex-shrink-0">
@@ -79,16 +61,7 @@ export function CultureValuesSection({ data }: { data: CultureValuesSectionData 
         </div>
 
         {/* Right: Image */}
-        <div 
-          ref={imageRef}
-          className={`relative transition-all duration-700 ${
-            isImageVisible ? 'animate-fade-in-up' : 'opacity-0'
-          }`}
-          style={{ 
-            animationDelay: isImageVisible ? '0.3s' : undefined,
-            animationFillMode: 'both'
-          }}
-        >
+        <div className="relative">
           <div className="relative h-[240px] sm:h-[320px] lg:h-[400px] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 transition-transform duration-300 hover:scale-[1.02]">
             <Image
               src={data.imageUrl}

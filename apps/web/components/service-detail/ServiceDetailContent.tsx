@@ -15,34 +15,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Lightbulb } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { ServiceDetailContentData } from './types';
 
 export function ServiceDetailContent({ data }: { data: ServiceDetailContentData }) {
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
   // Extract body content (skip title and first section)
   // Added null safety to prevent errors if content is undefined
   const bodyContent = (data.content || '')
@@ -52,12 +29,10 @@ export function ServiceDetailContent({ data }: { data: ServiceDetailContentData 
     .trim();
 
   return (
-    <article ref={ref} className="space-y-6 sm:space-y-8">
+    <article className="space-y-6 sm:space-y-8">
       {/* Highlight Line - Enhanced + Responsive */}
       <div
-        className={`flex items-start gap-3 sm:gap-4 rounded-xl sm:rounded-2xl border border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 sm:p-6 transition-all duration-700 ${
-          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-        }`}
+        className="flex items-start gap-3 sm:gap-4 rounded-xl sm:rounded-2xl border border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 sm:p-6"
       >
         <div className="mt-0.5 flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg">
           <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
@@ -67,9 +42,7 @@ export function ServiceDetailContent({ data }: { data: ServiceDetailContentData 
 
       {/* Cover Image - Enhanced + Responsive */}
       <div
-        className={`relative aspect-[16/9] overflow-hidden rounded-2xl sm:rounded-3xl bg-slate-100 shadow-lg sm:shadow-xl transition-all duration-700 delay-100 ${
-          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-        }`}
+        className="relative aspect-[16/9] overflow-hidden rounded-2xl sm:rounded-3xl bg-slate-100 shadow-lg sm:shadow-xl"
       >
         <Image src={data.coverImage} alt={data.heading} fill className="object-cover" />
         <div className="absolute inset-0 ring-1 ring-inset ring-slate-900/10" />
@@ -77,9 +50,7 @@ export function ServiceDetailContent({ data }: { data: ServiceDetailContentData 
 
       {/* Markdown Content - Enhanced + Responsive */}
       <div
-        className={`prose prose-sm sm:prose-base lg:prose-lg prose-slate max-w-none transition-all duration-700 delay-200 ${
-          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-        }`}
+        className="prose prose-sm sm:prose-base lg:prose-lg prose-slate max-w-none"
       >
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
@@ -104,9 +75,7 @@ export function ServiceDetailContent({ data }: { data: ServiceDetailContentData 
 
       {/* Bottom CTAs - Enhanced + Responsive */}
       <div
-        className={`flex flex-col sm:flex-row gap-3 sm:gap-4 border-t border-slate-200 pt-6 sm:pt-8 transition-all duration-700 delay-300 ${
-          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-        }`}
+        className="flex flex-col sm:flex-row gap-3 sm:gap-4 border-t border-slate-200 pt-6 sm:pt-8"
       >
         <Link
           href={data.ctaSecondary.href}

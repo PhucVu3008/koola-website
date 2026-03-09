@@ -13,7 +13,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 
 export type RelatedContentItem = {
@@ -57,39 +57,16 @@ function RelatedCard({
   locale: string;
   delay: number;
 }) {
-  const [isVisible, setIsVisible] = useState(false);
+  // Always visible — no scroll animation.
   const [isHovered, setIsHovered] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => {
-              setIsVisible(true);
-            }, delay);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, [delay]);
 
   const href = item.type === 'service' ? `/${locale}/services/${item.slug}` : `/${locale}/blog/${item.slug}`;
 
   return (
     <div
       ref={ref}
-      className={`group overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-slate-200 bg-white shadow-lg transition-all duration-700 hover:border-emerald-500 hover:shadow-2xl hover:scale-105 ${
-        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'
-      }`}
+      className="group overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-slate-200 bg-white shadow-lg transition-all duration-700 hover:border-emerald-500 hover:shadow-2xl hover:scale-105"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

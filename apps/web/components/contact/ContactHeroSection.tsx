@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 
 /**
@@ -21,12 +21,7 @@ export type ContactHeroSectionProps = {
 };
 
 export function ContactHeroSection({ data }: ContactHeroSectionProps) {
-  const [mounted, setMounted] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Track mouse position
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -60,13 +55,13 @@ export function ContactHeroSection({ data }: ContactHeroSectionProps) {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Large decorative circles that follow mouse subtly */}
         <div 
-          className={`absolute -left-20 -top-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl transition-all duration-[3000ms] ${mounted ? 'translate-x-32 translate-y-32' : ''}`}
+          className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl transition-all duration-[3000ms]"
           style={{
             transform: `translate(${32 + (mousePosition.x - 50) / 10}px, ${32 + (mousePosition.y - 50) / 10}px)`,
           }}
         />
         <div 
-          className={`absolute -right-20 -bottom-20 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl transition-all duration-[4000ms] delay-300 ${mounted ? '-translate-x-32 -translate-y-32' : ''}`}
+          className="absolute -right-20 -bottom-20 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl transition-all duration-[4000ms] delay-300"
           style={{
             transform: `translate(${-32 + (mousePosition.x - 50) / 15}px, ${-32 + (mousePosition.y - 50) / 15}px)`,
           }}
@@ -141,17 +136,17 @@ export function ContactHeroSection({ data }: ContactHeroSectionProps) {
             }}
           >
             {/* Title with staggered animation */}
-            <h1 className={`text-3xl sm:text-4xl font-bold tracking-tight text-white transition-all duration-1000 md:text-5xl lg:text-6xl ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
               {data.title}
             </h1>
             
             {/* Subtitle with delay */}
-            <p className={`mt-6 text-lg leading-relaxed text-white/90 transition-all duration-1000 delay-300 md:text-xl ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+            <p className="mt-6 text-lg leading-relaxed text-white/90 md:text-xl">
               {data.subtitle}
             </p>
 
             {/* Decorative line */}
-            <div className={`mx-auto mt-8 h-1 w-24 rounded-full bg-gradient-to-r from-blue-400 to-emerald-400 transition-all duration-1000 delay-500 ${mounted ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'}`} />
+            <div className="mx-auto mt-8 h-1 w-24 rounded-full bg-gradient-to-r from-blue-400 to-emerald-400" />
           </div>
         </div>
       </div>

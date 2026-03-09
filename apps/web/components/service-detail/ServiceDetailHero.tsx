@@ -40,7 +40,7 @@ export function ServiceDetailHero({ data }: { data: ServiceDetailHeroData }) {
 
       {/* Content Card - Responsive overlapping */}
       <div className="container relative h-full px-4 sm:px-6">
-        <div className="absolute bottom-0 left-4 right-4 sm:left-6 sm:right-auto w-auto sm:w-full sm:max-w-3xl translate-y-12 sm:translate-y-20 animate-fade-in-up rounded-2xl sm:rounded-3xl bg-white p-6 sm:p-10 lg:p-12 shadow-2xl">
+        <div className="absolute bottom-0 left-4 right-4 sm:left-6 sm:right-auto w-auto sm:w-full sm:max-w-3xl translate-y-12 sm:translate-y-20 rounded-2xl sm:rounded-3xl bg-white p-6 sm:p-10 lg:p-12 shadow-2xl">
           {/* Breadcrumbs */}
           <nav className="mb-3 sm:mb-5 flex items-center gap-2 text-xs sm:text-sm text-slate-500 overflow-x-auto">
             {data.breadcrumbs.map((item, index) => (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 
 import { InteractiveButton } from '../ui/InteractiveButton';
@@ -29,13 +29,8 @@ export type HeroSectionData = {
  * - Responsive height using fluid-h-hero
  */
 export function HeroSection({ data }: { data: HeroSectionData }) {
-  const [mounted, setMounted] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
   const { isMobile, isMobileOrTablet } = useMediaQuery();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     // Disable mouse tracking on mobile for performance
@@ -204,7 +199,7 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
       <div className="relative z-20 fluid-container-wide text-center">
         {/* Label Badge - Fluid sizing */}
         <div 
-          className={`inline-flex items-center rounded-full border border-blue-400/30 bg-blue-500/10 backdrop-blur-sm transition-all duration-1000 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          className="inline-flex items-center rounded-full border border-blue-400/30 bg-blue-500/10 backdrop-blur-sm"
           style={{ gap: 'clamp(0.375rem, 1vw, 0.5rem)', padding: 'clamp(0.25rem, 1vw, 0.375rem) clamp(0.75rem, 2vw, 1rem)' }}
         >
           <div 
@@ -217,15 +212,14 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
         </div>
         
         {/* Main Headline - Truly Fluid Typography */}
-        <div 
-          className={`transition-all duration-1000 delay-100 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
-          style={{ marginTop: 'clamp(1rem, 3vh, 2rem)' }}
+        <div
+          style={{ marginTop: 'clamp(1.5rem, 3vh, 2rem)' }}
         >
-          <h1 
+          <h1
             className="font-bold text-white"
-            style={{ 
-              fontSize: 'clamp(2rem, 6vw, 5rem)', 
-              lineHeight: '1.15',
+            style={{
+              fontSize: 'clamp(3rem, 8vw, 5rem)',
+              lineHeight: '1.1',
               letterSpacing: '-0.02em'
             }}
           >
@@ -233,10 +227,10 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
               {data.headline[0]}
             </span>
             <br />
-            <span 
+            <span
               className="block font-light text-slate-200"
-              style={{ 
-                fontSize: 'clamp(1.5rem, 4.5vw, 4rem)',
+              style={{
+                fontSize: 'clamp(1.75rem, 5vw, 4rem)',
                 marginTop: 'clamp(0.25rem, 1vh, 0.5rem)'
               }}
             >
@@ -247,7 +241,7 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
         
         {/* Mission Statement with Icon - Fluid padding */}
         <div 
-          className={`mx-auto flex max-w-2xl items-center justify-center transition-all duration-1000 delay-200 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          className="mx-auto flex max-w-2xl items-center justify-center"
           style={{ 
             marginTop: 'clamp(1rem, 2.5vh, 1.5rem)', 
             gap: 'clamp(0.5rem, 2vw, 0.75rem)',
@@ -259,9 +253,9 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
             className="h-px bg-gradient-to-r from-transparent to-blue-400/50" 
             style={{ width: 'clamp(2rem, 5vw, 3rem)' }}
           />
-          <p 
+          <p
             className="font-light leading-relaxed text-slate-300"
-            style={{ fontSize: 'clamp(0.875rem, 2vw, 1.125rem)' }}
+            style={{ fontSize: 'clamp(1rem, 2.5vw, 1.125rem)' }}
           >
             {data.subhead}
           </p>
@@ -273,7 +267,7 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
 
         {/* CTA Buttons - Fluid spacing, stack on mobile */}
         <div 
-          className={`flex flex-col sm:flex-row items-stretch sm:items-center justify-center transition-all duration-1000 delay-300 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center"
           style={{ marginTop: 'clamp(1.5rem, 4vh, 2.5rem)', gap: 'clamp(0.75rem, 2vw, 1rem)' }}
         >
           <InteractiveButton href={data.primaryCta.href} variant="primary">
@@ -286,7 +280,7 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
 
         {/* Trust Indicator - Fluid text, shorter on mobile */}
         <div 
-          className={`flex items-center justify-center text-slate-400 transition-all duration-1000 delay-400 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          className="flex items-center justify-center text-slate-400"
           style={{ marginTop: 'clamp(1.25rem, 3vh, 2rem)', gap: 'clamp(0.375rem, 1vw, 0.5rem)' }}
         >
           <svg 

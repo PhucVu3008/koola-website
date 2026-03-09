@@ -41,8 +41,6 @@ export function LegalPage({
             {sections.map((section, index) => (
               <article
                 key={index}
-                className="animate-fade-in-up"
-                style={{ animationDelay: `${index * 100}ms` }}
               >
                 <h2 className="text-2xl font-bold text-slate-900 mb-4">
                   {section.title}
@@ -62,8 +60,7 @@ export function LegalPage({
 
             {/* Contact Information Section */}
             <article
-              className="mt-16 border-t border-slate-200 pt-12 animate-fade-in-up"
-              style={{ animationDelay: `${sections.length * 100}ms` }}
+              className="mt-16 border-t border-slate-200 pt-12"
             >
               <div className="rounded-2xl bg-slate-50 p-8">
                 <div className="space-y-4">

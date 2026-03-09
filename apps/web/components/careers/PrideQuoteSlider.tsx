@@ -3,8 +3,6 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useScrollAnimation } from '../../src/hooks/useScrollAnimation';
-
 export type PrideQuoteSlide = {
   quote: string;
   authorName: string;
@@ -23,7 +21,6 @@ export type PrideQuoteSliderData = {
  */
 export function PrideQuoteSlider({ data }: { data: PrideQuoteSliderData }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [sectionRef, isSectionVisible] = useScrollAnimation<HTMLElement>();
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev === 0 ? data.slides.length - 1 : prev - 1));
@@ -38,11 +35,8 @@ export function PrideQuoteSlider({ data }: { data: PrideQuoteSliderData }) {
   if (!currentSlide) return null;
 
   return (
-    <section 
-      ref={sectionRef}
-      className={`bg-brand-600 py-16 transition-all duration-700 ${
-        isSectionVisible ? 'animate-fade-in-up' : 'opacity-0'
-      }`}
+    <section
+      className="bg-brand-600 py-16"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 sm:gap-16">

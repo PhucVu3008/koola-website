@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 
 export type CareersHeroSectionData = {
@@ -16,12 +16,7 @@ export type CareersHeroSectionData = {
  * Theme: Purple/Pink gradient with squares and triangles
  */
 export function CareersHeroSection({ data }: { data: CareersHeroSectionData }) {
-  const [mounted, setMounted] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Track mouse position
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -60,14 +55,14 @@ export function CareersHeroSection({ data }: { data: CareersHeroSectionData }) {
       {/* Interactive Geometric Shapes Layer */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Large decorative squares that rotate with mouse */}
-        <div 
-          className={`absolute -left-16 -top-16 h-48 w-48 border-2 border-purple-400/20 bg-purple-500/5 backdrop-blur-sm transition-all duration-[2500ms] ${mounted ? 'translate-x-24 translate-y-24' : ''}`}
+        <div
+          className="absolute -left-16 -top-16 h-48 w-48 border-2 border-purple-400/20 bg-purple-500/5 backdrop-blur-sm transition-all duration-[2500ms]"
           style={{
             transform: `translate(${24 + (mousePosition.x - 50) / 8}px, ${24 + (mousePosition.y - 50) / 8}px) rotate(${(mousePosition.x - 50) / 10}deg)`,
           }}
         />
-        <div 
-          className={`absolute -right-16 -bottom-16 h-64 w-64 border-2 border-pink-400/20 bg-pink-500/5 backdrop-blur-sm transition-all duration-[3000ms] delay-200 ${mounted ? '-translate-x-24 -translate-y-24' : ''}`}
+        <div
+          className="absolute -right-16 -bottom-16 h-64 w-64 border-2 border-pink-400/20 bg-pink-500/5 backdrop-blur-sm transition-all duration-[3000ms] delay-200"
           style={{
             transform: `translate(${-24 + (mousePosition.x - 50) / 12}px, ${-24 + (mousePosition.y - 50) / 12}px) rotate(${-(mousePosition.x - 50) / 8}deg)`,
           }}
@@ -153,17 +148,17 @@ export function CareersHeroSection({ data }: { data: CareersHeroSectionData }) {
           }}
         >
           {/* Title with gradient effect */}
-          <h1 className={`text-2xl sm:text-4xl lg:text-5xl font-bold text-white transition-all duration-1000 ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white">
             {data.title}
           </h1>
           
           {/* Subtitle */}
-          <p className={`text-sm sm:text-lg font-light text-white/95 transition-all duration-1000 delay-200 sm:text-xl ${mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+          <p className="text-sm sm:text-lg font-light text-white/95 sm:text-xl">
             {data.subtitle}
           </p>
 
           {/* Decorative elements */}
-          <div className={`mx-auto flex items-center justify-center gap-2 transition-all duration-1000 delay-400 ${mounted ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}>
+          <div className="mx-auto flex items-center justify-center gap-2">
             <div className="h-px w-12 bg-gradient-to-r from-transparent via-purple-300 to-transparent" />
             <div className="h-2 w-2 rotate-45 border border-pink-300 bg-pink-300/50" />
             <div className="h-px w-12 bg-gradient-to-r from-transparent via-purple-300 to-transparent" />
