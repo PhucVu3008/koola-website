@@ -71,6 +71,16 @@ export async function generateMetadata({
       title: dict.meta.homeTitle,
       description: dict.meta.homeDescription,
     },
+    icons: {
+      icon: [
+        // SVG first — modern browsers pick this (scalable, correct color)
+        { url: '/favicon.svg', type: 'image/svg+xml' },
+        // ICO fallback for older browsers
+        { url: '/favicon.ico', sizes: 'any', type: 'image/x-icon' },
+      ],
+      shortcut: '/favicon.svg',
+      apple: '/favicon.svg',
+    },
     other: {
       'script:ld+json': serializeJsonLd(schemas),
     },
