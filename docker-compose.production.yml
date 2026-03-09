@@ -1,0 +1,152 @@
+# =============================================================================
+# docker-compose.production.yml
+# Stack production chạy trên máy local, expose ra internet qua Cloudflare Tunnel
+#
+# Services:
+#   postgres  — PostgreSQL database
+#   api       — Fastify API backend (production build)
+#   web       — Next.js frontend (standalone production build)
+#   nginx     — Reverse proxy (koola.vn → web/api)
+#   cloudflared — Cloudflare Tunnel (expose localhost ra koola.vn)
+#
+# Khởi động:
+#   docker compose -f docker-compose.production.yml up -d --build
+#
+# Xem logs:
+#   docker compose -f docker-compose.production.yml logs -f
+# =============================================================================
+
+services:
+
+  # ===========================================================================
+  # PostgreSQL Database
+  # ===========================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: koola-postgres-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: koola_db
+      POSTGRES_USER: koola_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-koola_prod_password_change_me}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - ./db.sql:/docker-entrypoint-initdb.d/init.sql
+    # Không expose port ra ngoài host trong production (chỉ nội bộ Docker network)
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U koola_user -d koola_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - koola-prod-net
+
+  # ===========================================================================
+  # Fastify API Backend
+  # ===========================================================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: koola-api-prod
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      HOST: 0.0.0.0
+      DATABASE_URL: postgresql://koola_user:${POSTGRES_PASSWORD:-koola_prod_password_change_me}@postgres:5432/koola_db
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?JWT_ACCESS_SECRET is required}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET is required}
+      JWT_ACCESS_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+      # CORS: chấp nhận từ domain koola.vn và localhost (cho dev tools)
+      CORS_ORIGINS: https://koola.vn,http://localhost:3000
+      RATE_LIMIT_MAX: 100
+      RATE_LIMIT_TIMEWINDOW: 60000
+      MAX_FILE_SIZE: 10485760
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - api_prod_uploads:/app/uploads
+    expose:
+      - "4000"
+    networks:
+      - koola-prod-net
+
+  # ===========================================================================
+  # Next.js Frontend (standalone build)
+  # ===========================================================================
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: koola-web-prod
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      # Server-side: gọi API qua Docker internal network
+      API_BASE_URL_SERVER: http://api:4000
+      # Client-side: browser gọi qua domain public (qua Nginx /api/)
+      NEXT_PUBLIC_API_BASE_URL: https://koola.vn/api
+    expose:
+      - "3000"
+    networks:
+      - koola-prod-net
+
+  # ===========================================================================
+  # Nginx Reverse Proxy
+  # Nhận requests từ Cloudflare Tunnel (port 80) và phân phối đến web/api
+  # ===========================================================================
+  nginx:
+    image: nginx:alpine
+    container_name: koola-nginx-prod
+    restart: unless-stopped
+    depends_on:
+      - web
+      - api
+    ports:
+      # Chỉ expose port 80 ra host — Cloudflare Tunnel kết nối vào đây
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - koola-prod-net
+
+  # ===========================================================================
+  # Cloudflare Tunnel
+  # Expose http://localhost:80 ra internet với domain koola.vn (MIỄN PHÍ)
+  # Không cần IP tĩnh, không cần mở port router
+  #
+  # Setup: xem hướng dẫn trong docs/2026-03-05_CLOUDFLARE_TUNNEL_SETUP.md
+  # ===========================================================================
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: koola-cloudflared
+    restart: unless-stopped
+    depends_on:
+      - nginx
+    # CÁCH 1: Dùng tunnel token (sau khi tạo tunnel trên Cloudflare dashboard)
+    # Thay YOUR_TUNNEL_TOKEN bằng token thực trong file .env
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN:?CLOUDFLARE_TUNNEL_TOKEN is required}
+    networks:
+      - koola-prod-net
+
+volumes:
+  postgres_prod_data:
+    driver: local
+  api_prod_uploads:
+    driver: local
+
+networks:
+  koola-prod-net:
+    name: koola-production-network
+    driver: bridge

@@ -1,0 +1,45 @@
+# =============================================================================
+# Dockerfile.web — Copy pre-built Next.js standalone output
+#
+# Workflow:
+#   1. Build trên host: cd apps/web && npm run build
+#   2. Docker chỉ copy .next/standalone output vào production image
+#
+# Monorepo note: standalone output is at apps/web/.next/standalone/apps/web/server.js
+# =============================================================================
+
+FROM node:20-alpine
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser  --system --uid 1001 nextjs
+
+# Copy the full standalone directory (preserves monorepo paths)
+COPY apps/web/.next/standalone ./
+# Copy static assets and public into the correct monorepo-relative path
+COPY apps/web/.next/static ./apps/web/.next/static
+COPY apps/web/public ./apps/web/public
+COPY apps/web/.env.production ./apps/web/.env
+
+# Install sharp for Next.js image optimization (required in standalone mode).
+# Must run AFTER copying standalone so it installs into the correct node_modules.
+# sharp is a native addon — must be installed inside the container for correct platform/libc.
+RUN cd /app && npm install sharp --no-save
+
+# Grant write permissions to nextjs user for all runtime-writable paths.
+# .next/server — prerender cache (ISR), .next/cache — image optimizer, public — uploads
+RUN mkdir -p /app/apps/web/.next/cache \
+ && chown -R nextjs:nodejs /app/apps/web/.next \
+ && chown -R nextjs:nodejs /app/apps/web/public
+
+USER nextjs
+
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+# server.js lives at apps/web/server.js inside the standalone output
+CMD ["node", "apps/web/server.js"]

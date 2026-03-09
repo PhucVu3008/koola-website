@@ -1,0 +1,36 @@
+# =============================================================================
+# /home/anbinhfo1/koola.vn/.htaccess
+# Reverse proxy cho koola.vn addon domain trên cPanel
+#
+# Kiến trúc:
+#   koola.vn/*        → Next.js app (port 3001)
+#   koola.vn/api/*    → Fastify API (port 4001) — được handle bởi Next.js rewrite
+#   koola.vn/uploads/*→ Next.js rewrite → Fastify API (port 4001)
+#
+# LƯU Ý: mod_proxy phải được bật trên server cPanel.
+# Nếu không có mod_proxy, dùng Node.js App thay thế (xem hướng dẫn).
+# =============================================================================
+
+Options -Indexes
+Options +FollowSymLinks
+
+RewriteEngine On
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Redirect www to non-www
+RewriteCond %{HTTP_HOST} ^www\.koola\.vn [NC]
+RewriteRule ^(.*)$ https://koola.vn/$1 [L,R=301]
+
+# Proxy tất cả requests đến Next.js app (chạy trên port 3001)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ http://127.0.0.1:3001/$1 [P,L]
+
+# Security headers
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set X-XSS-Protection "1; mode=block"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
