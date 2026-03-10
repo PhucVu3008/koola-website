@@ -296,7 +296,7 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
             className="text-center"
             style={{ fontSize: 'clamp(0.75rem, 1.8vw, 0.875rem)' }}
           >
-            {isMobile ? 'Trusted by 500+ organizations' : 'Trusted by 500+ leading organizations worldwide'}
+            {isMobile ? 'Your Digital Growth Partner' : 'Empowering businesses with innovative digital solutions'}
           </span>
         </div>
       </div>

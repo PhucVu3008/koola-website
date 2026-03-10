@@ -23,14 +23,10 @@ export function generateOrganizationSchema(baseUrl: string): WithContext<Thing> 
     logo: `${baseUrl}/logo.png`,
     description: 'AI-focused software development and consulting services',
     sameAs: [
-      'https://facebook.com/koola',
-      'https://twitter.com/koola',
-      'https://linkedin.com/company/koola',
-      'https://github.com/koola',
+      'https://www.facebook.com/koola.vn',
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+84-123-456-789',
       contactType: 'customer service',
       email: 'contact@koola.vn',
       availableLanguage: ['English', 'Vietnamese'],

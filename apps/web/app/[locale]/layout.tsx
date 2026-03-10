@@ -65,11 +65,13 @@ export async function generateMetadata({
       title: dict.meta.homeTitle,
       description: dict.meta.homeDescription,
       siteName: dict.meta.siteName,
+      images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'KOOLA' }],
     },
     twitter: {
       card: 'summary_large_image',
       title: dict.meta.homeTitle,
       description: dict.meta.homeDescription,
+      images: ['/og-image.png'],
     },
     icons: {
       icon: [
@@ -80,9 +82,6 @@ export async function generateMetadata({
       ],
       shortcut: '/favicon.svg',
       apple: '/favicon.svg',
-    },
-    other: {
-      'script:ld+json': serializeJsonLd(schemas),
     },
   };
 }
@@ -106,9 +105,20 @@ export default async function LocaleLayout({
   if (!isLocale(locale)) notFound();
 
   const site = await getSiteSettings(locale).catch(() => null);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const schemas = combineSchemas(
+    generateOrganizationSchema(baseUrl),
+    generateWebSiteSchema(baseUrl, locale)
+  );
 
   return (
     <html lang={locale}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(schemas) }}
+        />
+      </head>
       <body>
         <PageLayout locale={locale} site={site}>
           {children}
