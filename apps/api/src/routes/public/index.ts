@@ -9,6 +9,7 @@ import leadsRoutes from './leads';
 import newsletterRoutes from './newsletter';
 import jobsRoutes from './jobs';
 import careersRoutes from './careers';
+import chatRoutes from './chat';
 
 /**
  * Public API routes aggregator.
@@ -36,6 +37,7 @@ const publicRoutes: FastifyPluginAsync = async (server) => {
   await server.register(leadsRoutes, { prefix: '/leads' });
   await server.register(newsletterRoutes, { prefix: '/newsletter' });
   await server.register(jobsRoutes, { prefix: '/jobs' });
+  await server.register(chatRoutes, { prefix: '/chat' });
 };
 
 export default publicRoutes;

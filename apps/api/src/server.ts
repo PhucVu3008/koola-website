@@ -125,7 +125,7 @@ export const buildServer = async () => {
         version: '1.0.0',
       },
       servers: [
-        { url: '/', description: 'Current server' },
+        { url: '/api', description: 'Production (via Nginx /api/ proxy)' },
       ],
       tags: [
         { name: 'Health', description: 'Health checks & metrics' },

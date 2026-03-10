@@ -22,7 +22,7 @@ services:
   # PostgreSQL Database
   # ===========================================================================
   postgres:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     container_name: koola-postgres-prod
     restart: unless-stopped
     environment:
@@ -71,6 +71,7 @@ services:
       RATE_LIMIT_TIMEWINDOW: 60000
       MAX_FILE_SIZE: 10485760
       UPLOAD_DIR: /app/uploads
+      GEMINI_API_KEY: ${GEMINI_API_KEY:?GEMINI_API_KEY is required}
     volumes:
       - api_prod_uploads:/app/uploads
     expose:
@@ -97,6 +98,8 @@ services:
       API_BASE_URL_SERVER: http://api:4000
       # Client-side: browser gọi qua domain public (qua Nginx /api/)
       NEXT_PUBLIC_API_BASE_URL: https://koola.vn/api
+      # SEO: base URL cho canonical, sitemap, OG tags
+      NEXT_PUBLIC_SITE_URL: https://koola.vn
     expose:
       - "3000"
     networks:

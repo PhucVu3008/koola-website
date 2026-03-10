@@ -1,7 +1,7 @@
 services:
   # PostgreSQL Database
   postgres:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     container_name: koola-postgres
     restart: unless-stopped
     environment:
@@ -43,6 +43,7 @@ services:
       RATE_LIMIT_TIMEWINDOW: 60000
       MAX_FILE_SIZE: 10485760
       UPLOAD_DIR: /workspace/apps/api/uploads
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     ports:
       - "4000:4000"
     volumes:
@@ -76,7 +77,7 @@ services:
 
   # PostgreSQL Database (TEST)
   postgres_test:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     container_name: koola-postgres-test
     restart: unless-stopped
     environment:
