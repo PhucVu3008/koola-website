@@ -4,6 +4,7 @@ import { SiteFooter } from '../SiteFooter';
 import { SiteHeader } from '../SiteHeader';
 import { MobileBottomNav } from '../MobileBottomNav';
 import { FloatingContactButton } from '../FloatingContactButton';
+import { ChatWidget } from '../ChatWidget';
 import type { SiteSettingsPayload } from '../../src/lib/api/site';
 
 /**
@@ -28,6 +29,7 @@ export function PageLayout({
       {site ? <SiteFooter locale={locale} site={site} /> : null}
       <MobileBottomNav locale={locale} />
       <FloatingContactButton locale={locale} />
+      <ChatWidget locale={locale} />
     </div>
   );
 }
