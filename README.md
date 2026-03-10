@@ -1,188 +1,153 @@
-# KOOLA Website Project
+# KOOLA Website
 
-## 🏗️ Kiến trúc dự án
+Monorepo cho website KOOLA — Fastify API + Next.js frontend, deploy qua Docker Compose + Cloudflare Tunnel.
 
-### Backend
+## Tech Stackv 
 
-- **Framework**: Fastify 4.x
-- **Database**: PostgreSQL 16 (raw SQL only, NO ORM)
-- **Language**: TypeScript
-- **Validation**: Zod
-- **Auth**: JWT + Refresh Tokens (bcrypt)
-- **API**: RESTful JSON
+**Backend** (`apps/api`)
+- Fastify 4, TypeScript, PostgreSQL 16 (raw SQL, no ORM)
+- Zod validation, JWT auth (access + refresh tokens)
+- Swagger/OpenAPI docs tại `/api-docs`
+- Monitoring: health checks, Prometheus metrics, DB performance
 
-### Frontend
+**Frontend** (`apps/web`)
+- Next.js 14 (App Router), Tailwind CSS
+- i18n: English + Vietnamese (`/en`, `/vi`)
+- SSR (force-dynamic), Server Components
+- Admin panel tại `/admin`
 
-- **Framework**: Next.js 14+ (App Router)
-- **Rendering**: SSG/ISR preferred, SSR when needed
-- **Styling**: Tailwind CSS / CSS Modules
-- **SEO**: Metadata API, Sitemap, Robots, JSON-LD
+**Infrastructure**
+- Docker Compose (postgres, api, web, nginx, cloudflared)
+- Nginx reverse proxy
+- Cloudflare Tunnel (expose ra internet không cần IP tĩnh)
 
-## 🐳 Quick Start
+## Quick Start
 
-### 1. Clone repository (không dùng Docker)
-```bash
-git clone <repo-url>
-cd koola-website
-```
+### Development (Docker)
 
-### 2. Start all services (dùng Docker)
 ```bash
 docker-compose up -d
 ```
 
-### 3. Verify everything is running
-```bash
-# Check container status
-docker-compose ps
-
-# Test API
-curl http://localhost:4000/v1/services?locale=en
-```
-
 Services:
-- **API Backend**: http://localhost:4000
-- **PostgreSQL**: localhost:5432
-- **PgAdmin**: http://localhost:5050
+- Web: http://localhost:3000
+- API: http://localhost:4000
+- PostgreSQL: localhost:5432
+- pgAdmin: http://localhost:5050 (admin@koola.local / admin)
 
-### 📊 Verification Report
+### Development (Local)
 
-See [BACKEND_VERIFICATION.md](./BACKEND_VERIFICATION.md) for detailed test results and API examples.
-- **PostgreSQL**: localhost:5432
-- **pgAdmin**: http://localhost:5050 (admin@koola.local / admin)
-
-### 3. Seed database với sample data
 ```bash
-docker exec -i koola-postgres psql -U koola_user -d koola_db < seed.sql
-```
-
-### 4. Test API
-```bash
-# Health check
-curl http://localhost:4000/health
-
-# Get services
-curl http://localhost:4000/v1/services?locale=en
-
-# Login
-curl -X POST http://localhost:4000/v1/admin/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email": "admin@koola.com", "password": "admin123"}'
-```
-
-## 💻 Development (Local - không dùng Docker)
-
-### Prerequisites
-- Node.js 18+
-- PostgreSQL 16+
-- npm/yarn/pnpm
-
-### Setup Backend
-
-1. **Install dependencies**:
-```bash
-cd apps/api
+# Install dependencies
 npm install
-```
 
-2. **Setup database**:
-```bash
-# Tạo database
+# Setup database
 createdb koola_db
+psql -d koola_db -f db.sql
+psql -d koola_db -f seed.sql
 
-# Import schema
-psql -d koola_db -f ../../db.sql
+# Run API
+cd apps/api && cp .env.example .env && npm run dev
 
-# Import seed data
-psql -d koola_db -f ../../seed.sql
+# Run Web (separate terminal)
+cd apps/web && npm run dev
 ```
 
-3. **Configure environment**:
+### Production
+
 ```bash
-cd apps/api
-cp .env.example .env
-# Edit .env với database credentials
+# Build web trước (Dockerfile.web COPY .next/standalone)
+npm run build --workspace=apps/web
+
+# Start production stack
+docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --build
 ```
 
-4. **Run development server**:
-```bash
-npm run dev
+Production stack: postgres → api → web → nginx → cloudflared → koola.vn
+
+## Project Structure
+
+```
+koola-website/
+├── apps/
+│   ├── api/                    # Fastify API backend
+│   │   ├── src/
+│   │   │   ├── controllers/    # Request/response handling
+│   │   │   ├── services/       # Business logic
+│   │   │   ├── repositories/   # Data access
+│   │   │   ├── routes/         # Route definitions (public + admin)
+│   │   │   ├── schemas/        # Zod validation schemas
+│   │   │   ├── sql/            # Raw SQL queries
+│   │   │   ├── swagger/        # OpenAPI schema definitions
+│   │   │   ├── monitoring/     # Health checks, metrics, tracing
+│   │   │   ├── middleware/     # Auth, error handling
+│   │   │   └── db/            # Database connection
+│   │   └── tests/
+│   └── web/                    # Next.js frontend
+│       ├── app/
+│       │   ├── [locale]/       # Public pages (en/vi)
+│       │   └── admin/[locale]/ # Admin panel
+│       ├── components/
+│       └── src/lib/            # API clients, utilities
+├── nginx/                      # Nginx reverse proxy config
+├── migrations/                 # SQL migration files
+├── db.sql                      # Database schema
+├── seed.sql                    # Sample data
+├── docker-compose.yml          # Development
+├── docker-compose.production.yml # Production
+├── Dockerfile                  # API container
+└── Dockerfile.web              # Web container
 ```
 
-## 📡 API Endpoints Overview
+## API Endpoints
 
-Xem chi tiết trong `/apps/api/README.md`
+Base URL: `https://koola.vn/api` (production) | `http://localhost:4000` (dev)
 
-### Public API (`/v1`)
-- Services: List & Detail (bundled)
-- Posts: List & Detail (bundled)
-- Pages: Dynamic pages
-- Navigation & Settings
-- Forms: Contact & Newsletter
-- Jobs: List & Detail
+**API Docs**: https://koola.vn/api-docs (Swagger UI)
 
-### Admin API (`/v1/admin`)
-- Authentication: Login, Refresh, Logout
-- CRUD operations (coming soon)
+### Public (`/v1`)
+- `GET /v1/services` — List services (paginated, filterable)
+- `GET /v1/services/:slug` — Service detail (bundled with deliverables, FAQs, related)
+- `GET /v1/posts` — List posts
+- `GET /v1/posts/:slug` — Post detail
+- `GET /v1/pages/:slug` — CMS page by slug
+- `GET /v1/nav` — Navigation items
+- `GET /v1/site/settings` — Site settings
+- `POST /v1/leads` — Contact form
+- `POST /v1/newsletter/subscribe` — Newsletter subscribe
+- `GET /v1/jobs` — Job listings
+- `GET /v1/jobs/:slug` — Job detail
 
-## 🗄️ Database Schema
+### Admin (`/v1/admin`) — JWT protected
+- Auth: login, refresh, logout
+- Full CRUD: services, posts, categories, tags, pages, sections, nav items, site settings, media, jobs, users
+- Management: leads, newsletter subscribers
 
-Database schema được định nghĩa trong `db.sql`:
+### Monitoring
+- `GET /health` — Liveness check
+- `GET /health/ready` — Readiness check
+- `GET /health/full` — Detailed health report
+- `GET /metrics` — Prometheus format
+- `GET /metrics/json` — JSON metrics
+- `GET /metrics/db` — DB performance
 
-**Entities**: users, roles, services, posts, pages, categories, tags, deliverables, process_steps, faqs, case_studies, leads, newsletter_subscribers, job_posts, ads, media_assets, nav_items, site_settings
-
-**Key Features**: Multi-language, content status workflow, SEO fields, relationships, timestamps
-
-## 🔐 Authentication
+## Authentication
 
 JWT-based với refresh token pattern.
 
-**Default admin** (từ seed.sql):
-- Email: `admin@koola.com`
-- Password: `admin123`
+Default admin (seed.sql): `admin@koola.com` / `admin123`
 
-## 📦 Response Format
+## Environment Variables
 
-**Success**:
-```json
-{
-  "data": { ... },
-  "meta": { "page": 1, "pageSize": 10, "total": 100, "totalPages": 10 }
-}
-```
+Xem `.env.example` (API) và `.env.production.local` (production).
 
-**Error**:
-```json
-{
-  "error": {
-    "code": "VALIDATION_ERROR|NOT_FOUND|UNAUTHORIZED|FORBIDDEN|INTERNAL",
-    "message": "Error description",
-    "details": { ... }
-  }
-}
-```
+Key variables: `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `CORS_ORIGINS`, `CLOUDFLARE_TUNNEL_TOKEN`
 
-## 🛠️ Development Guidelines
+## Resources
 
-### Hard Constraints
-
-1. **Database**: RAW SQL ONLY - NO ORM, parameterized queries, transactions
-2. **Backend**: Separate Node.js service (không dùng Next.js API routes), Fastify, Zod validation
-3. **Frontend**: Next.js App Router, SSG/ISR preferred, Server Components
-
-### Code Organization
-- SQL queries: `/apps/api/src/sql/`
-- Zod schemas: `/apps/api/src/schemas/`
-- Routes: `public/` và `admin/`
-- DB helpers: `/apps/api/src/db/`
-
-## 📚 Resources
-
-- [Project Instructions](.github/copilot-instructions.md)
 - [API Documentation](apps/api/README.md)
+- [Web Documentation](apps/web/README.md)
 - [Database Schema](db.sql)
-- [Sample Data](seed.sql)
+- [Cloudflare Tunnel Setup](docs/2026-03-05_CLOUDFLARE_TUNNEL_SETUP.md)
+- [Swagger UI](https://koola.vn/api-docs)
 
----
-
-**Built with ❤️ for KOOLA**

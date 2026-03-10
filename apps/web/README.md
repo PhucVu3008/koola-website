@@ -1,22 +1,66 @@
-# @koola/web
+# KOOLA Web Frontend
 
-Next.js (App Router) frontend for KOOLA marketing website.
+Next.js 14 (App Router) frontend cho KOOLA website — i18n, SSR, Tailwind CSS.
 
-## Data sources
-- Public API base: `NEXT_PUBLIC_API_BASE_URL`
-  - Docker Compose sets it to `http://api:4000` for container-to-container calls.
+## Tech Stack
 
-## Local development (Docker-first)
-- Start everything:
-  - `docker-compose up -d`
-- Open:
-  - Web: http://localhost:3000
-  - API: http://localhost:4000/health
+- **Framework**: Next.js 14 (App Router)
+- **Styling**: Tailwind CSS
+- **i18n**: English (`/en`) + Vietnamese (`/vi`)
+- **Rendering**: SSR (force-dynamic)
+- **Admin**: Full CMS admin panel
 
-## Notes
-- Primary pages:
-  - `/` (Home)
-  - `/about` (CMS-backed via `GET /v1/pages/about`)
-  - `/services`
-  - `/services/[slug]`
-  - `/contact` (posts to `POST /v1/leads`)
+## Pages
+
+### Public (`/[locale]/...`)
+
+| Route | Description |
+|-------|-------------|
+| `/` | Homepage |
+| `/about` | About page (CMS-backed) |
+| `/services` | Services listing |
+| `/services/[slug]` | Service detail |
+| `/careers` | Careers page |
+| `/careers/[slug]` | Job detail |
+| `/contact` | Contact form |
+| `/privacy` | Privacy policy |
+| `/terms` | Terms of service |
+| `/cookies` | Cookie policy |
+
+### Admin (`/admin/[locale]/...`)
+
+| Route | Description |
+|-------|-------------|
+| `/admin` | Dashboard |
+| `/admin/login` | Login |
+| `/admin/services` | Service CRUD |
+| `/admin/posts` | Post CRUD |
+| `/admin/categories` | Category management |
+| `/admin/tags` | Tag management |
+| `/admin/pages` | Page + sections management |
+| `/admin/navigation` | Nav items |
+| `/admin/settings` | Site settings |
+| `/admin/jobs` | Job management |
+| `/admin/leads` | Lead management |
+| `/admin/newsletter` | Newsletter subscribers |
+| `/admin/users` | User management |
+
+## Data Sources
+
+- Server-side API: `API_BASE_URL_SERVER` (Docker: `http://api:4000`)
+- Client-side API: `NEXT_PUBLIC_API_BASE_URL` (Production: `https://koola.vn/api`)
+
+## Development
+
+```bash
+npm run dev          # Dev server (http://localhost:3000)
+npm run build        # Production build
+npm start            # Start production server
+```
+
+## Middleware
+
+`middleware.ts` handles:
+- Locale detection from `Accept-Language` header
+- Redirect to locale-prefixed routes (`/` → `/en` or `/vi`)
+- Bypass for static assets, `/_next`, `/api-docs`, `/admin`
