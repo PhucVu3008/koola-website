@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { logger } from '../src/lib/logger';
 
-import { getDictionary, getLocaleLabel, getSupportedLocales } from '../src/i18n/getDictionary';
+import { getDictionary, getSupportedLocales } from '../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../src/i18n/locales';
 
 /**
@@ -136,32 +136,33 @@ export function SiteHeader({ locale }: { locale: string }) {
 
             {/* Desktop Actions - Hidden on mobile */}
             <div className="hidden lg:flex items-center fluid-gap-sm">
-              <label className="sr-only" htmlFor="locale-select">
-                Language
-              </label>
-              <select
-                id="locale-select"
-                className="rounded-full border border-slate-200 bg-white fluid-text-xs font-semibold text-slate-800 transition-colors hover:border-slate-300 fluid-h-sm"
-                style={{ paddingLeft: 'clamp(0.625rem, 2vw, 0.75rem)', paddingRight: 'clamp(0.625rem, 2vw, 0.75rem)' }}
-                value={baseLocale}
-                disabled={isSwitching}
-                onChange={async (e) => {
-                  if (isSwitching) return;
-                  setIsSwitching(true);
-                  try {
-                    const newUrl = await switchTo(e.target.value);
-                    router.push(newUrl);
-                  } finally {
-                    setIsSwitching(false);
-                  }
-                }}
-              >
+              <div className="relative flex items-center rounded-full border border-slate-200 bg-slate-50 p-0.5" role="radiogroup" aria-label="Language">
                 {supportedLocales.map((l) => (
-                  <option key={l} value={l}>
-                    {getLocaleLabel(l, baseLocale)}
-                  </option>
+                  <button
+                    key={l}
+                    role="radio"
+                    aria-checked={baseLocale === l}
+                    disabled={isSwitching}
+                    onClick={async () => {
+                      if (l === baseLocale || isSwitching) return;
+                      setIsSwitching(true);
+                      try {
+                        const newUrl = await switchTo(l);
+                        router.push(newUrl);
+                      } finally {
+                        setIsSwitching(false);
+                      }
+                    }}
+                    className={`relative z-10 rounded-full px-3 py-1 text-xs font-semibold transition-all duration-200 ${
+                      baseLocale === l
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-700'
+                    } ${isSwitching ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                  >
+                    {l.toUpperCase()}
+                  </button>
                 ))}
-              </select>
+              </div>
 
               <Link
                 href={withLocale('/contact')}
@@ -279,34 +280,39 @@ export function SiteHeader({ locale }: { locale: string }) {
 
           {/* Mobile Actions */}
           <div className="space-y-4 pt-6 border-t border-slate-200">
-            {/* Locale Selector */}
+            {/* Locale Toggle */}
             <div>
-              <label htmlFor="mobile-locale-select" className="block fluid-text-sm font-medium text-slate-700 mb-2">
+              <span className="block fluid-text-sm font-medium text-slate-700 mb-2">
                 {locale === 'vi' ? 'Ngôn ngữ' : 'Language'}
-              </label>
-              <select
-                id="mobile-locale-select"
-                className="w-full rounded-lg border border-slate-200 bg-white px-4 fluid-text-base text-slate-800 transition-colors hover:border-slate-300 fluid-h-md"
-                value={baseLocale}
-                disabled={isSwitching}
-                onChange={async (e) => {
-                  if (isSwitching) return;
-                  setIsSwitching(true);
-                  try {
-                    const newUrl = await switchTo(e.target.value);
-                    router.push(newUrl);
-                    setMobileMenuOpen(false);
-                  } finally {
-                    setIsSwitching(false);
-                  }
-                }}
-              >
+              </span>
+              <div className="flex items-center rounded-xl border border-slate-200 bg-slate-50 p-1" role="radiogroup" aria-label="Language">
                 {supportedLocales.map((l) => (
-                  <option key={l} value={l}>
-                    {getLocaleLabel(l, baseLocale)}
-                  </option>
+                  <button
+                    key={l}
+                    role="radio"
+                    aria-checked={baseLocale === l}
+                    disabled={isSwitching}
+                    onClick={async () => {
+                      if (l === baseLocale || isSwitching) return;
+                      setIsSwitching(true);
+                      try {
+                        const newUrl = await switchTo(l);
+                        router.push(newUrl);
+                        setMobileMenuOpen(false);
+                      } finally {
+                        setIsSwitching(false);
+                      }
+                    }}
+                    className={`flex-1 rounded-lg py-2.5 text-center text-sm font-semibold transition-all duration-200 ${
+                      baseLocale === l
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-700'
+                    } ${isSwitching ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                  >
+                    {l === 'vi' ? '🇻🇳 Tiếng Việt' : '🇬🇧 English'}
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
 
             {/* CTA Button */}

@@ -2,31 +2,10 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 import { isLocale, LOCALES } from './src/i18n/locales';
 
-const DEFAULT_LOCALE = 'en';
+const DEFAULT_LOCALE = 'vi';
 
-/**
- * Detect preferred locale from Accept-Language header.
- * Returns 'vi' if Vietnamese is preferred, otherwise 'en'.
- */
-function detectLocale(request: NextRequest): string {
-  const acceptLang = request.headers.get('accept-language');
-  if (!acceptLang) return DEFAULT_LOCALE;
-
-  // Parse Accept-Language: e.g. "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7"
-  const preferred = acceptLang
-    .split(',')
-    .map((part) => {
-      const [lang, qPart] = part.trim().split(';');
-      const q = qPart ? parseFloat(qPart.replace('q=', '')) : 1;
-      const code = lang.split('-')[0].toLowerCase();
-      return { code, q };
-    })
-    .sort((a, b) => b.q - a.q);
-
-  for (const { code } of preferred) {
-    if (isLocale(code)) return code;
-  }
-
+/** Always returns the default locale (vi). */
+function detectLocale(_request: NextRequest): string {
   return DEFAULT_LOCALE;
 }
 

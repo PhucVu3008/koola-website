@@ -6,5 +6,5 @@ import { redirect } from 'next/navigation';
  * We use locale-prefixed routes (`/en`, `/vi`) for SEO and clarity.
  */
 export default function RootPage() {
-  redirect('/en');
+  redirect('/vi');
 }
