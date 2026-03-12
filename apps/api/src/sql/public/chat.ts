@@ -4,6 +4,7 @@ export const SEARCH_EMBEDDINGS = `
          1 - (embedding <=> $1::vector) AS similarity
   FROM content_embeddings
   WHERE locale = $2
+    AND 1 - (embedding <=> $1::vector) > 0.4
   ORDER BY embedding <=> $1::vector
   LIMIT $3
 `;
@@ -32,6 +33,21 @@ export const GET_SERVICE_FAQS_FOR_INDEX = `
   FROM service_faqs sf
   JOIN services s ON sf.service_id = s.id
   WHERE s.status = 'published' AND s.locale = $1
+`;
+
+export const GET_ALL_PAGES_FOR_INDEX = `
+  SELECT id, locale, slug, title, seo_description
+  FROM pages
+  WHERE status = 'published' AND locale = $1
+`;
+
+export const GET_PAGE_SECTIONS_FOR_INDEX = `
+  SELECT ps.id, ps.section_key, ps.payload,
+         p.locale, p.slug AS page_slug, p.title AS page_title
+  FROM page_sections ps
+  JOIN pages p ON ps.page_id = p.id
+  WHERE p.status = 'published' AND p.locale = $1
+  ORDER BY p.id, ps.sort_order
 `;
 
 // ─── Upsert embedding ───────────────────────────────────────────

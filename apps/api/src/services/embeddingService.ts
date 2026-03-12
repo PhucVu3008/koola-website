@@ -34,6 +34,54 @@ interface FaqRow {
   service_slug: string;
 }
 
+interface PageSectionRow {
+  id: number;
+  section_key: string;
+  payload: Record<string, unknown>;
+  locale: string;
+  page_slug: string;
+  page_title: string;
+}
+
+/**
+ * Extract readable text from a page_section JSONB payload.
+ * Handles common field patterns: headline, paragraphs, content_md, description, items, etc.
+ */
+function extractTextFromPayload(_sectionKey: string, payload: Record<string, unknown>): string {
+  const parts: string[] = [];
+
+  const addIfString = (val: unknown) => {
+    if (typeof val === 'string' && val.trim()) parts.push(val.trim());
+  };
+
+  addIfString(payload.label);
+  addIfString(payload.headline);
+  addIfString(payload.subheadline);
+  addIfString(payload.title);
+  addIfString(payload.subtitle);
+  addIfString(payload.description);
+  addIfString(payload.content_md);
+
+  if (Array.isArray(payload.paragraphs)) {
+    for (const p of payload.paragraphs) addIfString(p);
+  }
+
+  if (Array.isArray(payload.items)) {
+    for (const item of payload.items) {
+      if (typeof item === 'object' && item !== null) {
+        const obj = item as Record<string, unknown>;
+        addIfString(obj.title);
+        addIfString(obj.description);
+        addIfString(obj.quote);
+        addIfString(obj.year);
+        addIfString(obj.role);
+      }
+    }
+  }
+
+  return parts.join('\n').slice(0, 2000);
+}
+
 /**
  * Split markdown content into focused chunks by ## headings.
  * Each chunk gets the parent title prepended for context.
@@ -136,4 +184,23 @@ export const indexLocale = async (locale: string) => {
     });
   }
   console.log(`    ${faqs.length} FAQs indexed`);
+
+  console.log(`  Indexing page sections (${locale})...`);
+  const sections = await query<PageSectionRow>(SQL.GET_PAGE_SECTIONS_FOR_INDEX, [locale]);
+  let pageSectionCount = 0;
+  for (const s of sections) {
+    const text = extractTextFromPayload(s.section_key, s.payload);
+    if (text.length < 30) continue; // skip trivial sections (CTAs, empty payloads)
+
+    const chunkText = `${s.page_title} — ${s.section_key}\n${text}`;
+    const embedding = await embedText(chunkText);
+    const pageUrl = s.page_slug === 'home' ? `/${locale}` : `/${locale}/${s.page_slug}`;
+    await chatRepo.upsertEmbedding('page', s.id, locale, 0, chunkText, embedding, {
+      title: s.page_title,
+      section: s.section_key,
+      url: pageUrl,
+    });
+    pageSectionCount++;
+  }
+  console.log(`    ${sections.length} sections → ${pageSectionCount} chunks indexed`);
 };

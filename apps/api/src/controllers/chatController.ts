@@ -19,20 +19,21 @@ export const chat = async (request: FastifyRequest, reply: FastifyReply) => {
   await streamChatResponse(
     input,
     (text) => send('chunk', text),
-    () => {
+    (suggestions) => {
       send('done', '');
+      if (suggestions.length > 0) {
+        reply.raw.write(`event: suggestions\ndata: ${JSON.stringify(suggestions)}\n\n`);
+      }
       reply.raw.end();
     },
     (err) => {
-      const msg = err.message || '';
-      if (msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')) {
-        request.log.warn('Chat rate limited by Gemini API');
-        send('error', 'AI đang bận, vui lòng thử lại sau vài giây.');
-      } else {
-        request.log.error(err, 'Chat stream error');
-        send('error', 'Something went wrong. Please try again.');
-      }
+      request.log.error(err, 'Chat stream error');
+      send('error', 'An error occurred while processing your request. Please try again.');
       reply.raw.end();
     }
   );
+
+  if (!reply.raw.writableEnded) {
+    reply.raw.end();
+  }
 };

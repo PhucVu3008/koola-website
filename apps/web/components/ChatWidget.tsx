@@ -6,7 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { usePathname } from 'next/navigation';
 
-type Message = { role: 'user' | 'bot'; text: string; streaming?: boolean };
+type Message = { role: 'user' | 'bot'; text: string; streaming?: boolean; suggestions?: string[] };
 
 const API_BASE =
   typeof window !== 'undefined'
@@ -37,10 +37,29 @@ const SUGGESTIONS = {
   en: ['KOOLA services', 'Career opportunities', 'Get in touch'],
 };
 
+const STORAGE_KEY = 'koola-chat-messages';
+
+function loadMessages(): Message[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as Message[];
+    // Clear any leftover streaming state
+    return parsed.map((m) => ({ ...m, streaming: false }));
+  } catch { return []; }
+}
+
+function saveMessages(msgs: Message[]) {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
+  } catch { /* quota exceeded — ignore */ }
+}
+
 export function ChatWidget({ locale }: { locale: string }) {
   const pathname = usePathname() ?? '';
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(loadMessages);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [greetingVisible, setGreetingVisible] = useState(false);
@@ -52,6 +71,10 @@ export function ChatWidget({ locale }: { locale: string }) {
   const lang = locale === 'vi' ? 'vi' : 'en';
 
   if (pathname.startsWith('/admin')) return null;
+
+  // Persist messages to sessionStorage
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { saveMessages(messages); }, [messages]);
 
   const scrollToBottom = () =>
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -98,6 +121,7 @@ export function ChatWidget({ locale }: { locale: string }) {
     setMessages((prev) => [...prev, userMsg]);
     setLoading(true);
 
+    // Build history from previous messages (exclude current — it's sent as `message`)
     const history = messages.slice(-10).map((m) => ({
       role: m.role === 'user' ? ('user' as const) : ('model' as const),
       text: m.text,
@@ -117,6 +141,8 @@ export function ChatWidget({ locale }: { locale: string }) {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
+      let errorNext = false;
+      let suggestionsNext = false;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -127,6 +153,27 @@ export function ChatWidget({ locale }: { locale: string }) {
         buffer = lines.pop() ?? '';
 
         for (const line of lines) {
+          if (line.startsWith('event: error')) {
+            // Next data: line contains the error message — flag it
+            errorNext = true;
+            continue;
+          }
+          if (errorNext && line.startsWith('data:')) {
+            errorNext = false;
+            const raw = line.slice(5).trim();
+            let errMsg = raw;
+            try { errMsg = JSON.parse(raw); } catch { /* use raw */ }
+            setMessages((prev) => {
+              const updated = [...prev];
+              const last = updated[updated.length - 1];
+              if (last?.streaming) {
+                last.text = `⚠️ ${errMsg}`;
+                last.streaming = false;
+              }
+              return updated;
+            });
+            continue;
+          }
           if (line.startsWith('data:')) {
             const data = line.slice(5).trim();
             if (!data) continue;
@@ -146,36 +193,43 @@ export function ChatWidget({ locale }: { locale: string }) {
             setMessages((prev) => {
               const updated = [...prev];
               const last = updated[updated.length - 1];
-              if (last?.streaming) last.streaming = false;
-              return updated;
-            });
-          }
-          if (line.startsWith('event: error')) {
-            setMessages((prev) => {
-              const updated = [...prev];
-              const last = updated[updated.length - 1];
               if (last?.streaming) {
-                last.text =
-                  locale === 'vi'
-                    ? 'Đã xảy ra lỗi. Vui lòng thử lại.'
-                    : 'Something went wrong. Please try again.';
+                // Strip trailing suggestions block (---\n["...", ...]) from displayed text
+                last.text = last.text.replace(/\n---\n\s*\[[\s\S]*\]\s*$/, '').trimEnd();
                 last.streaming = false;
               }
               return updated;
             });
           }
+          if (line.startsWith('event: suggestions')) {
+            suggestionsNext = true;
+            continue;
+          }
+          if (suggestionsNext && line.startsWith('data:')) {
+            suggestionsNext = false;
+            try {
+              const suggestions = JSON.parse(line.slice(5).trim()) as string[];
+              if (Array.isArray(suggestions)) {
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  const lastBot = [...updated].reverse().find((m) => m.role === 'bot');
+                  if (lastBot) lastBot.suggestions = suggestions;
+                  return updated;
+                });
+              }
+            } catch { /* ignore */ }
+            continue;
+          }
         }
       }
     } catch (err: unknown) {
       if (err instanceof DOMException && err.name === 'AbortError') return;
+      const errMsg = err instanceof Error ? err.message : String(err);
       setMessages((prev) => {
         const updated = [...prev];
         const last = updated[updated.length - 1];
         if (last?.streaming) {
-          last.text =
-            locale === 'vi'
-              ? 'Đã xảy ra lỗi. Vui lòng thử lại.'
-              : 'Something went wrong. Please try again.';
+          last.text = `⚠️ ${errMsg}`;
           last.streaming = false;
         }
         return updated;
@@ -191,7 +245,7 @@ export function ChatWidget({ locale }: { locale: string }) {
     <>
       {/* Chat Panel */}
       {open && (
-        <div className="fixed bottom-40 right-4 z-50 flex h-[520px] w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/10">
+        <div className="fixed bottom-40 right-4 z-50 flex h-[520px] w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/10 lg:bottom-24">
           {/* Header */}
           <div className="flex items-center gap-3 rounded-t-2xl bg-gradient-to-r from-brand-600 to-brand-700 px-4 py-3 text-white">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
@@ -253,36 +307,51 @@ export function ChatWidget({ locale }: { locale: string }) {
 
               {/* Message list */}
               {messages.map((msg, i) => (
-                <div
-                  key={i}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'items-end gap-2'}`}
-                >
-                  {msg.role === 'bot' && (
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-600">
-                      <Bot className="h-3.5 w-3.5" />
+                <div key={i}>
+                  <div
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'items-end gap-2'}`}
+                  >
+                    {msg.role === 'bot' && (
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+                        <Bot className="h-3.5 w-3.5" />
+                      </div>
+                    )}
+                    <div
+                      className={`max-w-[85%] text-sm ${
+                        msg.role === 'user'
+                          ? 'rounded-2xl rounded-br-md bg-brand-600 px-3.5 py-2.5 text-white'
+                          : 'rounded-2xl rounded-bl-md bg-white px-3.5 py-2.5 text-gray-700 shadow-sm ring-1 ring-black/5'
+                      }`}
+                    >
+                      {msg.role === 'bot' ? (
+                        msg.text || msg.streaming ? (
+                          <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {msg.text + (msg.streaming ? '▋' : '')}
+                            </ReactMarkdown>
+                          </div>
+                        ) : (
+                          <TypingIndicator />
+                        )
+                      ) : (
+                        msg.text
+                      )}
+                    </div>
+                  </div>
+                  {/* Follow-up suggestions after bot message */}
+                  {msg.role === 'bot' && msg.suggestions && !msg.streaming && i === messages.length - 1 && !loading && (
+                    <div className="flex flex-wrap gap-1.5 pl-8 mt-2">
+                      {msg.suggestions.map((s) => (
+                        <button
+                          key={s}
+                          onClick={() => sendMessage(s)}
+                          className="rounded-full border border-brand-200 bg-white px-2.5 py-1 text-xs font-medium text-brand-600 shadow-sm transition-colors hover:bg-brand-50 hover:border-brand-300"
+                        >
+                          {s}
+                        </button>
+                      ))}
                     </div>
                   )}
-                  <div
-                    className={`max-w-[85%] text-sm ${
-                      msg.role === 'user'
-                        ? 'rounded-2xl rounded-br-md bg-brand-600 px-3.5 py-2.5 text-white'
-                        : 'rounded-2xl rounded-bl-md bg-white px-3.5 py-2.5 text-gray-700 shadow-sm ring-1 ring-black/5'
-                    }`}
-                  >
-                    {msg.role === 'bot' ? (
-                      msg.text || msg.streaming ? (
-                        <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {msg.text + (msg.streaming ? '▋' : '')}
-                          </ReactMarkdown>
-                        </div>
-                      ) : (
-                        <TypingIndicator />
-                      )
-                    ) : (
-                      msg.text
-                    )}
-                  </div>
                 </div>
               ))}
               <div ref={bottomRef} />
@@ -321,45 +390,48 @@ export function ChatWidget({ locale }: { locale: string }) {
         </div>
       )}
 
-      {/* Popup greeting bubble — positioned to the left of the chat button */}
-      {popupVisible && !open && (
-        <div className="fixed bottom-[6.5rem] right-20 z-50 animate-in fade-in slide-in-from-right-2 duration-300">
-          <div
-            className="relative max-w-[260px] cursor-pointer rounded-2xl bg-white px-4 py-3 text-sm text-gray-700 shadow-lg ring-1 ring-black/10"
-            onClick={() => { setPopupVisible(false); setPopupDismissed(true); setOpen(true); }}
-          >
-            <button
-              onClick={(e) => { e.stopPropagation(); setPopupVisible(false); setPopupDismissed(true); }}
-              className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-gray-200 text-gray-500 shadow-sm transition-colors hover:bg-gray-300"
-              aria-label="Dismiss"
+      {/* Floating Bubble + Greeting wrapper */}
+      <div className="fixed bottom-24 right-4 z-50 lg:bottom-8">
+        {/* Popup greeting bubble — anchored relative to the bubble */}
+        {popupVisible && !open && (
+          <div className="absolute bottom-0 right-[4.5rem] animate-in fade-in slide-in-from-right-2 duration-300">
+            <div
+              className="relative whitespace-nowrap cursor-pointer rounded-2xl bg-white px-4 py-3 text-sm text-gray-700 shadow-lg ring-1 ring-black/10"
+              onClick={() => { setPopupVisible(false); setPopupDismissed(true); setOpen(true); }}
             >
-              <X className="h-3 w-3" />
-            </button>
-            {getTimeGreeting(lang)} {lang === 'vi' ? 'Bạn cần hỗ trợ gì không?' : 'Need any help?'}
-            {/* Triangle pointer pointing right toward the chat button */}
-            <div className="absolute right-[-6px] top-1/2 h-3 w-3 -translate-y-1/2 rotate-45 bg-white ring-1 ring-black/10" style={{ clipPath: 'polygon(100% 0%, 100% 100%, 0% 100%)' }} />
+              <button
+                onClick={(e) => { e.stopPropagation(); setPopupVisible(false); setPopupDismissed(true); }}
+                className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-gray-200 text-gray-500 shadow-sm transition-colors hover:bg-gray-300"
+                aria-label="Dismiss"
+              >
+                <X className="h-3 w-3" />
+              </button>
+              {getTimeGreeting(lang)} {lang === 'vi' ? 'Bạn cần hỗ trợ gì không?' : 'Need any help?'}
+              {/* Triangle pointer pointing right toward the chat button */}
+              <div className="absolute right-[-6px] top-1/2 h-3 w-3 -translate-y-1/2 rotate-45 bg-white ring-1 ring-black/10" style={{ clipPath: 'polygon(100% 0%, 100% 100%, 0% 100%)' }} />
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* Floating Bubble */}
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-24 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-lg shadow-brand-500/30 transition-transform hover:scale-105"
-        aria-label={lang === 'vi' ? 'Mở trợ lý AI' : 'Open AI assistant'}
-      >
-        {open ? (
-          <X className="h-6 w-6" />
-        ) : (
-          <>
-            <span
-              className="absolute inset-0 animate-ping rounded-full bg-brand-400/40"
-              style={{ animationDuration: '3s' }}
-            />
-            <MessageCircle className="relative z-10 h-6 w-6" />
-          </>
         )}
-      </button>
+
+        {/* Bubble button */}
+        <button
+          onClick={() => setOpen((o) => !o)}
+          className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-lg shadow-brand-500/30 transition-transform hover:scale-105"
+          aria-label={lang === 'vi' ? 'Mở trợ lý AI' : 'Open AI assistant'}
+        >
+          {open ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <>
+              <span
+                className="absolute inset-0 animate-ping rounded-full bg-brand-400/40"
+                style={{ animationDuration: '3s' }}
+              />
+              <MessageCircle className="relative z-10 h-6 w-6" />
+            </>
+          )}
+        </button>
+      </div>
     </>
   );
 }
