@@ -54,7 +54,7 @@ export function PrimaryCTASection({ data }: { data: PrimaryCTASectionData }) {
               variant="primary"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
-              className="relative flex h-12 items-center justify-center rounded-full bg-white px-8 text-base font-semibold text-blue-600 shadow-lg shadow-white/20 transition-all duration-300 hover:scale-105 hover:bg-white/95 hover:shadow-xl hover:shadow-white/30"
+              className="relative flex h-12 items-center justify-center rounded-full bg-white px-8 text-base font-semibold text-brand-600 shadow-lg shadow-white/20 transition-all duration-300 hover:scale-105 hover:bg-white/95 hover:shadow-xl hover:shadow-white/30"
             >
               <span className="relative z-10">{data.ctaLabel}</span>
               
@@ -83,7 +83,7 @@ export function PrimaryCTASection({ data }: { data: PrimaryCTASectionData }) {
             />
             
             {/* Overlay gradient to blend with background */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-blue-600/20 via-transparent to-transparent transition-opacity duration-500 group-hover:opacity-0" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-600/20 via-transparent to-transparent transition-opacity duration-500 group-hover:opacity-0" />
           </div>
         </div>
       </div>
