@@ -76,11 +76,12 @@ export type ServiceDetailPayload = {
   process_steps?: Array<{ id: number; title: string; description?: string | null; sort_order?: number }>;
   faqs?: Array<{ id: number; question: string; answer: string }>;
   benefits?: Array<{ id: number; title: string; description?: string | null; icon_name?: string | null }>;
-  related_services?: Array<{ 
-    id: number; 
-    slug: string; 
-    title: string; 
-    excerpt?: string | null; 
+  images?: Array<{ id: number; url: string; alt: string; caption: string; sort_order: number }>;
+  related_services?: Array<{
+    id: number;
+    slug: string;
+    title: string;
+    excerpt?: string | null;
     hero_image_url?: string | null;
   }>;
   sidebar?: unknown;

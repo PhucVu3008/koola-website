@@ -77,6 +77,7 @@ export const getServiceBySlug = async (slug: string, locale: string) => {
     process_steps,
     faqs,
     benefits,
+    images,
     related_services,
     related_posts,
     sidebarTags,
@@ -88,6 +89,7 @@ export const getServiceBySlug = async (slug: string, locale: string) => {
     serviceRepository.getServiceProcessSteps(service.id),
     serviceRepository.getServiceFaqs(service.id),
     serviceRepository.getServiceBenefits(service.id),
+    serviceRepository.getServiceImages(service.id),
     serviceRepository.getRelatedServices(service.id, locale),
     serviceRepository.getRelatedPosts(service.id, locale),
     sidebarRepository.getTags(locale),
@@ -102,6 +104,7 @@ export const getServiceBySlug = async (slug: string, locale: string) => {
     process_steps,
     faqs,
     benefits,
+    images,
     related_services,
     related_posts,
     sidebar: {

@@ -18,11 +18,19 @@ export type ServiceDetailHeroData = {
   ctaSecondary: { label: string; href: string };
 };
 
+export type ServiceImageItem = {
+  id: number;
+  url: string;
+  alt: string;
+  caption: string;
+};
+
 export type ServiceDetailContentData = {
   highlightTitle: string;
   coverImage: string;
   heading: string;
   content: string; // Full markdown content as string
+  images: ServiceImageItem[];
   ctaPrimary: { label: string; href: string };
   ctaSecondary: { label: string; href: string };
 };

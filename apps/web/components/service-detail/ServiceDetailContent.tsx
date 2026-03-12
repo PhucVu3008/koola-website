@@ -73,6 +73,30 @@ export function ServiceDetailContent({ data }: { data: ServiceDetailContentData 
         </ReactMarkdown>
       </div>
 
+      {/* Image Gallery */}
+      {data.images.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {data.images.map((img) => (
+            <figure key={img.id} className="group relative overflow-hidden rounded-2xl bg-slate-100">
+              <div className="relative aspect-[4/3]">
+                <Image
+                  src={img.url}
+                  alt={img.alt}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 ring-1 ring-inset ring-slate-900/10" />
+              </div>
+              {img.caption && (
+                <figcaption className="px-3 py-2 text-sm text-slate-500 text-center">
+                  {img.caption}
+                </figcaption>
+              )}
+            </figure>
+          ))}
+        </div>
+      )}
+
       {/* Bottom CTAs - Enhanced + Responsive */}
       <div
         className="flex flex-col sm:flex-row gap-3 sm:gap-4 border-t border-slate-200 pt-6 sm:pt-8"

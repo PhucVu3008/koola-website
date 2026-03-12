@@ -149,6 +149,18 @@ export const getServiceBenefits = async (serviceId: number) => {
 };
 
 /**
+ * Get gallery images for a service.
+ *
+ * @param serviceId - Service id.
+ * @returns Image rows ordered by sort_order.
+ *
+ * @throws Will throw if the database query fails.
+ */
+export const getServiceImages = async (serviceId: number) => {
+  return await query(SQL.GET_SERVICE_IMAGES, [serviceId]);
+};
+
+/**
  * Get related services for a service.
  *
  * @param serviceId - Service id.

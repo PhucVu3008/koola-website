@@ -283,6 +283,21 @@ export const GET_SERVICE_RELATED_POSTS = `
 `;
 
 /**
+ * GET_SERVICE_IMAGES
+ *
+ * Fetch gallery images for a service, ordered by sort_order.
+ *
+ * Parameters:
+ * - $1 service_id
+ */
+export const GET_SERVICE_IMAGES = `
+  SELECT id, url, alt, caption, sort_order
+  FROM service_images
+  WHERE service_id = $1
+  ORDER BY sort_order ASC
+`;
+
+/**
  * GET_SERVICE_ALTERNATE_SLUG
  *
  * Get the slug for the same service in a different locale.

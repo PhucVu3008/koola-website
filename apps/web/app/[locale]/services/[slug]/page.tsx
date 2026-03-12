@@ -156,6 +156,12 @@ export default async function ServiceDetailRoute({
       coverImage: data.service.hero_image_url || `/services/${imageSlug}.jpg`,
       heading: data.service.title,
       content: data.service.content_md || data.service.excerpt || '', // Pass full markdown content as string
+      images: (data.images ?? []).map((img: any) => ({
+        id: img.id,
+        url: img.url,
+        alt: img.alt || '',
+        caption: img.caption || '',
+      })),
       ctaPrimary: {
         label: dict.serviceDetail.cta.bookCall,
         href: `/${locale}/contact`,
