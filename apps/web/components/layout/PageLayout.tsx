@@ -3,7 +3,6 @@ import type { ReactNode } from 'react';
 import { SiteFooter } from '../SiteFooter';
 import { SiteHeader } from '../SiteHeader';
 import { MobileBottomNav } from '../MobileBottomNav';
-import { FloatingContactButton } from '../FloatingContactButton';
 import { ChatWidget } from '../ChatWidget';
 import type { SiteSettingsPayload } from '../../src/lib/api/site';
 
@@ -19,16 +18,15 @@ export function PageLayout({
   children,
 }: {
   locale: string;
-  site: SiteSettingsPayload | null;
+  site: SiteSettingsPayload;
   children: ReactNode;
 }) {
   return (
     <div className="min-h-dvh bg-white">
       <SiteHeader locale={locale} />
       <main className="w-full">{children as React.ReactNode}</main>
-      {site ? <SiteFooter locale={locale} site={site} /> : null}
+      <SiteFooter locale={locale} site={site} />
       <MobileBottomNav locale={locale} />
-      <FloatingContactButton locale={locale} />
       <ChatWidget locale={locale} />
     </div>
   );

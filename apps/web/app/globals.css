@@ -270,9 +270,10 @@ a {
   height: clamp(3.5rem, 9vh, 4.5rem);
 }
 
-/* NEW: Hero section height */
+/* Hero section height — full viewport */
 .fluid-h-hero {
-  min-height: clamp(500px, 75vh, 900px);
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* Touch Target Utilities - Mobile Accessibility */

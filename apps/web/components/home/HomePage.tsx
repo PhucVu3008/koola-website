@@ -1,11 +1,8 @@
-import Image from 'next/image';
-
-import { getHomeData, HOME } from '../../src/lib/home/homeData';
+import { getHomeData } from '../../src/lib/home/homeData';
 import { getPageBySlug } from '../../src/lib/api/pages';
 import { Section } from '../ui/Section';
 import { RevealOnScroll } from '../ui/RevealOnScroll';
 import { HeroSection } from './HeroSection';
-import { CapabilityHighlights } from './CapabilityHighlights';
 import { HomeServicesSection } from './HomeServicesSection';
 import { ValuePropositionSlider } from './ValuePropositionSlider';
 import { BlogPreviewGrid } from './BlogPreviewGrid';
@@ -62,16 +59,9 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
       {/* Main Content - Add container with padding to prevent horizontal overflow */}
       <div className="fluid-container">
         <div className="space-y-16 py-8">
-          <RevealOnScroll delayMs={80} hoverParallax>
-            <Section tone="white">
-              <CapabilityHighlights data={data.capabilities} />
-            </Section>
-          </RevealOnScroll>
 
         <RevealOnScroll delayMs={160} hoverParallax>
-          <Section tone="white">
             <HomeServicesSection locale={locale} title={servicesTitle} />
-          </Section>
         </RevealOnScroll>
 
         <RevealOnScroll delayMs={320} hoverParallax>
