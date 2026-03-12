@@ -13,10 +13,10 @@ export type AboutStoryPayload = {
   image: { src: string; alt: string };
 };
 
-export type AboutMilestonePayload = {
-  label: string;
-  headline: string;
-  iconAlt: string;
+export type AboutMissionValuesPayload = {
+  title: string;
+  subtitle: string;
+  values: Array<{ icon: string; title: string; description: string }>;
 };
 
 export type AboutTeamRolesPayload = {
@@ -27,29 +27,10 @@ export type AboutTeamRolesPayload = {
   intro: string;
 };
 
-export type AboutTrustedPayload = {
+export type AboutProcessPayload = {
   title: string;
   subtitle: string;
-  ctaLabel: string;
-  ctaHref?: string;
-  logos: string[];
-};
-
-export type AboutTestimonialsPayload = {
-  title: string;
-  subtitle: string;
-  helper: string;
-  items: Array<{ stars: number; quote: string; name: string }>;
-};
-
-export type AboutTimelinePayload = {
-  label: string;
-  items: Array<{ year: string; title: string; description: string }>;
-};
-
-export type AboutPerformancePayload = {
-  description: string;
-  percent: number;
+  steps: Array<{ step: number; title: string; description: string }>;
 };
 
 export type AboutCtaPayload = {
@@ -63,11 +44,9 @@ export type AboutCtaPayload = {
 export type AboutPagePayload = {
   intro: AboutIntroPayload;
   story: AboutStoryPayload;
-  milestone: AboutMilestonePayload;
+  missionValues: AboutMissionValuesPayload;
   team: AboutTeamRolesPayload;
-  testimonials: AboutTestimonialsPayload;
-  timeline: AboutTimelinePayload;
-  performance: AboutPerformancePayload;
+  process: AboutProcessPayload;
   cta: AboutCtaPayload;
 };
 

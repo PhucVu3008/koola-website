@@ -2,21 +2,17 @@ import { Section } from '../ui/Section';
 import { RevealOnScroll } from '../ui/RevealOnScroll';
 import { AboutIntroSection, type AboutIntroSectionData } from './sections/AboutIntroSection';
 import { OurStorySection, type OurStorySectionData } from './sections/OurStorySection';
-import { MilestoneHighlight, type MilestoneHighlightData } from './sections/MilestoneHighlight';
+import { MissionValues, type MissionValuesData } from './sections/MissionValues';
 import { TeamRolesPreview, type TeamRolesPreviewData } from '../home/TeamRolesPreview';
-import { TestimonialsSlider, type TestimonialsSliderData } from '../home/TestimonialsSlider';
-import { CompanyTimeline, type CompanyTimelineData } from './sections/CompanyTimeline';
-import { PerformanceMetric, type PerformanceMetricData } from './sections/PerformanceMetric';
+import { WorkProcess, type WorkProcessData } from './sections/WorkProcess';
 import { PrimaryCTASection, type PrimaryCTASectionData } from '../home/PrimaryCTASection';
 
 export type AboutPageData = {
   intro: AboutIntroSectionData | null;
   story: OurStorySectionData | null;
-  milestone: MilestoneHighlightData | null;
+  missionValues: MissionValuesData | null;
   team: TeamRolesPreviewData | null;
-  testimonials: TestimonialsSliderData | null;
-  timeline: CompanyTimelineData | null;
-  performance: PerformanceMetricData | null;
+  process: WorkProcessData | null;
   cta: PrimaryCTASectionData | null;
 };
 
@@ -36,11 +32,9 @@ function assertSection<T>(name: string, value: T | null | undefined): T {
 export function AboutPage({ data }: { data: AboutPageData }) {
   const intro = assertSection('about_intro', data.intro);
   const story = assertSection('about_story', data.story);
-  const milestone = assertSection('about_milestone', data.milestone);
+  const missionValues = assertSection('about_mission_values', data.missionValues);
   const team = assertSection('about_team_roles', data.team);
-  const testimonials = assertSection('about_testimonials', data.testimonials);
-  const timeline = assertSection('about_timeline', data.timeline);
-  const performance = assertSection('about_performance', data.performance);
+  const process = assertSection('about_process', data.process);
   const cta = assertSection('about_cta', data.cta);
 
   return (
@@ -59,7 +53,7 @@ export function AboutPage({ data }: { data: AboutPageData }) {
 
       <RevealOnScroll delayMs={200} hoverParallax>
         <Section tone="white">
-          <MilestoneHighlight data={milestone} />
+          <MissionValues data={missionValues} />
         </Section>
       </RevealOnScroll>
 
@@ -71,23 +65,11 @@ export function AboutPage({ data }: { data: AboutPageData }) {
 
       <RevealOnScroll delayMs={440} hoverParallax>
         <Section tone="white">
-          <TestimonialsSlider data={testimonials} />
+          <WorkProcess data={process} />
         </Section>
       </RevealOnScroll>
 
       <RevealOnScroll delayMs={520} hoverParallax>
-        <Section tone="white">
-          <CompanyTimeline data={timeline} />
-        </Section>
-      </RevealOnScroll>
-
-      <RevealOnScroll delayMs={600} hoverParallax>
-        <Section tone="white">
-          <PerformanceMetric data={performance} />
-        </Section>
-      </RevealOnScroll>
-
-      <RevealOnScroll delayMs={680} hoverParallax>
         <Section tone="brand" className="rounded-3xl py-16 text-white">
           <PrimaryCTASection data={cta} />
         </Section>

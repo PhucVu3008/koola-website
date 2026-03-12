@@ -24,12 +24,9 @@ const aboutRoutes: FastifyPluginAsync = async (server) => {
     const requiredKeys = [
       'about_intro',
       'about_story',
-      'about_milestone',
+      'about_mission_values',
       'about_team_roles',
-      'about_trusted',
-      'about_testimonials',
-      'about_timeline',
-      'about_performance',
+      'about_process',
       'about_cta',
     ];
 
@@ -55,12 +52,9 @@ const aboutRoutes: FastifyPluginAsync = async (server) => {
     const payload = {
       intro: pick('about_intro'),
       story: pick('about_story'),
-      milestone: pick('about_milestone'),
+      missionValues: pick('about_mission_values'),
       team: pick('about_team_roles'),
-      trusted: pick('about_trusted'),
-      testimonials: pick('about_testimonials'),
-      timeline: pick('about_timeline'),
-      performance: pick('about_performance'),
+      process: pick('about_process'),
       cta: pick('about_cta'),
     };
 
