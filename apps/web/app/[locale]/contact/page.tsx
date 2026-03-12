@@ -49,13 +49,13 @@ export default async function ContactRoute({
     info: {
       title: dict.contact.info.title,
       emailLabel: dict.contact.info.email,
-      email: 'contact@koola.vn',
+      email: 'sales@anbinhfoods.com',
       phoneLabel: dict.contact.info.phone,
-      phone: '+84 123 456 789',
+      phone: '0941 508 468',
       addressLabel: dict.contact.info.address,
-      address: locale === 'vi' 
-        ? 'Lâm Đồng, Việt Nam' 
-        : 'Lam Dong, Vietnam',
+      address: locale === 'vi'
+        ? 'Số 58, đường 3, thôn 4, Đức Hạnh, Đức Linh, Bình Thuận, Việt Nam'
+        : '58 Road 3, Village 4, Duc Hanh, Duc Linh, Binh Thuan, Vietnam',
       businessHoursLabel: dict.contact.info.businessHours,
       businessHours: dict.contact.info.businessHoursValue,
     },

@@ -42,7 +42,8 @@ export function ContactInfoSection({ data }: ContactInfoSectionProps) {
       icon: MapPin,
       label: data.addressLabel,
       value: data.address,
-      href: null,
+      href: 'https://www.google.com/maps/search/?api=1&query=Đức+Hạnh,+Đức+Linh,+Bình+Thuận,+Vietnam',
+      external: true,
     },
     {
       icon: Clock,
@@ -80,6 +81,7 @@ export function ContactInfoSection({ data }: ContactInfoSectionProps) {
               <a
                 key={index}
                 href={item.href}
+                {...('external' in item && item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 className="rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:border-brand-300 hover:shadow-md"
               >
                 {content}

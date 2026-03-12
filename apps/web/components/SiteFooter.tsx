@@ -171,9 +171,45 @@ export function SiteFooter({
           </div>
         </div>
 
+        {/* Company Legal Info + Map */}
+        <div className="fluid-container" style={{ marginTop: 'clamp(2rem, 5vh, 3rem)' }}>
+          <div className="rounded-xl bg-slate-50 overflow-hidden">
+            <div className="fluid-p-lg">
+              <div className="font-semibold text-slate-900 fluid-text-base">
+                {locale === 'vi'
+                  ? 'CÔNG TY TNHH THỰC PHẨM QUỐC TẾ AN BÌNH'
+                  : 'AN BINH INTERNATIONAL FOODS CO., LTD'}
+              </div>
+              <div className="mt-3 flex flex-col gap-1.5 text-slate-500 fluid-text-sm" style={{ lineHeight: '1.6' }}>
+                <p>
+                  <span className="font-medium text-slate-600">{locale === 'vi' ? 'Địa chỉ' : 'Address'}:</span>{' '}
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=Đức+Hạnh,+Đức+Linh,+Bình+Thuận,+Vietnam"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline decoration-slate-300 underline-offset-2 hover:text-brand-600 hover:decoration-brand-400 transition-colors"
+                  >
+                    {locale === 'vi'
+                      ? 'Số 58, đường 3, thôn 4, Đức Hạnh, Đức Linh, Bình Thuận, Việt Nam'
+                      : '58 Road 3, Village 4, Duc Hanh, Duc Linh, Binh Thuan, Vietnam'}
+                  </a>
+                </p>
+                <p>
+                  <span className="font-medium text-slate-600">{locale === 'vi' ? 'Điện thoại' : 'Phone'}:</span>{' '}
+                  <a href="tel:0941508468" className="hover:text-brand-600 transition-colors">0941 508 468</a>
+                </p>
+                <p>
+                  <span className="font-medium text-slate-600">Email:</span>{' '}
+                  <a href="mailto:sales@anbinhfoods.com" className="hover:text-brand-600 transition-colors">sales@anbinhfoods.com</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Divider */}
         <div className="fluid-container">
-          <div className="h-px w-full bg-slate-200" style={{ marginTop: 'clamp(2rem, 5vh, 3.5rem)', marginBottom: 'clamp(1.5rem, 4vh, 1.75rem)' }} />
+          <div className="h-px w-full bg-slate-200" style={{ marginTop: 'clamp(1.5rem, 4vh, 2rem)', marginBottom: 'clamp(1.5rem, 4vh, 1.75rem)' }} />
         </div>
 
         {/* Footer Bottom - Fluid layout */}

@@ -823,7 +823,7 @@ INSERT INTO site_settings (key, value) VALUES
   ('site_meta', '{"title": "KOOLA - IT, IoT & Automation Solutions", "description": "Leading provider of Information Technology, IoT, and Automation solutions for individuals and enterprises", "keywords": ["IT Solutions", "IoT", "Automation", "Smart Systems", "Industry 4.0"]}'),
   ('global_cta', '{"label": "Get Started", "link": "/contact"}'),
   ('social_links', '{"twitter": "https://twitter.com/koola", "linkedin": "https://linkedin.com/company/koola", "github": "https://github.com/koola"}'),
-  ('contact_info', '{"email": "hello@koola.com", "phone": "+1 (555) 123-4567", "address": "123 Tech Street, Innovation City, IC 12345"}')
+  ('contact_info', '{"email": "sales@anbinhfoods.com", "phone": "0941 508 468", "address": "Số 58, đường 3, thôn 4, Đức Hạnh, Đức Linh, Bình Thuận, Việt Nam", "company_name": "CÔNG TY TNHH THỰC PHẨM QUỐC TẾ AN BÌNH"}')
 ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 
 -- Insert sample job posts
