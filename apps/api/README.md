@@ -67,8 +67,8 @@ Local: http://localhost:4000/api-docs
 | GET | `/v1/posts` | List posts (paginated, filterable) |
 | GET | `/v1/posts/:slug` | Post detail |
 | GET | `/v1/pages/:slug` | CMS page by slug |
-| GET | `/v1/pages/about` | About page aggregate |
-| GET | `/v1/pages/careers` | Careers page aggregate |
+| GET | `/v1/pages/about/aggregate` | About page aggregate |
+| GET | `/v1/pages/careers/aggregate` | Careers page aggregate |
 | GET | `/v1/nav` | Navigation items |
 | GET | `/v1/site/settings` | Site settings |
 | POST | `/v1/leads` | Submit contact form |
@@ -76,7 +76,9 @@ Local: http://localhost:4000/api-docs
 | POST | `/v1/newsletter/unsubscribe` | Newsletter unsubscribe |
 | GET | `/v1/jobs` | Job listings |
 | GET | `/v1/jobs/:slug` | Job detail |
+| GET | `/v1/jobs/slug-map` | Cross-locale job slug mapping |
 | POST | `/v1/jobs/:slug/apply` | Job application |
+| POST | `/v1/chat` | AI chat (SSE streaming) |
 
 ### Admin (`/v1/admin`) — JWT protected
 
@@ -86,17 +88,25 @@ Local: http://localhost:4000/api-docs
 | POST | `/v1/admin/auth/refresh` | Refresh access token |
 | POST | `/v1/admin/auth/logout` | Logout (revoke refresh token) |
 | CRUD | `/v1/admin/services` | Service management |
+| POST | `/v1/admin/services/:id/translate` | Auto-translate service |
+| POST | `/v1/admin/services/:id/sync-images` | Sync service images |
 | CRUD | `/v1/admin/posts` | Post management |
 | CRUD | `/v1/admin/categories` | Category management |
 | CRUD | `/v1/admin/tags` | Tag management |
-| CRUD | `/v1/admin/pages` | Page + sections management |
-| CRUD | `/v1/admin/nav` | Navigation items |
+| CRUD | `/v1/admin/pages` | Page management |
+| CRUD | `/v1/admin/pages/:id/sections` | Page sections management |
+| CRUD | `/v1/admin/nav-items` | Navigation items |
 | CRUD | `/v1/admin/site-settings` | Site settings |
 | CRUD | `/v1/admin/media` | Media uploads |
-| CRUD | `/v1/admin/jobs` | Job management + applications |
-| CRUD | `/v1/admin/users` | User management + roles |
+| CRUD | `/v1/admin/jobs` | Job management |
+| GET | `/v1/admin/jobs/:id/applications` | Job applications list |
+| PATCH | `/v1/admin/jobs/:id/applications/:applicationId/status` | Update application status |
+| CRUD | `/v1/admin/users` | User management |
+| GET | `/v1/admin/users/roles` | List available roles |
+| PUT | `/v1/admin/users/:id/password` | Change user password |
+| PUT | `/v1/admin/users/:id/toggle-active` | Toggle user active status |
 | GET/PATCH | `/v1/admin/leads` | Lead management |
-| GET/PATCH | `/v1/admin/newsletter` | Newsletter subscriber management |
+| GET/PATCH | `/v1/admin/newsletter-subscribers` | Newsletter subscriber management |
 
 ### Monitoring (no prefix)
 

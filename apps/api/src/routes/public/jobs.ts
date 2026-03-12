@@ -44,7 +44,15 @@ const jobsRoutes: FastifyPluginAsync = async (server) => {
     Body: unknown;
   }>(
     '/:slug/apply',
-    { schema: jobSchemas.apply },
+    {
+      schema: jobSchemas.apply,
+      config: {
+        rateLimit: {
+          max: 5,
+          timeWindow: '1 minute',
+        },
+      },
+    },
     async (request, reply) => {
       const { slug } = jobSlugParamsSchema.parse(request.params);
       const { locale } = jobSlugQuerySchema.parse(request.query);

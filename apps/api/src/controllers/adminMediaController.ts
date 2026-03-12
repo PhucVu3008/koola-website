@@ -24,7 +24,7 @@ export const uploadMedia = async (request: FastifyRequest, reply: FastifyReply) 
       });
     }
 
-    const userId = (request.user as any)?.userId;
+    const userId = (request.user as any)?.id;
     const result = await adminMediaService.uploadMedia({
       file: data,
       userId,
