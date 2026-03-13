@@ -47,12 +47,12 @@ WORKDIR /workspace
 
 ENV NODE_ENV=production
 
-# Copy workspace configuration
-COPY package*.json ./
+# Copy workspace root + api package files and lockfile
+COPY package.json package-lock.json ./
 COPY apps/api/package.json ./apps/api/
 
-# Install only production dependencies
-RUN npm install --omit=dev
+# Install only production dependencies using the lockfile
+RUN npm ci --omit=dev
 
 # Copy built artifacts from builder
 COPY --from=builder /workspace/apps/api/dist ./apps/api/dist
@@ -61,4 +61,4 @@ COPY --from=builder /workspace/apps/api/dist ./apps/api/dist
 EXPOSE 4000
 
 # Start production server from workspace root
-CMD ["npm", "start", "--workspace=apps/api"]
+CMD ["node", "apps/api/dist/index.js"]

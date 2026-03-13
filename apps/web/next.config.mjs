@@ -2,6 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  // Allow more time for SSG pages that fetch from external API
+  staticPageGenerationTimeout: 180,
   typescript: {
     // Pre-existing type errors in admin pages — skip for production build
     ignoreBuildErrors: true,

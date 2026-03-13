@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-type RouteContext = {
-  params: Promise<{
-    slug: string;
-  }>;
-};
-
 /**
  * POST /api/jobs/[slug]/apply
- * 
+ *
  * Handles job application submission.
  * Forwards the request to the backend API.
  */
-export async function POST(request: NextRequest, context: RouteContext) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { slug: string } }
+) {
   try {
-    const { slug } = await context.params;
+    const { slug } = params;
     const { searchParams } = new URL(request.url);
     const locale = searchParams.get('locale') || 'en';
 
