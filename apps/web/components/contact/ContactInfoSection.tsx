@@ -42,7 +42,7 @@ export function ContactInfoSection({ data }: ContactInfoSectionProps) {
       icon: MapPin,
       label: data.addressLabel,
       value: data.address,
-      href: 'https://www.google.com/maps/search/?api=1&query=Đức+Hạnh,+Đức+Linh,+Bình+Thuận,+Vietnam',
+      href: 'https://www.google.com/maps/search/?api=1&query=Số+58+đường+3+thôn+4+Đức+Hạnh+Đức+Linh+Bình+Thuận+Vietnam',
       external: true,
     },
     {

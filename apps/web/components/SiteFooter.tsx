@@ -184,7 +184,7 @@ export function SiteFooter({
                 <p>
                   <span className="font-medium text-slate-600">{locale === 'vi' ? 'Địa chỉ' : 'Address'}:</span>{' '}
                   <a
-                    href="https://www.google.com/maps/search/?api=1&query=Đức+Hạnh,+Đức+Linh,+Bình+Thuận,+Vietnam"
+                    href="https://www.google.com/maps/search/?api=1&query=Số+58+đường+3+thôn+4+Đức+Hạnh+Đức+Linh+Bình+Thuận+Vietnam"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline decoration-slate-300 underline-offset-2 hover:text-brand-600 hover:decoration-brand-400 transition-colors"
