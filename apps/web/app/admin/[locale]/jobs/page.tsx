@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { adminApi } from '@/lib/admin-api';
 import { getAdminTranslations } from '@/i18n/admin-translations';
-import { Briefcase, Plus, Edit, Trash2, Filter, Eye } from 'lucide-react';
+import { Briefcase, Plus, Edit, Trash2, Filter, Eye, ToggleLeft, ToggleRight } from 'lucide-react';
 import { logger, LogContext } from '@/lib/logger';
 
 interface Job {
@@ -86,6 +86,19 @@ export default function AdminJobsPage() {
       const errorMessage = currentLocale === 'vi'
         ? error.message || 'Không thể xóa công việc'
         : error.message || 'Failed to delete job';
+      alert(errorMessage);
+    }
+  };
+
+  const handleToggleStatus = async (id: number, currentStatus: string) => {
+    const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+    try {
+      await adminApi.jobs.updateStatus(id, newStatus);
+      loadJobs();
+    } catch (error: any) {
+      const errorMessage = currentLocale === 'vi'
+        ? error.message || 'Không thể cập nhật trạng thái'
+        : error.message || 'Failed to update status';
       alert(errorMessage);
     }
   };
@@ -258,6 +271,25 @@ export default function AdminJobsPage() {
                       </td>
                       <td className="px-6 py-4 text-right text-sm font-medium">
                         <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleToggleStatus(job.id, job.status)}
+                            className={`p-2 rounded transition-colors ${
+                              job.status === 'published'
+                                ? 'text-green-600 hover:text-green-900 hover:bg-green-50'
+                                : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                            }`}
+                            title={
+                              job.status === 'published'
+                                ? (currentLocale === 'vi' ? 'Ẩn công việc' : 'Unpublish')
+                                : (currentLocale === 'vi' ? 'Hiển thị công việc' : 'Publish')
+                            }
+                          >
+                            {job.status === 'published' ? (
+                              <ToggleRight className="w-5 h-5" />
+                            ) : (
+                              <ToggleLeft className="w-5 h-5" />
+                            )}
+                          </button>
                           <Link
                             href={`/admin/${currentLocale}/jobs/${job.id}/applications`}
                             className="text-green-600 hover:text-green-900 p-2 hover:bg-green-50 rounded transition-colors"

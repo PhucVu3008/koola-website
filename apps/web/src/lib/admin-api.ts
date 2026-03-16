@@ -632,6 +632,16 @@ class AdminApiClient {
     },
 
     /**
+     * Quick update job status
+     */
+    updateStatus: async (id: number, status: string): Promise<ApiResponse> => {
+      return this.request(`/v1/admin/jobs/${id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+    },
+
+    /**
      * Get applications for a job
      */
     getApplications: async (jobId: number): Promise<ApiResponse> => {
