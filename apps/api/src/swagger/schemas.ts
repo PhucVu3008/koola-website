@@ -275,4 +275,9 @@ export const adminJobSchemas = {
     params: { type: 'object', properties: { id: { type: 'string' }, applicationId: { type: 'string' } }, required: ['id', 'applicationId'] },
     security: bearerSecurity,
   },
+  updateStatus: {
+    tags: ['Admin Jobs'],
+    params: idParam,
+    security: bearerSecurity,
+  },
 };

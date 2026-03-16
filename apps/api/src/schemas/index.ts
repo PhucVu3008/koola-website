@@ -67,7 +67,7 @@ export const siteSettingsQuerySchema = z.object({
  */
 export const jobListQuerySchema = z.object({
   locale: z.string().default('en'),
-  status: z.enum(['draft', 'published', 'closed']).default('published'),
+  status: z.enum(['draft', 'published', 'archived']).default('published'),
 });
 
 /**

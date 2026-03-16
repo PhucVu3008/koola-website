@@ -44,7 +44,7 @@ export const LIST_JOBS = `
  * - $2 status (nullable)
  */
 export const COUNT_JOBS = `
-  SELECT COUNT(*) as total
+  SELECT COUNT(*) as count
   FROM job_posts
   WHERE locale = $1
     AND ($2::job_status IS NULL OR status = $2::job_status)
@@ -213,6 +213,29 @@ export const GET_JOB_APPLICATIONS = `
  * - $1 application_id
  * - $2 status (reviewing, shortlisted, rejected, accepted)
  */
+/**
+ * UPDATE_JOB_STATUS
+ *
+ * Quick status update for a job post
+ *
+ * Parameters:
+ * - $1 id
+ * - $2 status (draft, published, archived)
+ */
+export const UPDATE_JOB_STATUS = `
+  UPDATE job_posts
+  SET
+    status = $2::job_status,
+    published_at = CASE
+      WHEN $2::job_status = 'published' AND status != 'published' THEN NOW()
+      WHEN $2::job_status != 'published' THEN NULL
+      ELSE published_at
+    END,
+    updated_at = NOW()
+  WHERE id = $1
+  RETURNING id, status, published_at
+`;
+
 export const UPDATE_APPLICATION_STATUS = `
   UPDATE job_applications
   SET status = $2

@@ -12,6 +12,7 @@ const jobsRoutes: FastifyPluginAsync = async (server) => {
   server.post('/', { schema: adminJobSchemas.create, handler: adminJobController.createJob });
   server.put('/:id', { schema: adminJobSchemas.update, handler: adminJobController.updateJob });
   server.delete('/:id', { schema: adminJobSchemas.delete, handler: adminJobController.deleteJob });
+  server.patch('/:id/status', { schema: adminJobSchemas.updateStatus, handler: adminJobController.updateJobStatus });
   server.get('/:id/applications', { schema: adminJobSchemas.listApplications, handler: adminJobController.getJobApplications });
   server.patch('/:id/applications/:applicationId/status', { schema: adminJobSchemas.updateApplicationStatus, handler: adminJobController.updateApplicationStatus });
 };

@@ -168,3 +168,16 @@ export const updateApplicationStatus = async (
 ): Promise<void> => {
   await query(JobsSQL.UPDATE_APPLICATION_STATUS, [applicationId, status]);
 };
+
+/**
+ * Quick update job status (draft/published/archived)
+ */
+export const updateJobStatus = async (
+  id: number,
+  status: 'draft' | 'published' | 'archived'
+): Promise<{ id: number; status: string; published_at: Date | null } | null> => {
+  return await queryOne<{ id: number; status: string; published_at: Date | null }>(
+    JobsSQL.UPDATE_JOB_STATUS,
+    [id, status]
+  );
+};

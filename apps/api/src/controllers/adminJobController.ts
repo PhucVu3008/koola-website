@@ -41,6 +41,10 @@ const jobUpdateSchema = jobCreateSchema.extend({
   updated_by: z.coerce.number().int().positive().optional().nullable(),
 });
 
+const updateJobStatusSchema = z.object({
+  status: z.enum(['draft', 'published', 'archived']),
+});
+
 const applicationIdParamsSchema = z.object({
   applicationId: z.coerce.number().int().positive(),
 });
@@ -221,6 +225,36 @@ export const deleteJob = async (request: FastifyRequest, reply: FastifyReply) =>
     if (error.name === 'ZodError') {
       return reply.status(400).send(
         errorResponse(ErrorCodes.VALIDATION_ERROR, 'Invalid job ID', {
+          issues: error.issues,
+        })
+      );
+    }
+    throw error;
+  }
+};
+
+/**
+ * PATCH /v1/admin/jobs/:id/status
+ * Quick status toggle for a job post
+ */
+export const updateJobStatus = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const { id } = jobIdParamsSchema.parse(request.params);
+    const { status } = updateJobStatusSchema.parse(request.body);
+
+    const result = await adminJobService.updateJobStatus(id, status);
+
+    if (!result) {
+      return reply.status(404).send(
+        errorResponse(ErrorCodes.NOT_FOUND, 'Job not found')
+      );
+    }
+
+    return reply.send(successResponse(result));
+  } catch (error: any) {
+    if (error.name === 'ZodError') {
+      return reply.status(400).send(
+        errorResponse(ErrorCodes.VALIDATION_ERROR, 'Invalid status', {
           issues: error.issues,
         })
       );

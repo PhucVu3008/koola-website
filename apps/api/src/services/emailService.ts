@@ -249,6 +249,157 @@ View in Admin Panel: ${adminPanelUrl}/leads
 };
 
 /**
+ * Send job application notification email to admin.
+ *
+ * Email recipient is determined by:
+ * 1. Database setting: `notification_email` (preferred)
+ * 2. Environment variable: `NOTIFICATION_EMAIL` (fallback)
+ *
+ * @param application - Job application data
+ * @returns Email notification ID
+ */
+export const sendJobApplicationNotification = async (application: {
+  id: number;
+  job_title: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  linked_in?: string | null;
+  portfolio?: string | null;
+  cover_letter?: string | null;
+  created_at: Date;
+}): Promise<number> => {
+  const notificationEmail = await siteSettings.getNotificationEmail();
+  const adminPanelUrl = await siteSettings.getAdminPanelUrl();
+
+  const subject = `📋 New Job Application - ${application.full_name} for ${application.job_title}`;
+
+  const text = `
+New Job Application
+
+ID: ${application.id}
+Position: ${application.job_title}
+Name: ${application.full_name}
+Email: ${application.email}
+Phone: ${application.phone}
+LinkedIn: ${application.linked_in || 'N/A'}
+Portfolio: ${application.portfolio || 'N/A'}
+Submitted at: ${application.created_at.toISOString()}
+
+Cover Letter:
+${application.cover_letter || 'No cover letter provided'}
+
+---
+View in Admin Panel: ${adminPanelUrl}/jobs
+  `.trim();
+
+  const html = buildJobApplicationHtml(application, adminPanelUrl);
+
+  return await sendEmail({
+    to: notificationEmail,
+    subject,
+    text,
+    html,
+    type: 'job_application',
+    metadata: {
+      application_id: application.id,
+      applicant_email: application.email,
+      job_title: application.job_title,
+    },
+  });
+};
+
+/** Build HTML email for job application notification. */
+const buildJobApplicationHtml = (application: {
+  id: number;
+  job_title: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  linked_in?: string | null;
+  portfolio?: string | null;
+  cover_letter?: string | null;
+  created_at: Date;
+}, adminPanelUrl: string): string => `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #7c3aed; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+    .content { background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; border-top: none; }
+    .field { margin-bottom: 16px; }
+    .field-label { font-weight: 600; color: #6b7280; font-size: 14px; }
+    .field-value { margin-top: 4px; padding: 8px 12px; background: white; border-radius: 4px; }
+    .message-box { background: white; padding: 16px; border-left: 4px solid #7c3aed; margin: 20px 0; }
+    .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+    .button { display: inline-block; background: #7c3aed; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 style="margin: 0; font-size: 24px;">📋 New Job Application</h1>
+      <p style="margin: 8px 0 0; opacity: 0.9;">Position: ${application.job_title}</p>
+    </div>
+    <div class="content">
+      <div class="field">
+        <div class="field-label">Application ID</div>
+        <div class="field-value">#${application.id}</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Full Name</div>
+        <div class="field-value">${application.full_name}</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Email</div>
+        <div class="field-value"><a href="mailto:${application.email}">${application.email}</a></div>
+      </div>
+      <div class="field">
+        <div class="field-label">Phone</div>
+        <div class="field-value"><a href="tel:${application.phone}">${application.phone}</a></div>
+      </div>
+      ${application.linked_in ? `
+      <div class="field">
+        <div class="field-label">LinkedIn</div>
+        <div class="field-value"><a href="${application.linked_in}" target="_blank">${application.linked_in}</a></div>
+      </div>
+      ` : ''}
+      ${application.portfolio ? `
+      <div class="field">
+        <div class="field-label">Portfolio</div>
+        <div class="field-value"><a href="${application.portfolio}" target="_blank">${application.portfolio}</a></div>
+      </div>
+      ` : ''}
+      <div class="field">
+        <div class="field-label">Submitted At</div>
+        <div class="field-value">${application.created_at.toLocaleString('en-US', {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+          timeZone: 'Asia/Ho_Chi_Minh'
+        })}</div>
+      </div>
+      ${application.cover_letter ? `
+      <div class="message-box">
+        <div class="field-label">Cover Letter</div>
+        <div style="margin-top: 8px; white-space: pre-wrap;">${application.cover_letter}</div>
+      </div>
+      ` : ''}
+      <a href="${adminPanelUrl}/jobs" class="button">
+        View in Admin Panel →
+      </a>
+    </div>
+    <div class="footer">
+      <p>This is an automated notification from your website careers page.</p>
+    </div>
+  </div>
+</body>
+</html>
+`.trim();
+
+/**
  * Test email configuration.
  * Useful for verifying SMTP settings.
  *

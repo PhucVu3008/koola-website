@@ -39,3 +39,10 @@ export const getJobApplications = async (jobId: number) => {
 export const updateApplicationStatus = async (applicationId: number, status: string) => {
   return await adminJobRepository.updateApplicationStatus(applicationId, status);
 };
+
+/**
+ * Quick update job status (draft/published/archived)
+ */
+export const updateJobStatus = async (id: number, status: 'draft' | 'published' | 'archived') => {
+  return await adminJobRepository.updateJobStatus(id, status);
+};

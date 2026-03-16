@@ -9,6 +9,7 @@ import {
 import * as SQL from '../../sql/queries';
 import { ErrorCodes, errorResponse, successResponse } from '../../utils/response';
 import { jobSchemas } from '../../swagger/schemas';
+import * as emailService from '../../services/emailService';
 
 const jobsRoutes: FastifyPluginAsync = async (server) => {
   server.get('/', { schema: jobSchemas.list }, async (request, reply) => {
@@ -83,6 +84,23 @@ const jobsRoutes: FastifyPluginAsync = async (server) => {
         resumeAssetId,
         applicationData.coverLetter || null,
       ]);
+
+      // Send email notification asynchronously (non-blocking)
+      emailService
+        .sendJobApplicationNotification({
+          id: result.id,
+          job_title: job.title,
+          full_name: applicationData.fullName,
+          email: applicationData.email,
+          phone: applicationData.phone,
+          linked_in: applicationData.linkedIn || null,
+          portfolio: applicationData.portfolio || null,
+          cover_letter: applicationData.coverLetter || null,
+          created_at: new Date(),
+        })
+        .catch((error) => {
+          console.error('Failed to send job application notification email:', error.message);
+        });
 
       return reply.status(201).send(
         successResponse({
