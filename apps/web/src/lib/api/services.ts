@@ -7,10 +7,12 @@ export type ServiceListItem = {
   slug_group?: string | null;
   title: string;
   excerpt?: string | null;
-  hero_image_url?: string | null; // URL to uploaded hero image
-  icon_name?: string | null; // Icon identifier for service card (e.g., 'brain', 'spark', 'cloud')
+  hero_image_url?: string | null;
+  icon_name?: string | null;
   status?: string;
   published_at?: string | null;
+  tags?: Array<{ id: number; name: string; slug: string }>;
+  categories?: Array<{ id: number; name: string; slug: string }>;
 };
 
 export type PaginationMeta = {

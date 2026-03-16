@@ -1,13 +1,14 @@
 import { ServicesHero, type ServicesHeroData } from './ServicesHero';
-import { ServicesGrid, type ServicesGridData } from './ServicesGrid';
+import { ServiceOverviewList, type ServiceOverviewListData } from './ServiceOverviewList';
 import { ServicesMidQuote, type ServicesMidQuoteData } from './ServicesMidQuote';
 import { ServicesCTASection, type ServicesCTASectionData } from './ServicesCTASection';
 
 export type ServicesPageData = {
   hero: ServicesHeroData;
-  servicesGrid: ServicesGridData;
+  servicesList: ServiceOverviewListData;
   midQuote: ServicesMidQuoteData;
   cta: ServicesCTASectionData;
+  viewMoreLabel: string;
 };
 
 /**
@@ -15,7 +16,7 @@ export type ServicesPageData = {
  *
  * Orchestrates all services page sections:
  * 1. Hero banner
- * 2. Services grid (6 items)
+ * 2. Services overview list (alternating cards)
  * 3. Mid-page quote
  * 4. CTA banner
  */
@@ -25,23 +26,14 @@ export function ServicesPage({ data, locale }: { data: ServicesPageData; locale:
       {/* Hero Banner */}
       <ServicesHero data={data.hero} />
 
-      {/* Services Grid */}
-      <ServicesGrid data={data.servicesGrid} locale={locale} />
+      {/* Services Overview */}
+      <ServiceOverviewList data={data.servicesList} locale={locale} viewMoreLabel={data.viewMoreLabel} />
 
       {/* Mid-page Quote */}
       <ServicesMidQuote data={data.midQuote} />
 
-      {/* CTA Banner - Dark background */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-800 via-slate-900 to-black py-12 sm:py-16 lg:py-24">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
-        </div>
-        
-        <div className="container relative z-10">
-          <ServicesCTASection data={data.cta} />
-        </div>
-      </section>
+      {/* CTA Banner */}
+      <ServicesCTASection data={data.cta} />
     </div>
   );
 }

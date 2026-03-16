@@ -48,15 +48,16 @@ export default async function ServicesPageRoute({
       title: pageData.hero.title,
       backgroundImage: pageData.hero.backgroundImage,
     },
-    servicesGrid: {
+    servicesList: {
       title: dict.services.grid.title,
-      items: servicesData.items.map((item, index) => ({
+      items: servicesData.items.map((item) => ({
         id: item.id,
         slug: item.slug,
         title: item.title,
-        // Use uploaded image URL from admin, fallback to slug_group (English slug) for image path
+        excerpt: item.excerpt || '',
         imageUrl: item.hero_image_url || `/services/${item.slug_group || item.slug}.jpg`,
-        order: index + 1,
+        category: item.categories?.[0]?.name ?? item.tags?.[0]?.name,
+        iconName: item.icon_name,
       })),
     },
     midQuote: {
@@ -70,6 +71,7 @@ export default async function ServicesPageRoute({
       ctaHref: `/${locale}/contact`,
       image: pageData.cta.image,
     },
+    viewMoreLabel: dict.services.viewMore,
   };
 
   return <ServicesPage data={servicesPageData} locale={locale} />;
