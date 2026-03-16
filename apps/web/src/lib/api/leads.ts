@@ -19,7 +19,7 @@ export type CreateLeadInput = {
  * @throws Error for non-2xx responses.
  */
 export async function createLead(payload: CreateLeadInput): Promise<void> {
-  const url = new URL('/v1/leads', env.NEXT_PUBLIC_API_BASE_URL);
+  const url = `${env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, '')}/v1/leads`;
 
   // Map frontend fields to backend schema
   const body = {
