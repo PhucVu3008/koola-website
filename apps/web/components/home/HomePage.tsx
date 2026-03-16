@@ -82,13 +82,13 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
           </Section>
         </RevealOnScroll>
 
-        <RevealOnScroll delayMs={560} hoverParallax>
-          <Section tone="brand" className="rounded-3xl py-16 text-white">
-            <PrimaryCTASection data={{ ...data.primaryCta, ctaHref: `/${locale}/contact` }} />
-          </Section>
-        </RevealOnScroll>
         </div>
       </div>
+
+      {/* CTA — full width, outside container */}
+      <RevealOnScroll delayMs={560} hoverParallax>
+        <PrimaryCTASection data={{ ...data.primaryCta, ctaHref: `/${locale}/contact` }} />
+      </RevealOnScroll>
     </>
   );
 }

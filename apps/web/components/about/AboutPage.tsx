@@ -38,42 +38,43 @@ export function AboutPage({ data }: { data: AboutPageData }) {
   const cta = assertSection('about_cta', data.cta);
 
   return (
-    <div className="space-y-10 sm:space-y-16 py-6 sm:py-8 px-4 md:px-6 lg:px-8 pb-24 lg:pb-8">
-      <RevealOnScroll delayMs={0} hoverParallax>
-        <Section tone="white">
-          <AboutIntroSection data={intro} />
-        </Section>
-      </RevealOnScroll>
+    <>
+      <div className="space-y-10 sm:space-y-16 py-6 sm:py-8 px-4 md:px-6 lg:px-8 pb-24 lg:pb-8">
+        <RevealOnScroll delayMs={0} hoverParallax>
+          <Section tone="white">
+            <AboutIntroSection data={intro} />
+          </Section>
+        </RevealOnScroll>
 
-      <RevealOnScroll delayMs={120} hoverParallax>
-        <Section tone="white">
-          <OurStorySection data={story} />
-        </Section>
-      </RevealOnScroll>
+        <RevealOnScroll delayMs={120} hoverParallax>
+          <Section tone="white">
+            <OurStorySection data={story} />
+          </Section>
+        </RevealOnScroll>
 
-      <RevealOnScroll delayMs={200} hoverParallax>
-        <Section tone="white">
-          <MissionValues data={missionValues} />
-        </Section>
-      </RevealOnScroll>
+        <RevealOnScroll delayMs={200} hoverParallax>
+          <Section tone="white">
+            <MissionValues data={missionValues} />
+          </Section>
+        </RevealOnScroll>
 
-      <RevealOnScroll delayMs={280} hoverParallax>
-        <Section tone="white">
-          <TeamRolesPreview data={team} />
-        </Section>
-      </RevealOnScroll>
+        <RevealOnScroll delayMs={280} hoverParallax>
+          <Section tone="white">
+            <TeamRolesPreview data={team} />
+          </Section>
+        </RevealOnScroll>
 
-      <RevealOnScroll delayMs={440} hoverParallax>
-        <Section tone="white">
-          <WorkProcess data={process} />
-        </Section>
-      </RevealOnScroll>
+        <RevealOnScroll delayMs={440} hoverParallax>
+          <Section tone="white">
+            <WorkProcess data={process} />
+          </Section>
+        </RevealOnScroll>
+      </div>
 
+      {/* CTA — full width, outside container */}
       <RevealOnScroll delayMs={520} hoverParallax>
-        <Section tone="brand" className="rounded-3xl py-16 text-white">
-          <PrimaryCTASection data={cta} />
-        </Section>
+        <PrimaryCTASection data={cta} />
       </RevealOnScroll>
-    </div>
+    </>
   );
 }

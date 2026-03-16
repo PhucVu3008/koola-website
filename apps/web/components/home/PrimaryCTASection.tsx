@@ -1,9 +1,5 @@
-'use client';
-
 import Image from 'next/image';
-import { useState } from 'react';
-
-import { Button } from '../ui/Button';
+import Link from 'next/link';
 
 export type PrimaryCTASectionData = {
   title: string;
@@ -14,79 +10,54 @@ export type PrimaryCTASectionData = {
 };
 
 /**
- * Final primary CTA section with unique animations.
- * - Floating title animation
- * - Pulse + ripple effect on button
- * - Image blend with background using opacity and blend modes
+ * Primary CTA section — full-width background image (B&W),
+ * white italic title, white pill button with brand-colored text + arrow.
+ * Dotted pattern overlay at the bottom edge.
  */
 export function PrimaryCTASection({ data }: { data: PrimaryCTASectionData }) {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
-    <div className="relative">
-      <div className="mx-auto max-w-4xl text-center">
-        {/* Title with floating animation */}
-        <h2 className="animate-float text-3xl font-semibold leading-tight text-white">
+    <section className="relative overflow-hidden">
+      {/* Background image — grayscale + dark overlay */}
+      <div className="absolute inset-0">
+        <Image
+          src={data.image}
+          alt=""
+          fill
+          className="object-cover grayscale"
+          quality={85}
+          unoptimized
+          priority
+        />
+        <div className="absolute inset-0 bg-black/60" />
+      </div>
+
+      {/* Dotted pattern at bottom */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-16 opacity-30"
+        style={{
+          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)',
+          backgroundSize: '8px 8px',
+        }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center px-6 py-20 sm:py-28 lg:py-32 text-center">
+        <h2 className="max-w-3xl text-2xl sm:text-3xl lg:text-4xl font-bold italic leading-snug text-white">
           {data.title}
         </h2>
-        
-        {data.subtitle && (
-          <p className="mt-6 text-base leading-relaxed text-white/90 transition-all duration-500 hover:text-white">
-            {data.subtitle}
-          </p>
-        )}
-        
-        {/* Button with pulse + ripple effect */}
-        <div className="mt-8 flex justify-center">
-          <div className="relative">
-            {/* Ripple rings */}
-            {isHovered && (
-              <>
-                <div className="absolute inset-0 animate-ping rounded-full bg-white/30 opacity-75" 
-                     style={{ animationDuration: '1.5s' }} />
-                <div className="absolute inset-0 animate-ping rounded-full bg-white/20 opacity-50" 
-                     style={{ animationDuration: '2s', animationDelay: '0.3s' }} />
-              </>
-            )}
-            
-            <Button 
-              href={data.ctaHref || '/contact'} 
-              variant="primary"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              className="relative flex h-12 items-center justify-center rounded-full bg-white px-8 text-base font-semibold text-brand-600 shadow-lg shadow-white/20 transition-all duration-300 hover:scale-105 hover:bg-white/95 hover:shadow-xl hover:shadow-white/30"
-            >
-              <span className="relative z-10">{data.ctaLabel}</span>
-              
-              {/* Shimmer effect */}
-              <div className="absolute inset-0 overflow-hidden rounded-full">
-                <div className="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-[100%]" />
-              </div>
-            </Button>
-          </div>
-        </div>
-      </div>
 
-      {/* Image with blend effect to harmonize with background */}
-      <div className="mt-12 flex justify-center">
-        <div className="group relative w-full max-w-4xl overflow-hidden rounded-[42px] bg-gradient-to-br from-white/5 to-white/10 p-1 backdrop-blur-sm">
-          {/* Gradient border effect */}
-          <div className="absolute inset-0 rounded-[42px] bg-gradient-to-br from-white/20 via-transparent to-white/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-          
-          <div className="relative overflow-hidden rounded-[40px]">
-            <Image
-              src={data.image}
-              alt="Team collaboration"
-              width={980}
-              height={420}
-              className="h-[320px] w-full object-cover opacity-90 mix-blend-luminosity transition-all duration-700 group-hover:scale-105 group-hover:opacity-100 group-hover:mix-blend-normal"
-            />
-            
-            {/* Overlay gradient to blend with background */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-600/20 via-transparent to-transparent transition-opacity duration-500 group-hover:opacity-0" />
-          </div>
-        </div>
+        {data.subtitle && (
+          <p className="mt-4 max-w-2xl text-base text-white/80">{data.subtitle}</p>
+        )}
+
+        <Link
+          href={data.ctaHref || '/contact'}
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-8 py-3 text-sm sm:text-base font-semibold text-brand-600 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
+        >
+          {data.ctaLabel}
+          <span aria-hidden="true">→</span>
+        </Link>
       </div>
-    </div>
+    </section>
   );
 }
