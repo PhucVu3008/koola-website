@@ -1,10 +1,11 @@
 'use client';
 
-import type { FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 
 import type { SiteSettingsPayload } from '../src/lib/api/site';
 import { getDictionary } from '../src/i18n/getDictionary';
 import { isLocale } from '../src/i18n/locales';
+import { env } from '../src/lib/env';
 
 /**
  * Marketing site footer (desktop-first).
@@ -21,6 +22,7 @@ export function SiteFooter({
   site: SiteSettingsPayload;
 }) {
   const dict = getDictionary(isLocale(locale) ? locale : 'en');
+  const [subStatus, setSubStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
   const withLocale = (path: string) => `/${locale}${path}`;
 
@@ -58,70 +60,70 @@ export function SiteFooter({
 
   return (
     <footer className="w-full border-t border-slate-200 bg-white">
-      {/* Full-width background, contained content */}
-      <div className="w-full">
-        <div className="fluid-container fluid-p-lg" style={{ paddingTop: 'clamp(2rem, 5vh, 3.5rem)', paddingBottom: 'clamp(1.5rem, 4vh, 2rem)' }}>
-          {/* Main Footer Content - Truly Fluid Grid */}
-          <div 
-            className="grid"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(160px, 25vw, 300px), 1fr))',
-              gap: 'clamp(1.25rem, 4vw, 3rem)'
-            }}
-          >
-            {/* Company Links */}
-            <div>
-              <div className="font-semibold text-slate-900 fluid-text-lg">
-                {locale === 'vi' ? 'Công ty' : 'Company'}
-              </div>
-              <ul style={{ marginTop: 'clamp(0.75rem, 2vw, 1rem)', gap: 'clamp(0.5rem, 1.5vw, 0.75rem)' }} className="flex flex-col">
-                {companyLinks.map((l) => (
-                  <li key={l.label}>
-                    <a
-                      href={l.href}
-                      className="text-slate-500 hover:text-slate-900 transition-colors fluid-text-sm"
-                      style={{ lineHeight: '1.6' }}
-                    >
-                      {l.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+      {/* Top section: link columns + subscribe */}
+      <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20 pt-12 pb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          {/* Company Links */}
+          <div>
+            <div className="font-semibold text-slate-900 text-sm uppercase tracking-wide">
+              {locale === 'vi' ? 'Công ty' : 'Company'}
             </div>
+            <ul className="mt-4 flex flex-col gap-2.5">
+              {companyLinks.map((l) => (
+                <li key={l.label}>
+                  <a href={l.href} className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-            {/* Resources Links */}
-            <div>
-              <div className="font-semibold text-slate-900 fluid-text-lg">
-                {locale === 'vi' ? 'Tài nguyên' : 'Resources'}
-              </div>
-              <ul style={{ marginTop: 'clamp(0.75rem, 2vw, 1rem)', gap: 'clamp(0.5rem, 1.5vw, 0.75rem)' }} className="flex flex-col">
-                {resourceLinks.map((l) => (
-                  <li key={l.label}>
-                    <a
-                      href={l.href}
-                      className="text-slate-500 hover:text-slate-900 transition-colors fluid-text-sm"
-                      style={{ lineHeight: '1.6' }}
-                    >
-                      {l.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+          {/* Resources Links */}
+          <div>
+            <div className="font-semibold text-slate-900 text-sm uppercase tracking-wide">
+              {locale === 'vi' ? 'Tài nguyên' : 'Resources'}
             </div>
+            <ul className="mt-4 flex flex-col gap-2.5">
+              {resourceLinks.map((l) => (
+                <li key={l.label}>
+                  <a href={l.href} className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-            {/* Subscribe Section - Full width on mobile, spans columns on desktop */}
-            <div className="col-span-full md:col-span-2">
-              <div className="rounded-xl bg-slate-50 fluid-p-lg">
-                <div className="font-semibold text-slate-900 fluid-text-xl">{dict.footer.subscribe}</div>
+          {/* Subscribe — spans 2 cols on lg */}
+          <div className="sm:col-span-2">
+            <div className="rounded-xl bg-slate-50 p-5 sm:p-6">
+              <div className="font-semibold text-slate-900 text-base">{dict.footer.subscribe}</div>
+              <form
+                className="mt-3"
+                onSubmit={async (e: FormEvent<HTMLFormElement>) => {
+                  e.preventDefault();
+                  const form = e.currentTarget;
+                  const email = new FormData(form).get('email')?.toString().trim();
+                  if (!email) return;
 
-                <form
-                  style={{ marginTop: 'clamp(0.75rem, 2vw, 1rem)' }}
-                  onSubmit={(e: FormEvent<HTMLFormElement>) => {
-                    // UI-only for now. We can wire to `/v1/newsletter/subscribe`.
-                    e.preventDefault();
-                  }}
-                >
-                <div className="relative w-full max-w-[420px]">
+                  setSubStatus('submitting');
+                  try {
+                    const url = `${env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, '')}/v1/newsletter/subscribe`;
+                    const res = await fetch(url, {
+                      method: 'POST',
+                      headers: { 'content-type': 'application/json' },
+                      body: JSON.stringify({ email, source_path: 'footer' }),
+                    });
+                    if (!res.ok) throw new Error();
+                    setSubStatus('success');
+                    form.reset();
+                  } catch {
+                    setSubStatus('error');
+                  }
+                }}
+              >
+                <div className="relative w-full max-w-md">
                   <label htmlFor="footer-email" className="sr-only">
                     {dict.footer.emailAddress}
                   </label>
@@ -131,161 +133,142 @@ export function SiteFooter({
                     type="email"
                     autoComplete="email"
                     placeholder={dict.footer.emailAddress}
-                    className="w-full rounded-full border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 shadow-sm outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-200 transition-all fluid-h-md fluid-text-sm"
-                    style={{ 
-                      paddingLeft: 'clamp(1rem, 3vw, 1.5rem)', 
-                      paddingRight: 'clamp(3.5rem, 15vw, 4rem)' 
-                    }}
+                    className="w-full rounded-full border border-slate-200 bg-white py-2.5 pl-4 pr-14 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-200 transition-all"
                   />
                   <button
                     type="submit"
+                    disabled={subStatus === 'submitting'}
                     aria-label={dict.footer.subscribeCta}
-                    className="absolute right-[4px] top-1/2 grid -translate-y-1/2 place-items-center rounded-full bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition-colors"
-                    style={{ 
-                      width: 'clamp(2.25rem, 10vw, 2.875rem)', 
-                      height: 'clamp(2.25rem, 10vw, 2.875rem)' 
-                    }}
+                    className={`absolute right-1 top-1/2 grid -translate-y-1/2 place-items-center rounded-full bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition-colors w-9 h-9 ${subStatus === 'submitting' ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    <svg
-                      viewBox="0 0 24 24"
-                      style={{ width: 'clamp(14px, 3vw, 16px)', height: 'clamp(14px, 3vw, 16px)' }}
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
+                    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="M5 12h14" />
                       <path d="m13 5 7 7-7 7" />
                     </svg>
                   </button>
                 </div>
               </form>
-
-              <p style={{ marginTop: 'clamp(0.75rem, 2vw, 1rem)' }} className="max-w-[480px] text-slate-500 fluid-text-sm">
+              {subStatus === 'success' && (
+                <p className="mt-2 text-xs text-emerald-600 font-medium">
+                  {locale === 'vi' ? 'Đăng ký thành công!' : 'Subscribed successfully!'}
+                </p>
+              )}
+              {subStatus === 'error' && (
+                <p className="mt-2 text-xs text-rose-600 font-medium">
+                  {locale === 'vi' ? 'Có lỗi xảy ra, vui lòng thử lại.' : 'Something went wrong, please try again.'}
+                </p>
+              )}
+              <p className="mt-3 max-w-md text-xs text-slate-500 leading-relaxed">
                 {dict.footer.subscribeDescription}
               </p>
-              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Company Legal Info + Map */}
-        <div className="fluid-container" style={{ marginTop: 'clamp(2rem, 5vh, 3rem)' }}>
-          <div className="rounded-xl bg-slate-50 overflow-hidden">
-            <div className="fluid-p-lg">
-              <div className="font-semibold text-slate-900 fluid-text-base">
+      {/* Company Legal Info */}
+      <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20 pb-6">
+        <div className="rounded-xl bg-slate-50 overflow-hidden p-5 sm:p-6">
+          <div className="font-semibold text-slate-900 text-sm">
+            {locale === 'vi'
+              ? 'CÔNG TY TNHH THỰC PHẨM QUỐC TẾ AN BÌNH'
+              : 'AN BINH INTERNATIONAL FOODS CO., LTD'}
+          </div>
+          <div className="mt-3 flex flex-col gap-1.5 text-sm text-slate-500 leading-relaxed">
+            <p>
+              <span className="font-medium text-slate-600">{locale === 'vi' ? 'Địa chỉ' : 'Address'}:</span>{' '}
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=Số+58+đường+3+thôn+4+Đức+Hạnh+Đức+Linh+Bình+Thuận+Vietnam"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-slate-300 underline-offset-2 hover:text-brand-600 hover:decoration-brand-400 transition-colors"
+              >
                 {locale === 'vi'
-                  ? 'CÔNG TY TNHH THỰC PHẨM QUỐC TẾ AN BÌNH'
-                  : 'AN BINH INTERNATIONAL FOODS CO., LTD'}
-              </div>
-              <div className="mt-3 flex flex-col gap-1.5 text-slate-500 fluid-text-sm" style={{ lineHeight: '1.6' }}>
-                <p>
-                  <span className="font-medium text-slate-600">{locale === 'vi' ? 'Địa chỉ' : 'Address'}:</span>{' '}
-                  <a
-                    href="https://www.google.com/maps/search/?api=1&query=Số+58+đường+3+thôn+4+Đức+Hạnh+Đức+Linh+Bình+Thuận+Vietnam"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline decoration-slate-300 underline-offset-2 hover:text-brand-600 hover:decoration-brand-400 transition-colors"
-                  >
-                    {locale === 'vi'
-                      ? 'Số 58, đường 3, thôn 4, Đức Hạnh, Đức Linh, Bình Thuận, Việt Nam'
-                      : '58 Road 3, Village 4, Duc Hanh, Duc Linh, Binh Thuan, Vietnam'}
-                  </a>
-                </p>
-                <p>
-                  <span className="font-medium text-slate-600">{locale === 'vi' ? 'Điện thoại' : 'Phone'}:</span>{' '}
-                  <a href="tel:0941508468" className="hover:text-brand-600 transition-colors">0941 508 468</a>
-                </p>
-                <p>
-                  <span className="font-medium text-slate-600">Email:</span>{' '}
-                  <a href="mailto:sales@anbinhfoods.com" className="hover:text-brand-600 transition-colors">sales@anbinhfoods.com</a>
-                </p>
-              </div>
-            </div>
+                  ? 'Số 58, đường 3, thôn 4, Đức Hạnh, Đức Linh, Bình Thuận, Việt Nam'
+                  : '58 Road 3, Village 4, Duc Hanh, Duc Linh, Binh Thuan, Vietnam'}
+              </a>
+            </p>
+            <p>
+              <span className="font-medium text-slate-600">{locale === 'vi' ? 'Điện thoại' : 'Phone'}:</span>{' '}
+              <a href="tel:0941508468" className="hover:text-brand-600 transition-colors">0941 508 468</a>
+            </p>
+            <p>
+              <span className="font-medium text-slate-600">Email:</span>{' '}
+              <a href="mailto:sales@anbinhfoods.com" className="hover:text-brand-600 transition-colors">sales@anbinhfoods.com</a>
+            </p>
           </div>
         </div>
+      </div>
 
-        {/* Divider */}
-        <div className="fluid-container">
-          <div className="h-px w-full bg-slate-200" style={{ marginTop: 'clamp(1.5rem, 4vh, 2rem)', marginBottom: 'clamp(1.5rem, 4vh, 1.75rem)' }} />
-        </div>
+      {/* Divider */}
+      <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20">
+        <div className="h-px w-full bg-slate-200" />
+      </div>
 
-        {/* Footer Bottom - Fluid layout */}
-        <div className="fluid-container" style={{ paddingBottom: 'clamp(1.5rem, 4vh, 2rem)' }}>
-          <div className="flex flex-col md:flex-row items-center justify-between" style={{ gap: 'clamp(1.25rem, 3vw, 1.5rem)' }}>
-            {/* Logo/Brand - Fluid size */}
-            <a href={withLocale('/')} aria-label="Home" className="inline-flex items-center order-1 md:order-1">
-              <div className="grid place-items-center rounded-xl bg-slate-50" style={{ width: 'clamp(2.25rem, 4vw, 2.75rem)', height: 'clamp(2.25rem, 4vw, 2.75rem)' }}>
-                <span className="font-bold text-indigo-600 fluid-text-lg">K</span>
+      {/* Footer Bottom */}
+      <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-20 py-6">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          {/* Logo + Copyright */}
+          <div className="flex items-center gap-3 order-1">
+            <a href={withLocale('/')} aria-label="Home" className="inline-flex items-center">
+              <div className="grid place-items-center rounded-xl bg-slate-50 w-9 h-9">
+                <span className="font-bold text-indigo-600 text-base">K</span>
               </div>
             </a>
+            <span className="text-xs text-slate-400">
+              © {new Date().getFullYear()} KOOLA. {locale === 'vi' ? 'Bảo lưu mọi quyền.' : 'All rights reserved.'}
+            </span>
+          </div>
 
-            {/* Legal Links - Fluid gap */}
-            <nav aria-label="Legal" className="flex flex-wrap items-center justify-center order-3 md:order-2" style={{ gap: 'clamp(1rem, 3vw, 3.5rem)' }}>
-              {legalLinks.map((l) => (
-                <a
-                  key={l.label}
-                  href={l.href}
-                  className="text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap fluid-text-sm"
-                >
-                  {l.label}
-                </a>
-              ))}
-            </nav>
+          {/* Legal Links */}
+          <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 order-3 md:order-2">
+            {legalLinks.map((l) => (
+              <a key={l.label} href={l.href} className="text-sm text-slate-700 hover:text-slate-900 transition-colors whitespace-nowrap">
+                {l.label}
+              </a>
+            ))}
+          </nav>
 
-            {/* Social Icons - Fluid sizing */}
-            <div className="flex items-center order-2 md:order-3" style={{ gap: 'clamp(0.625rem, 2vw, 1rem)' }}>
-              {[
-                {
-                  label: 'LinkedIn',
-                  href: (site as any).social_links?.linkedin ?? '#',
-                  icon: (
-                    <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
-                      <path
-                        fill="currentColor"
-                        d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0.5 23.5h4V7.98h-4V23.5zM8.02 7.98h3.83v2.12h.05c.53-1 1.82-2.17 3.74-2.17 4 0 4.74 2.63 4.74 6.04v7.53h-4v-6.68c0-1.59-.03-3.63-2.21-3.63-2.21 0-2.55 1.73-2.55 3.52v6.79h-4V7.98z"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  label: 'Facebook',
-                  href: (site as any).social_links?.facebook ?? '#',
-                  icon: (
-                    <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
-                      <path
-                        fill="currentColor"
-                        d="M13.5 22v-8h2.7l.4-3H13.5V9.1c0-.87.24-1.46 1.5-1.46H16.7V5.02c-.3-.04-1.33-.12-2.52-.12-2.49 0-4.18 1.52-4.18 4.3V11H7.5v3H10v8h3.5z"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  label: 'Twitter',
-                  href: (site as any).social_links?.twitter ?? '#',
-                  icon: (
-                    <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
-                      <path
-                        fill="currentColor"
-                        d="M18.9 2H22l-6.8 7.8L23.2 22h-6.2l-4.9-6.3L6.5 22H3.4l7.3-8.4L1 2h6.4l4.4 5.7L18.9 2zm-1.1 18h1.7L7.3 3.9H5.5L17.8 20z"
-                      />
-                    </svg>
-                  ),
-                },
-              ].map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
-                  className="grid place-items-center rounded-full border border-slate-200 text-slate-700 hover:border-slate-300 hover:text-slate-900 transition-all"
-                  style={{ width: 'clamp(2.25rem, 4vw, 2.75rem)', height: 'clamp(2.25rem, 4vw, 2.75rem)' }}
-                >
-                  {s.icon}
-                </a>
-              ))}
-            </div>
+          {/* Social Icons */}
+          <div className="flex items-center gap-2.5 order-2 md:order-3">
+            {[
+              {
+                label: 'LinkedIn',
+                href: (site as any).social_links?.linkedin ?? '#',
+                icon: (
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
+                    <path fill="currentColor" d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0.5 23.5h4V7.98h-4V23.5zM8.02 7.98h3.83v2.12h.05c.53-1 1.82-2.17 3.74-2.17 4 0 4.74 2.63 4.74 6.04v7.53h-4v-6.68c0-1.59-.03-3.63-2.21-3.63-2.21 0-2.55 1.73-2.55 3.52v6.79h-4V7.98z" />
+                  </svg>
+                ),
+              },
+              {
+                label: 'Facebook',
+                href: (site as any).social_links?.facebook ?? '#',
+                icon: (
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
+                    <path fill="currentColor" d="M13.5 22v-8h2.7l.4-3H13.5V9.1c0-.87.24-1.46 1.5-1.46H16.7V5.02c-.3-.04-1.33-.12-2.52-.12-2.49 0-4.18 1.52-4.18 4.3V11H7.5v3H10v8h3.5z" />
+                  </svg>
+                ),
+              },
+              {
+                label: 'Twitter',
+                href: (site as any).social_links?.twitter ?? '#',
+                icon: (
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
+                    <path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23.2 22h-6.2l-4.9-6.3L6.5 22H3.4l7.3-8.4L1 2h6.4l4.4 5.7L18.9 2zm-1.1 18h1.7L7.3 3.9H5.5L17.8 20z" />
+                  </svg>
+                ),
+              },
+            ].map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                aria-label={s.label}
+                className="grid place-items-center rounded-full border border-slate-200 text-slate-700 hover:border-slate-300 hover:text-slate-900 transition-all w-9 h-9"
+              >
+                {s.icon}
+              </a>
+            ))}
           </div>
         </div>
       </div>
