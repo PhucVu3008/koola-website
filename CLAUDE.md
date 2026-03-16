@@ -131,6 +131,24 @@ Pagination: { "meta": { "page": 1, "pageSize": 10, "total": 123, "totalPages": 1
 - Commits: Conventional commits (feat:, fix:, refactor:, docs:, chore:)
 - Docker: all run/test/build commands via `docker-compose exec`
 
+## Deployment & Verification Workflow
+
+- Production runs via Docker Compose — live at **koola.vn**
+- After code changes, ALWAYS rebuild in two steps:
+  ```bash
+  # Step 1: Build Next.js first (Dockerfile.web COPYs .next/standalone)
+  cd /Users/vunam/Downloads/koola/koola-website && npm run build --workspace=apps/web
+
+  # Step 2: Rebuild and restart the web container
+  docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --build web
+  ```
+- If only backend changed:
+  ```bash
+  docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --build api
+  ```
+- Wait for containers to be healthy before telling the user to check
+- Do NOT skip the rebuild step — the user cannot verify changes without it
+
 ## When Making Changes
 - Read existing code before modifying — understand the pattern first
 - Follow existing project patterns and conventions
