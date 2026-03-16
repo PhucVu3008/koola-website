@@ -24,7 +24,7 @@ export function PageLayout({
   return (
     <div className="min-h-dvh bg-white">
       <SiteHeader locale={locale} />
-      <main className="w-full">{children as React.ReactNode}</main>
+      <main className="w-full pt-[clamp(3.5rem,8vh,4.5rem)]">{children as React.ReactNode}</main>
       <SiteFooter locale={locale} site={site} />
       <MobileBottomNav locale={locale} />
       <ChatWidget locale={locale} />

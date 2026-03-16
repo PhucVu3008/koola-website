@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { logger } from '../src/lib/logger';
 
 import { getDictionary, getSupportedLocales } from '../src/i18n/getDictionary';
@@ -16,12 +16,13 @@ import { isLocale, type Locale } from '../src/i18n/locales';
  * - Mobile: Hamburger menu with slide-in drawer
  * - Active route highlighting (brand color)
  * - i18n support with locale-prefixed paths
+ * - Scroll-aware: transparent on hero, solid white when scrolled
  */
 export function SiteHeader({ locale }: { locale: string }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isSwitching, setIsSwitching] = useState(false);
+  const [scrolled, setScrolled] = useState(true); // default solid to avoid FOUC
   const pathname = usePathname() ?? '/';
-  const router = useRouter();
 
   const parts = pathname.split('/').filter(Boolean);
   const fromPath = parts[0];
@@ -29,6 +30,36 @@ export function SiteHeader({ locale }: { locale: string }) {
   const baseLocale: Locale = isLocale(fromPath) ? fromPath : (isLocale(locale) ? locale : 'en');
 
   const dict = getDictionary(baseLocale);
+
+  /**
+   * Observe elements with data-header-theme="dark".
+   * When any such element overlaps the top 60px of the viewport (header zone),
+   * switch to transparent mode (white text). Otherwise, solid mode (dark text).
+   * rootMargin: only the top strip of the viewport triggers intersection.
+   */
+  useEffect(() => {
+    const targets = document.querySelectorAll<HTMLElement>('[data-header-theme="dark"]');
+    if (targets.length === 0) {
+      setScrolled(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // If any dark-hero element intersects the header zone → transparent
+        const anyDarkVisible = entries.some((e) => e.isIntersecting);
+        setScrolled(!anyDarkVisible);
+      },
+      {
+        // Only observe intersection with the top 60px strip of the viewport
+        rootMargin: '0px 0px -95% 0px',
+        threshold: 0,
+      }
+    );
+
+    targets.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [pathname]);
 
   const withLocale = (href: string) => {
     const clean = href === '/' ? '' : href;
@@ -43,8 +74,8 @@ export function SiteHeader({ locale }: { locale: string }) {
 
   const linkClass = (href: string) =>
     isActive(href)
-      ? 'fluid-text-sm font-semibold text-brand-700'
-      : 'fluid-text-sm font-medium text-slate-700 hover:text-slate-900';
+      ? `fluid-text-sm font-semibold ${scrolled ? 'text-brand-700' : 'text-white'}`
+      : `fluid-text-sm font-medium ${scrolled ? 'text-slate-700 hover:text-slate-900' : 'text-white/70 hover:text-white'}`;
   
   const mobileLinkClass = (href: string) =>
     isActive(href)
@@ -112,177 +143,153 @@ export function SiteHeader({ locale }: { locale: string }) {
   const supportedLocales = getSupportedLocales();
 
   return (
-    <header className="w-full bg-white sticky top-0 z-50 border-b border-slate-100">
-      {/* Full-width background, contained content */}
-      <div className="w-full">
-        <div className="fluid-container">
-          <div className="flex items-center justify-between" style={{ height: 'clamp(3.5rem, 8vh, 4.5rem)' }}>
-            {/* Logo - Fluid size */}
-            <Link 
-              href={`/${baseLocale}`} 
-              className="z-50 font-semibold tracking-tight text-slate-900 fluid-text-base"
-            >
-              KOOLA
-            </Link>
+    <>
+      <header className={`w-full fixed top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm' : 'bg-transparent'}`}>
+        {/* Full-width background, contained content */}
+        <div className="w-full">
+          <div className="fluid-container">
+            <div className="flex items-center justify-between" style={{ height: 'clamp(3.5rem, 8vh, 4.5rem)' }}>
+              {/* Logo - Fluid size */}
+              <Link
+                href={`/${baseLocale}`}
+                className={`z-50 font-semibold tracking-tight fluid-text-base transition-colors duration-300 ${scrolled ? 'text-slate-900' : 'text-white'}`}
+              >
+                KOOLA
+              </Link>
 
-            {/* Desktop Navigation - Hidden on mobile */}
-            <nav aria-label="Primary" className="hidden lg:flex items-center fluid-gap-lg">
-              <Link href={withLocale('/')} className={linkClass('/')}>{dict.nav.home}</Link>
-              <Link href={withLocale('/about')} className={linkClass('/about')}>{dict.nav.about}</Link>
-              <Link href={withLocale('/services')} className={linkClass('/services')}>{dict.nav.services}</Link>
-              <Link href={withLocale('/careers')} className={linkClass('/careers')}>{dict.nav.careers}</Link>
-              <Link href={withLocale('/contact')} className={linkClass('/contact')}>{dict.nav.contact}</Link>
-            </nav>
+              {/* Desktop Navigation - Hidden on mobile */}
+              <nav aria-label="Primary" className="hidden lg:flex items-center fluid-gap-lg">
+                <Link href={withLocale('/')} className={linkClass('/')}>{dict.nav.home}</Link>
+                <Link href={withLocale('/about')} className={linkClass('/about')}>{dict.nav.about}</Link>
+                <Link href={withLocale('/services')} className={linkClass('/services')}>{dict.nav.services}</Link>
+                <Link href={withLocale('/careers')} className={linkClass('/careers')}>{dict.nav.careers}</Link>
+                <Link href={withLocale('/contact')} className={linkClass('/contact')}>{dict.nav.contact}</Link>
+              </nav>
 
-            {/* Desktop Actions - Hidden on mobile */}
-            <div className="hidden lg:flex items-center fluid-gap-sm">
-              <div className="relative flex items-center rounded-full border border-slate-200 bg-slate-50 p-0.5" role="radiogroup" aria-label="Language">
-                {supportedLocales.map((l) => (
-                  <button
-                    key={l}
-                    role="radio"
-                    aria-checked={baseLocale === l}
-                    disabled={isSwitching}
-                    onClick={async () => {
-                      if (l === baseLocale || isSwitching) return;
-                      setIsSwitching(true);
-                      try {
-                        const newUrl = await switchTo(l);
-                        router.push(newUrl);
-                      } finally {
-                        setIsSwitching(false);
-                      }
-                    }}
-                    className={`relative z-10 rounded-full px-3 py-1 text-xs font-semibold transition-all duration-200 ${
-                      baseLocale === l
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-500 hover:text-slate-700'
-                    } ${isSwitching ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                  >
-                    {l.toUpperCase()}
-                  </button>
-                ))}
+              {/* Desktop Actions - Hidden on mobile */}
+              <div className="hidden lg:flex items-center fluid-gap-sm">
+                <div className={`relative flex items-center rounded-full p-0.5 transition-all duration-300 ${scrolled ? 'border border-slate-200 bg-slate-50' : 'border border-white/20 bg-white/10'}`} role="radiogroup" aria-label="Language">
+                  {supportedLocales.map((l) => (
+                    <button
+                      key={l}
+                      role="radio"
+                      aria-checked={baseLocale === l}
+                      disabled={isSwitching}
+                      onClick={async () => {
+                        if (l === baseLocale || isSwitching) return;
+                        setIsSwitching(true);
+                        try {
+                          const newUrl = await switchTo(l);
+                          window.location.href = newUrl;
+                        } catch {
+                          setIsSwitching(false);
+                        }
+                      }}
+                      className={`relative z-10 rounded-full px-3 py-1 text-xs font-semibold transition-all duration-200 ${
+                        baseLocale === l
+                          ? 'bg-white text-slate-900 shadow-sm'
+                          : scrolled ? 'text-slate-500 hover:text-slate-700' : 'text-white/70 hover:text-white'
+                      } ${isSwitching ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    >
+                      {l.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+
+                <Link
+                  href={withLocale('/contact')}
+                  className="inline-flex items-center justify-center rounded-full bg-brand-600 text-white font-medium transition-colors hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 fluid-h-sm fluid-text-xs"
+                  style={{ paddingLeft: 'clamp(0.75rem, 2.5vw, 1.25rem)', paddingRight: 'clamp(0.75rem, 2.5vw, 1.25rem)' }}
+                >
+                  {dict.nav.scheduleCall}
+                </Link>
               </div>
 
-              <Link
-                href={withLocale('/contact')}
-                className="inline-flex items-center justify-center rounded-full bg-brand-600 text-white font-medium transition-colors hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 fluid-h-sm fluid-text-xs"
-                style={{ paddingLeft: 'clamp(0.75rem, 2.5vw, 1.25rem)', paddingRight: 'clamp(0.75rem, 2.5vw, 1.25rem)' }}
-              >
-                {dict.nav.scheduleCall}
-              </Link>
-            </div>
+              {/* Mobile Locale Toggle + Menu Button */}
+              <div className="lg:hidden flex items-center gap-2">
+                <div className={`relative flex items-center rounded-full p-0.5 transition-all duration-300 ${scrolled ? 'border border-slate-200 bg-slate-50' : 'border border-white/20 bg-white/10'}`} role="radiogroup" aria-label="Language">
+                  {supportedLocales.map((l) => (
+                    <button
+                      key={l}
+                      role="radio"
+                      aria-checked={baseLocale === l}
+                      disabled={isSwitching}
+                      onClick={async () => {
+                        if (l === baseLocale || isSwitching) return;
+                        setIsSwitching(true);
+                        try {
+                          const newUrl = await switchTo(l);
+                          window.location.href = newUrl;
+                        } catch {
+                          setIsSwitching(false);
+                        }
+                      }}
+                      className={`relative z-10 rounded-full px-2.5 py-1 text-xs font-semibold transition-all duration-200 ${
+                        baseLocale === l
+                          ? 'bg-white text-slate-900 shadow-sm'
+                          : scrolled ? 'text-slate-500 hover:text-slate-700' : 'text-white/70 hover:text-white'
+                      } ${isSwitching ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    >
+                      {l.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
 
-            {/* Mobile Menu Button - Shown on mobile only */}
-            <button
-              type="button"
-              className="lg:hidden z-50 p-2 -mr-2 text-slate-700 hover:text-slate-900"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={mobileMenuOpen}
-            >
-            {mobileMenuOpen ? (
-              // Close Icon (X)
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              // Hamburger Icon
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-              </svg>
-            )}
-          </button>
+                <button
+                  type="button"
+                  className={`z-50 p-2 -mr-2 transition-colors duration-300 ${scrolled ? 'text-slate-700 hover:text-slate-900' : 'text-white/80 hover:text-white'}`}
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+                  aria-expanded={mobileMenuOpen}
+                >
+              {mobileMenuOpen ? (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+              )}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile Menu - Slide-in drawer */}
+      {/* Mobile Menu - Full-screen drawer (outside header to avoid backdrop-blur containing block) */}
       <div
         className={`lg:hidden fixed inset-0 z-40 bg-white transform transition-transform duration-300 ease-in-out ${
           mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="h-full overflow-y-auto" style={{ 
-          paddingTop: 'clamp(4rem, 15vh, 5rem)', 
-          paddingBottom: 'clamp(1.5rem, 5vh, 2rem)',
-          paddingLeft: 'clamp(1rem, 5vw, 1.5rem)',
-          paddingRight: 'clamp(1rem, 5vw, 1.5rem)'
-        }}>
+        <div className="h-full overflow-y-auto pt-20 pb-6 px-4 sm:px-6">
           {/* Mobile Navigation */}
-          <nav aria-label="Mobile navigation" style={{ marginBottom: 'clamp(2rem, 8vh, 3rem)' }} className="space-y-2">
-            <Link 
-              href={withLocale('/')} 
-              className={mobileLinkClass('/')}
-              style={{ 
-                paddingTop: 'clamp(0.75rem, 3vw, 1rem)', 
-                paddingBottom: 'clamp(0.75rem, 3vw, 1rem)',
-                paddingLeft: 'clamp(1rem, 4vw, 1.25rem)',
-                paddingRight: 'clamp(1rem, 4vw, 1.25rem)'
-              }}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {dict.nav.home}
-            </Link>
-            <Link 
-              href={withLocale('/about')} 
-              className={mobileLinkClass('/about')}
-              style={{ 
-                paddingTop: 'clamp(0.75rem, 3vw, 1rem)', 
-                paddingBottom: 'clamp(0.75rem, 3vw, 1rem)',
-                paddingLeft: 'clamp(1rem, 4vw, 1.25rem)',
-                paddingRight: 'clamp(1rem, 4vw, 1.25rem)'
-              }}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {dict.nav.about}
-            </Link>
-            <Link 
-              href={withLocale('/services')} 
-              className={mobileLinkClass('/services')}
-              style={{ 
-                paddingTop: 'clamp(0.75rem, 3vw, 1rem)', 
-                paddingBottom: 'clamp(0.75rem, 3vw, 1rem)',
-                paddingLeft: 'clamp(1rem, 4vw, 1.25rem)',
-                paddingRight: 'clamp(1rem, 4vw, 1.25rem)'
-              }}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {dict.nav.services}
-            </Link>
-            <Link 
-              href={withLocale('/careers')} 
-              className={mobileLinkClass('/careers')}
-              style={{ 
-                paddingTop: 'clamp(0.75rem, 3vw, 1rem)', 
-                paddingBottom: 'clamp(0.75rem, 3vw, 1rem)',
-                paddingLeft: 'clamp(1rem, 4vw, 1.25rem)',
-                paddingRight: 'clamp(1rem, 4vw, 1.25rem)'
-              }}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {dict.nav.careers}
-            </Link>
-            <Link 
-              href={withLocale('/contact')} 
-              className={mobileLinkClass('/contact')}
-              style={{ 
-                paddingTop: 'clamp(0.75rem, 3vw, 1rem)', 
-                paddingBottom: 'clamp(0.75rem, 3vw, 1rem)',
-                paddingLeft: 'clamp(1rem, 4vw, 1.25rem)',
-                paddingRight: 'clamp(1rem, 4vw, 1.25rem)'
-              }}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {dict.nav.contact}
-            </Link>
+          <nav aria-label="Mobile navigation" className="space-y-2 mb-8">
+            {[
+              { href: '/', label: dict.nav.home },
+              { href: '/about', label: dict.nav.about },
+              { href: '/services', label: dict.nav.services },
+              { href: '/careers', label: dict.nav.careers },
+              { href: '/contact', label: dict.nav.contact },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={withLocale(link.href)}
+                className={`${mobileLinkClass(link.href)} px-4 py-3`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
           {/* Mobile Actions */}
           <div className="space-y-4 pt-6 border-t border-slate-200">
             {/* Locale Toggle */}
             <div>
-              <span className="block fluid-text-sm font-medium text-slate-700 mb-2">
+              <span className="block text-sm font-medium text-slate-700 mb-2">
                 {locale === 'vi' ? 'Ngôn ngữ' : 'Language'}
               </span>
               <div className="flex items-center rounded-xl border border-slate-200 bg-slate-50 p-1" role="radiogroup" aria-label="Language">
@@ -297,9 +304,8 @@ export function SiteHeader({ locale }: { locale: string }) {
                       setIsSwitching(true);
                       try {
                         const newUrl = await switchTo(l);
-                        router.push(newUrl);
-                        setMobileMenuOpen(false);
-                      } finally {
+                        window.location.href = newUrl;
+                      } catch {
                         setIsSwitching(false);
                       }
                     }}
@@ -318,7 +324,7 @@ export function SiteHeader({ locale }: { locale: string }) {
             {/* CTA Button */}
             <Link
               href={withLocale('/contact')}
-              className="block w-full flex items-center justify-center rounded-lg bg-brand-600 px-4 fluid-text-base font-medium text-white transition-colors hover:bg-brand-700 fluid-h-md"
+              className="flex w-full items-center justify-center rounded-lg bg-brand-600 px-4 py-3 text-base font-medium text-white transition-colors hover:bg-brand-700"
               onClick={() => setMobileMenuOpen(false)}
             >
               {dict.nav.scheduleCall}
@@ -335,6 +341,6 @@ export function SiteHeader({ locale }: { locale: string }) {
           aria-hidden="true"
         />
       )}
-    </header>
+    </>
   );
 }

@@ -26,8 +26,10 @@ export function ServicesHero({ data }: { data: ServicesHeroData }) {
   };
 
   return (
-    <section 
-      className="relative h-[300px] sm:h-[360px] lg:h-[420px] w-full overflow-hidden rounded-b-[28px] sm:rounded-b-[42px] bg-gradient-to-br from-emerald-700 via-teal-600 to-cyan-600"
+    <section
+      className="relative w-full overflow-hidden rounded-b-[28px] sm:rounded-b-[42px] bg-gradient-to-br from-emerald-700 via-teal-600 to-cyan-600 -mt-[clamp(3.5rem,8vh,4.5rem)]"
+      style={{ height: 'calc(clamp(3.5rem,8vh,4.5rem) + clamp(300px,40vw,420px))' }}
+      data-header-theme="dark"
       onMouseMove={handleMouseMove}
     >
       {/* Background Image */}

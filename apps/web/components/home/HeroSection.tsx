@@ -43,8 +43,9 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
   };
 
   return (
-    <div 
-      className="relative flex w-full items-center justify-center overflow-hidden fluid-h-hero"
+    <div
+      className="relative flex w-full items-center justify-center overflow-hidden fluid-h-hero -mt-[clamp(3.5rem,8vh,4.5rem)]"
+      data-header-theme="dark"
       onMouseMove={handleMouseMove}
     >
       {/* LAYER 0: Background Gradient Base - MOUSE TRACKING (desktop only) */}

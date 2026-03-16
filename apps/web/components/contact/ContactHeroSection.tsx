@@ -32,8 +32,9 @@ export function ContactHeroSection({ data }: ContactHeroSectionProps) {
   };
 
   return (
-    <section 
-      className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900"
+    <section
+      className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 -mt-[clamp(3.5rem,8vh,4.5rem)] pt-[clamp(3.5rem,8vh,4.5rem)]"
+      data-header-theme="dark"
       onMouseMove={handleMouseMove}
     >
       {/* Background Image with Overlay */}

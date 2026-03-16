@@ -27,8 +27,10 @@ export function CareersHeroSection({ data }: { data: CareersHeroSectionData }) {
   };
 
   return (
-    <div 
-      className="relative h-[280px] sm:h-[340px] lg:h-[420px] w-full overflow-hidden"
+    <div
+      className="relative w-full overflow-hidden -mt-[clamp(3.5rem,8vh,4.5rem)]"
+      style={{ height: 'calc(clamp(3.5rem,8vh,4.5rem) + clamp(280px,38vw,420px))' }}
+      data-header-theme="dark"
       onMouseMove={handleMouseMove}
     >
       {/* Background Image with Overlay */}
