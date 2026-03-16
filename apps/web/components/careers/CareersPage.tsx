@@ -16,6 +16,7 @@ export type CareersPageProps = {
     featuredJobs: {
       title: string;
       exploreMore: string;
+      noOpenings: string;
     };
     job: {
       locationLabel: string;
@@ -52,7 +53,8 @@ export function CareersPage({ pageData, jobs, locale, dict }: CareersPageProps) 
   const jobsData: FeaturedJobsAccordionData = {
     title: dict.featuredJobs.title,
     exploreMoreLabel: dict.featuredJobs.exploreMore,
-    exploreMoreHref: '/jobs',
+    noOpeningsLabel: dict.featuredJobs.noOpenings,
+    exploreMoreHref: `/${locale}/careers`,
     locationLabel: dict.job.locationLabel,
     levelLabel: dict.job.levelLabel,
     responsibilitiesTitle: dict.job.responsibilitiesTitle,

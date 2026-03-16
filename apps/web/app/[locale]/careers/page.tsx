@@ -58,6 +58,7 @@ export default async function CareersRoute({
         featuredJobs: {
           title: dict.careers.featuredJobs.title,
           exploreMore: dict.careers.featuredJobs.exploreMore,
+          noOpenings: dict.careers.featuredJobs.noOpenings,
         },
         job: {
           locationLabel: dict.careers.job.locationLabel,

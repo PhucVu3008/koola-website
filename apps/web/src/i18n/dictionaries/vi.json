@@ -48,7 +48,9 @@
     },
     "grid": {
       "title": "Dịch vụ của chúng tôi"
-    }
+    },
+    "viewMore": "Xem thêm",
+    "getStarted": "Bắt đầu"
   },
   "serviceDetail": {
     "breadcrumbs": {
@@ -86,7 +88,8 @@
     },
     "featuredJobs": {
       "title": "Vị trí tuyển dụng",
-      "exploreMore": "Xem thêm"
+      "exploreMore": "Xem thêm",
+      "noOpenings": "Hiện tại chưa có vị trí tuyển dụng nào. Vui lòng quay lại sau!"
     },
     "job": {
       "locationLabel": "Địa điểm",
@@ -376,9 +379,9 @@
       }
     },
     "contactInfo": {
-      "email": "legal@koola.com",
-      "phone": "+84 (28) 1234 5678",
-      "address": "123 Đường Sáng tạo, Quận 1, Thành phố Hồ Chí Minh, Việt Nam"
+      "email": "sales@anbinhfoods.com",
+      "phone": "0941 508 468",
+      "address": "Số 58, đường 3, thôn 4, Đức Hạnh, Đức Linh, Bình Thuận, Việt Nam"
     }
   },
   "admin": {

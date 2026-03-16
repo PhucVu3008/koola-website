@@ -48,7 +48,9 @@
     },
     "grid": {
       "title": "Our Services"
-    }
+    },
+    "viewMore": "Learn more",
+    "getStarted": "Get started"
   },
   "serviceDetail": {
     "breadcrumbs": {
@@ -86,7 +88,8 @@
     },
     "featuredJobs": {
       "title": "Featured jobs",
-      "exploreMore": "Explore more"
+      "exploreMore": "Explore more",
+      "noOpenings": "There are no open positions at the moment. Please check back later!"
     },
     "job": {
       "locationLabel": "Location",
@@ -376,9 +379,9 @@
       }
     },
     "contactInfo": {
-      "email": "legal@koola.com",
-      "phone": "+84 (28) 1234 5678",
-      "address": "123 Innovation Street, District 1, Ho Chi Minh City, Vietnam"
+      "email": "sales@anbinhfoods.com",
+      "phone": "0941 508 468",
+      "address": "58 Road 3, Village 4, Duc Hanh, Duc Linh, Binh Thuan, Vietnam"
     }
   },
   "admin": {

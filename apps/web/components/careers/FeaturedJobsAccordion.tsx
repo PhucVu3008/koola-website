@@ -15,6 +15,7 @@ export type FeaturedJobData = {
 export type FeaturedJobsAccordionData = {
   title: string;
   exploreMoreLabel: string;
+  noOpeningsLabel: string;
   exploreMoreHref: string;
   locationLabel: string;
   levelLabel: string;
@@ -58,16 +59,23 @@ export function FeaturedJobsAccordion({ data }: { data: FeaturedJobsAccordionDat
       {/* Section Header */}
       <div className="mb-6 sm:mb-8 flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-xl sm:text-2xl font-semibold text-slate-900">{data.title}</h2>
-        <a
-          href={data.exploreMoreHref}
-          className="flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors"
-        >
-          {data.exploreMoreLabel}
-          <span aria-hidden="true">→</span>
-        </a>
+        {data.jobs.length > 0 && (
+          <a
+            href={data.exploreMoreHref}
+            className="flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors"
+          >
+            {data.exploreMoreLabel}
+            <span aria-hidden="true">→</span>
+          </a>
+        )}
       </div>
 
       {/* Accordion List */}
+      {data.jobs.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-16 px-6 text-center">
+          <p className="text-base text-slate-500">{data.noOpeningsLabel}</p>
+        </div>
+      ) : (
       <div className="space-y-3">
         {data.jobs.map((job, index) => {
           const isExpanded = expandedId === job.id;
@@ -159,6 +167,7 @@ export function FeaturedJobsAccordion({ data }: { data: FeaturedJobsAccordionDat
           );
         })}
       </div>
+      )}
     </section>
   );
 }
