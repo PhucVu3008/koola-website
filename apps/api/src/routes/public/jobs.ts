@@ -85,7 +85,7 @@ const jobsRoutes: FastifyPluginAsync = async (server) => {
         applicationData.coverLetter || null,
       ]);
 
-      // Send email notification asynchronously (non-blocking)
+      // Send email notification to admin (async, non-blocking)
       emailService
         .sendJobApplicationNotification({
           id: result.id,
@@ -100,6 +100,17 @@ const jobsRoutes: FastifyPluginAsync = async (server) => {
         })
         .catch((error) => {
           console.error('Failed to send job application notification email:', error.message);
+        });
+
+      // Send auto-reply confirmation to the applicant (async, non-blocking)
+      emailService
+        .sendJobApplicationAutoReply({
+          full_name: applicationData.fullName,
+          email: applicationData.email,
+          job_title: job.title,
+        })
+        .catch((error) => {
+          console.error('Failed to send job application auto-reply email:', error.message);
         });
 
       return reply.status(201).send(

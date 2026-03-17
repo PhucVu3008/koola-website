@@ -8,6 +8,7 @@ import {
 import * as SQL from '../../sql/queries';
 import { ErrorCodes, errorResponse, successResponse } from '../../utils/response';
 import { newsletterSchemas } from '../../swagger/schemas';
+import * as emailService from '../../services/emailService';
 
 const newsletterRoutes: FastifyPluginAsync = async (server) => {
   server.post<{ Body: NewsletterSubscribeInput }>('/subscribe', {
@@ -25,6 +26,13 @@ const newsletterRoutes: FastifyPluginAsync = async (server) => {
         data.email,
         data.source_path || null,
       ]);
+
+      // Send welcome email (async, non-blocking)
+      emailService
+        .sendNewsletterWelcome({ email: data.email })
+        .catch((error) => {
+          console.error('Failed to send newsletter welcome email:', error.message);
+        });
 
       return reply
         .status(201)

@@ -24,8 +24,7 @@ export const createLead = async (data: LeadCreateInput) => {
   // Create lead in database
   const lead = await leadRepository.create(data);
 
-  // Send email notification asynchronously (non-blocking)
-  // We don't await this to avoid blocking the response
+  // Send email notification to admin (async, non-blocking)
   emailService
     .sendLeadNotification({
       id: lead.id,
@@ -38,8 +37,17 @@ export const createLead = async (data: LeadCreateInput) => {
       created_at: new Date(),
     })
     .catch((error) => {
-      // Log error but don't fail the request
       console.error('Failed to send lead notification email:', error.message);
+    });
+
+  // Send auto-reply confirmation to the user (async, non-blocking)
+  emailService
+    .sendLeadAutoReply({
+      full_name: data.full_name,
+      email: data.email,
+    })
+    .catch((error) => {
+      console.error('Failed to send lead auto-reply email:', error.message);
     });
 
   return lead;

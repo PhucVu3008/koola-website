@@ -62,7 +62,7 @@ export interface SendEmailOptions {
   subject: string;
   text: string;
   html: string;
-  type: 'lead_notification' | 'job_application' | 'system';
+  type: 'lead_notification' | 'lead_auto_reply' | 'job_application' | 'job_application_auto_reply' | 'newsletter_welcome' | 'system';
   metadata?: Record<string, any>;
 }
 
@@ -400,8 +400,496 @@ const buildJobApplicationHtml = (application: {
 `.trim();
 
 /**
- * Test email configuration.
- * Useful for verifying SMTP settings.
+ * Send auto-reply confirmation email to the person who submitted the contact form.
+ *
+ * Bilingual email (Vietnamese primary, English below).
+ * Confirms receipt and sets expectation of 48 business-hour response time.
+ *
+ * @param lead - Lead data (name + email are required)
+ * @returns Email notification ID
+ */
+export const sendLeadAutoReply = async (lead: {
+  full_name: string;
+  email: string;
+}): Promise<number> => {
+  const subject = 'KOOLA — Chúng tôi đã nhận được thông tin của bạn | We have received your inquiry';
+
+  const text = `
+Xin chào ${lead.full_name},
+
+Cảm ơn bạn đã liên hệ với KOOLA!
+
+Chúng tôi đã nhận được thông tin của bạn và đội ngũ của chúng tôi sẽ xem xét yêu cầu trong thời gian sớm nhất. Bạn sẽ nhận được phản hồi trong vòng 48 giờ làm việc.
+
+Nếu có bất kỳ câu hỏi gấp nào, vui lòng liên hệ trực tiếp qua:
+- Email: sales@anbinhfoods.com
+- Điện thoại: 0941 508 468
+
+Trân trọng,
+Đội ngũ KOOLA
+
+---
+
+ENGLISH VERSION BELOW
+
+Dear ${lead.full_name},
+
+Thank you for reaching out to KOOLA!
+
+We have received your inquiry and our team will review it as soon as possible. You can expect a response within 48 business hours.
+
+If you have any urgent questions, please contact us directly:
+- Email: sales@anbinhfoods.com
+- Phone: 0941 508 468
+
+Best regards,
+The KOOLA Team
+
+--
+KOOLA
+58 Đường 3, Thôn 4, Đức Hạnh, Đức Linh, Bình Thuận, Việt Nam
+Website: https://koola.vn
+  `.trim();
+
+  const html = buildLeadAutoReplyHtml(lead);
+
+  return await sendEmail({
+    to: lead.email,
+    subject,
+    text,
+    html,
+    type: 'lead_auto_reply',
+    metadata: {
+      lead_email: lead.email,
+      lead_name: lead.full_name,
+    },
+  });
+};
+
+/** Build HTML auto-reply email for contact form submission. */
+const buildLeadAutoReplyHtml = (lead: { full_name: string; email: string }): string => `
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.7; color: #1e293b; background: #f1f5f9; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 24px 16px; }
+    .card { background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .brand-bar { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 32px 32px 28px; text-align: center; }
+    .brand-bar h1 { margin: 0; font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: 2px; }
+    .brand-bar p { margin: 8px 0 0; font-size: 13px; color: rgba(255,255,255,0.8); letter-spacing: 0.5px; }
+    .body-section { padding: 32px; }
+    .greeting { font-size: 17px; font-weight: 600; color: #1e293b; margin: 0 0 16px; }
+    .body-text { font-size: 15px; color: #475569; margin: 0 0 16px; }
+    .highlight-box { background: #eff6ff; border-left: 4px solid #2563eb; border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; }
+    .highlight-box p { margin: 0; font-size: 15px; color: #1e40af; font-weight: 500; }
+    .divider { border: none; border-top: 1px solid #e2e8f0; margin: 28px 0; }
+    .lang-label { display: inline-block; background: #f1f5f9; color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 16px; }
+    .contact-row { display: flex; align-items: center; margin: 8px 0; font-size: 14px; color: #475569; }
+    .contact-row a { color: #2563eb; text-decoration: none; }
+    .signature { margin-top: 28px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+    .sig-name { font-size: 15px; font-weight: 600; color: #1e293b; margin: 0; }
+    .sig-title { font-size: 13px; color: #64748b; margin: 2px 0 0; }
+    .footer { padding: 20px 32px; background: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center; }
+    .footer p { margin: 0; font-size: 12px; color: #94a3b8; }
+    .footer a { color: #2563eb; text-decoration: none; }
+    .social-links { margin-top: 12px; }
+    .social-links a { display: inline-block; margin: 0 6px; color: #64748b; font-size: 13px; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <!-- Brand Header -->
+      <div class="brand-bar">
+        <h1>KOOLA</h1>
+        <p>Technology &amp; Digital Solutions</p>
+      </div>
+
+      <!-- Vietnamese Section -->
+      <div class="body-section">
+        <p class="greeting">Xin chào ${lead.full_name},</p>
+        <p class="body-text">Cảm ơn bạn đã liên hệ với <strong>KOOLA</strong>! Chúng tôi rất vui khi nhận được thông tin từ bạn.</p>
+        <p class="body-text">Đội ngũ của chúng tôi đã nhận được yêu cầu và sẽ xem xét trong thời gian sớm nhất.</p>
+
+        <div class="highlight-box">
+          <p>⏱ Bạn sẽ nhận được phản hồi trong vòng <strong>48 giờ làm việc</strong>.</p>
+        </div>
+
+        <p class="body-text">Nếu có bất kỳ câu hỏi gấp nào, vui lòng liên hệ trực tiếp:</p>
+        <div style="margin: 12px 0 0;">
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:sales@anbinhfoods.com" style="color: #2563eb; text-decoration: none;">sales@anbinhfoods.com</a></p>
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📞 Điện thoại: <a href="tel:0941508468" style="color: #2563eb; text-decoration: none;">0941 508 468</a></p>
+        </div>
+
+        <hr class="divider">
+
+        <!-- English Section -->
+        <span class="lang-label">English version below</span>
+
+        <p class="greeting">Dear ${lead.full_name},</p>
+        <p class="body-text">Thank you for reaching out to <strong>KOOLA</strong>! We appreciate your interest and are glad to hear from you.</p>
+        <p class="body-text">Our team has received your inquiry and will review it promptly.</p>
+
+        <div class="highlight-box">
+          <p>⏱ You can expect a response within <strong>48 business hours</strong>.</p>
+        </div>
+
+        <p class="body-text">For any urgent matters, feel free to contact us directly:</p>
+        <div style="margin: 12px 0 0;">
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:sales@anbinhfoods.com" style="color: #2563eb; text-decoration: none;">sales@anbinhfoods.com</a></p>
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📞 Phone: <a href="tel:0941508468" style="color: #2563eb; text-decoration: none;">0941 508 468</a></p>
+        </div>
+
+        <!-- Signature -->
+        <div class="signature">
+          <p class="sig-name">Đội ngũ KOOLA | The KOOLA Team</p>
+          <p class="sig-title">Technology &amp; Digital Solutions</p>
+          <div style="margin-top: 12px; font-size: 13px; color: #64748b; line-height: 1.6;">
+            <p style="margin: 2px 0;">🌐 <a href="https://koola.vn" style="color: #2563eb; text-decoration: none;">koola.vn</a></p>
+            <p style="margin: 2px 0;">📍 58 Đường 3, Thôn 4, Đức Hạnh, Đức Linh, Bình Thuận, Việt Nam</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>Email này được gửi tự động. Vui lòng không trả lời trực tiếp.</p>
+        <p style="margin-top: 4px;">This is an automated email. Please do not reply directly.</p>
+        <p style="margin-top: 8px;">&copy; ${new Date().getFullYear()} KOOLA. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+`.trim();
+
+/**
+ * Send auto-reply confirmation email to a job applicant.
+ *
+ * Bilingual email (Vietnamese primary, English below).
+ * Confirms receipt and sets expectation of 48 business-hour response time.
+ *
+ * @param application - Applicant data + job title
+ * @returns Email notification ID
+ */
+export const sendJobApplicationAutoReply = async (application: {
+  full_name: string;
+  email: string;
+  job_title: string;
+}): Promise<number> => {
+  const subject = 'KOOLA — Chúng tôi đã nhận được hồ sơ ứng tuyển của bạn | We have received your application';
+
+  const text = `
+Xin chào ${application.full_name},
+
+Cảm ơn bạn đã ứng tuyển vị trí "${application.job_title}" tại KOOLA!
+
+Chúng tôi đã nhận được hồ sơ của bạn và đội ngũ tuyển dụng sẽ xem xét trong thời gian sớm nhất. Bạn sẽ nhận được phản hồi trong vòng 48 giờ làm việc.
+
+Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ trực tiếp qua:
+- Email: sales@anbinhfoods.com
+- Điện thoại: 0941 508 468
+
+Trân trọng,
+Đội ngũ Tuyển dụng KOOLA
+
+---
+
+ENGLISH VERSION BELOW
+
+Dear ${application.full_name},
+
+Thank you for applying for the "${application.job_title}" position at KOOLA!
+
+We have received your application and our recruitment team will review it as soon as possible. You can expect to hear back from us within 48 business hours.
+
+If you have any questions, please contact us directly:
+- Email: sales@anbinhfoods.com
+- Phone: 0941 508 468
+
+Best regards,
+KOOLA Recruitment Team
+
+--
+KOOLA
+58 Đường 3, Thôn 4, Đức Hạnh, Đức Linh, Bình Thuận, Việt Nam
+Website: https://koola.vn
+  `.trim();
+
+  const html = buildJobApplicationAutoReplyHtml(application);
+
+  return await sendEmail({
+    to: application.email,
+    subject,
+    text,
+    html,
+    type: 'job_application_auto_reply',
+    metadata: {
+      applicant_email: application.email,
+      applicant_name: application.full_name,
+      job_title: application.job_title,
+    },
+  });
+};
+
+/** Build HTML auto-reply email for job application. */
+const buildJobApplicationAutoReplyHtml = (application: {
+  full_name: string;
+  email: string;
+  job_title: string;
+}): string => `
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.7; color: #1e293b; background: #f1f5f9; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 24px 16px; }
+    .card { background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .brand-bar { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); padding: 32px 32px 28px; text-align: center; }
+    .brand-bar h1 { margin: 0; font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: 2px; }
+    .brand-bar p { margin: 8px 0 0; font-size: 13px; color: rgba(255,255,255,0.8); letter-spacing: 0.5px; }
+    .body-section { padding: 32px; }
+    .greeting { font-size: 17px; font-weight: 600; color: #1e293b; margin: 0 0 16px; }
+    .body-text { font-size: 15px; color: #475569; margin: 0 0 16px; }
+    .position-badge { display: inline-block; background: #f5f3ff; color: #6d28d9; font-weight: 600; font-size: 14px; padding: 6px 14px; border-radius: 6px; margin: 4px 0 16px; }
+    .highlight-box { background: #f5f3ff; border-left: 4px solid #7c3aed; border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; }
+    .highlight-box p { margin: 0; font-size: 15px; color: #5b21b6; font-weight: 500; }
+    .divider { border: none; border-top: 1px solid #e2e8f0; margin: 28px 0; }
+    .lang-label { display: inline-block; background: #f1f5f9; color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 16px; }
+    .signature { margin-top: 28px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+    .sig-name { font-size: 15px; font-weight: 600; color: #1e293b; margin: 0; }
+    .sig-title { font-size: 13px; color: #64748b; margin: 2px 0 0; }
+    .footer { padding: 20px 32px; background: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center; }
+    .footer p { margin: 0; font-size: 12px; color: #94a3b8; }
+    .footer a { color: #7c3aed; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="brand-bar">
+        <h1>KOOLA</h1>
+        <p>Careers &amp; Recruitment</p>
+      </div>
+      <div class="body-section">
+        <p class="greeting">Xin chào ${application.full_name},</p>
+        <p class="body-text">Cảm ơn bạn đã ứng tuyển tại <strong>KOOLA</strong>! Chúng tôi rất vui khi nhận được hồ sơ của bạn cho vị trí:</p>
+        <div class="position-badge">📋 ${application.job_title}</div>
+        <p class="body-text">Đội ngũ tuyển dụng của chúng tôi sẽ xem xét hồ sơ và liên hệ với bạn trong thời gian sớm nhất.</p>
+        <div class="highlight-box">
+          <p>⏱ Bạn sẽ nhận được phản hồi trong vòng <strong>48 giờ làm việc</strong>.</p>
+        </div>
+        <p class="body-text">Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ trực tiếp:</p>
+        <div style="margin: 12px 0 0;">
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:sales@anbinhfoods.com" style="color: #7c3aed; text-decoration: none;">sales@anbinhfoods.com</a></p>
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📞 Điện thoại: <a href="tel:0941508468" style="color: #7c3aed; text-decoration: none;">0941 508 468</a></p>
+        </div>
+        <hr class="divider">
+        <span class="lang-label">English version below</span>
+        <p class="greeting">Dear ${application.full_name},</p>
+        <p class="body-text">Thank you for applying at <strong>KOOLA</strong>! We are pleased to have received your application for the position:</p>
+        <div class="position-badge">📋 ${application.job_title}</div>
+        <p class="body-text">Our recruitment team will review your application and get back to you as soon as possible.</p>
+        <div class="highlight-box">
+          <p>⏱ You can expect to hear back within <strong>48 business hours</strong>.</p>
+        </div>
+        <p class="body-text">If you have any questions, feel free to contact us directly:</p>
+        <div style="margin: 12px 0 0;">
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:sales@anbinhfoods.com" style="color: #7c3aed; text-decoration: none;">sales@anbinhfoods.com</a></p>
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📞 Phone: <a href="tel:0941508468" style="color: #7c3aed; text-decoration: none;">0941 508 468</a></p>
+        </div>
+        <div class="signature">
+          <p class="sig-name">Đội ngũ Tuyển dụng KOOLA | KOOLA Recruitment Team</p>
+          <p class="sig-title">Careers &amp; Recruitment</p>
+          <div style="margin-top: 12px; font-size: 13px; color: #64748b; line-height: 1.6;">
+            <p style="margin: 2px 0;">🌐 <a href="https://koola.vn" style="color: #7c3aed; text-decoration: none;">koola.vn</a></p>
+            <p style="margin: 2px 0;">📍 58 Đường 3, Thôn 4, Đức Hạnh, Đức Linh, Bình Thuận, Việt Nam</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <p>Email này được gửi tự động. Vui lòng không trả lời trực tiếp.</p>
+        <p style="margin-top: 4px;">This is an automated email. Please do not reply directly.</p>
+        <p style="margin-top: 8px;">&copy; ${new Date().getFullYear()} KOOLA. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+`.trim();
+
+/**
+ * Send welcome email to a new newsletter subscriber.
+ *
+ * Bilingual (Vietnamese primary, English below).
+ *
+ * @param subscriber - Subscriber email address
+ * @returns Email notification ID
+ */
+export const sendNewsletterWelcome = async (subscriber: {
+  email: string;
+}): Promise<number> => {
+  const subject = 'KOOLA — Chào mừng bạn đã đăng ký nhận tin! | Welcome to our newsletter!';
+
+  const text = `
+Xin chào,
+
+Cảm ơn bạn đã đăng ký nhận thông tin từ KOOLA!
+
+Từ giờ, bạn sẽ nhận được những cập nhật mới nhất về dịch vụ, xu hướng công nghệ và các cơ hội hợp tác từ chúng tôi.
+
+Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ:
+- Email: sales@anbinhfoods.com
+- Điện thoại: 0941 508 468
+
+Trân trọng,
+Đội ngũ KOOLA
+
+---
+
+ENGLISH VERSION BELOW
+
+Hello,
+
+Thank you for subscribing to KOOLA's newsletter!
+
+From now on, you will receive the latest updates on our services, technology trends, and partnership opportunities.
+
+If you have any questions, feel free to contact us:
+- Email: sales@anbinhfoods.com
+- Phone: 0941 508 468
+
+Best regards,
+The KOOLA Team
+
+--
+KOOLA
+58 Đường 3, Thôn 4, Đức Hạnh, Đức Linh, Bình Thuận, Việt Nam
+Website: https://koola.vn
+  `.trim();
+
+  const html = buildNewsletterWelcomeHtml(subscriber);
+
+  return await sendEmail({
+    to: subscriber.email,
+    subject,
+    text,
+    html,
+    type: 'newsletter_welcome',
+    metadata: { subscriber_email: subscriber.email },
+  });
+};
+
+/** Build HTML welcome email for newsletter subscriber. */
+const buildNewsletterWelcomeHtml = (_subscriber: { email: string }): string => `
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.7; color: #1e293b; background: #f1f5f9; }
+    .wrapper { max-width: 600px; margin: 0 auto; padding: 24px 16px; }
+    .card { background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .brand-bar { background: linear-gradient(135deg, #059669 0%, #047857 100%); padding: 32px 32px 28px; text-align: center; }
+    .brand-bar h1 { margin: 0; font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: 2px; }
+    .brand-bar p { margin: 8px 0 0; font-size: 13px; color: rgba(255,255,255,0.8); letter-spacing: 0.5px; }
+    .body-section { padding: 32px; }
+    .greeting { font-size: 17px; font-weight: 600; color: #1e293b; margin: 0 0 16px; }
+    .body-text { font-size: 15px; color: #475569; margin: 0 0 16px; }
+    .highlight-box { background: #ecfdf5; border-left: 4px solid #059669; border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; }
+    .highlight-box p { margin: 0; font-size: 15px; color: #065f46; font-weight: 500; }
+    .benefits { margin: 20px 0; padding: 0; }
+    .benefits li { list-style: none; padding: 6px 0; font-size: 14px; color: #475569; }
+    .benefits li::before { content: "✓ "; color: #059669; font-weight: 700; }
+    .divider { border: none; border-top: 1px solid #e2e8f0; margin: 28px 0; }
+    .lang-label { display: inline-block; background: #f1f5f9; color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 16px; }
+    .signature { margin-top: 28px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+    .sig-name { font-size: 15px; font-weight: 600; color: #1e293b; margin: 0; }
+    .sig-title { font-size: 13px; color: #64748b; margin: 2px 0 0; }
+    .footer { padding: 20px 32px; background: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center; }
+    .footer p { margin: 0; font-size: 12px; color: #94a3b8; }
+    .footer a { color: #059669; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="brand-bar">
+        <h1>KOOLA</h1>
+        <p>Newsletter</p>
+      </div>
+      <div class="body-section">
+        <p class="greeting">Xin chào,</p>
+        <p class="body-text">Cảm ơn bạn đã đăng ký nhận thông tin từ <strong>KOOLA</strong>! 🎉</p>
+
+        <div class="highlight-box">
+          <p>Bạn sẽ nhận được những cập nhật mới nhất từ chúng tôi.</p>
+        </div>
+
+        <p class="body-text">Những gì bạn sẽ nhận được:</p>
+        <ul class="benefits">
+          <li>Cập nhật dịch vụ và giải pháp công nghệ mới</li>
+          <li>Xu hướng công nghệ và chuyển đổi số</li>
+          <li>Cơ hội hợp tác và ưu đãi đặc biệt</li>
+        </ul>
+
+        <p class="body-text">Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ:</p>
+        <div style="margin: 12px 0 0;">
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:sales@anbinhfoods.com" style="color: #059669; text-decoration: none;">sales@anbinhfoods.com</a></p>
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📞 Điện thoại: <a href="tel:0941508468" style="color: #059669; text-decoration: none;">0941 508 468</a></p>
+        </div>
+
+        <hr class="divider">
+
+        <span class="lang-label">English version below</span>
+
+        <p class="greeting">Hello,</p>
+        <p class="body-text">Thank you for subscribing to <strong>KOOLA</strong>'s newsletter! 🎉</p>
+
+        <div class="highlight-box">
+          <p>You will receive the latest updates from us.</p>
+        </div>
+
+        <p class="body-text">What you can expect:</p>
+        <ul class="benefits">
+          <li>New services and technology solutions</li>
+          <li>Technology trends and digital transformation insights</li>
+          <li>Partnership opportunities and special offers</li>
+        </ul>
+
+        <p class="body-text">If you have any questions, feel free to contact us:</p>
+        <div style="margin: 12px 0 0;">
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:sales@anbinhfoods.com" style="color: #059669; text-decoration: none;">sales@anbinhfoods.com</a></p>
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📞 Phone: <a href="tel:0941508468" style="color: #059669; text-decoration: none;">0941 508 468</a></p>
+        </div>
+
+        <div class="signature">
+          <p class="sig-name">Đội ngũ KOOLA | The KOOLA Team</p>
+          <p class="sig-title">Technology &amp; Digital Solutions</p>
+          <div style="margin-top: 12px; font-size: 13px; color: #64748b; line-height: 1.6;">
+            <p style="margin: 2px 0;">🌐 <a href="https://koola.vn" style="color: #059669; text-decoration: none;">koola.vn</a></p>
+            <p style="margin: 2px 0;">📍 58 Đường 3, Thôn 4, Đức Hạnh, Đức Linh, Bình Thuận, Việt Nam</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <p>Email này được gửi tự động. Vui lòng không trả lời trực tiếp.</p>
+        <p style="margin-top: 4px;">This is an automated email. Please do not reply directly.</p>
+        <p style="margin-top: 8px;">&copy; ${new Date().getFullYear()} KOOLA. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+`.trim();
+
+/**
  *
  * @param testRecipient - Email address to send test email to
  */

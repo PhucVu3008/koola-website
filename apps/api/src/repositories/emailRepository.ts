@@ -8,7 +8,7 @@ import { pool } from '../db';
  */
 
 export interface EmailNotificationCreate {
-  type: 'lead_notification' | 'job_application' | 'system';
+  type: 'lead_notification' | 'lead_auto_reply' | 'job_application' | 'job_application_auto_reply' | 'newsletter_welcome' | 'system';
   recipient: string;
   subject: string;
   body: string;
