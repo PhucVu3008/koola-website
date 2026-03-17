@@ -92,19 +92,19 @@ export const HOME = {
         stars: 5,
         quote:
           'Exceptional Solutions, Exceeded Expectation! Working with KOOLA has been incredible. Their team listened to our needs and delivered an outstanding product on time.',
-        name: 'Mary Johnson',
+        name: 'Phạm Thanh Hà',
       },
       {
         stars: 5,
         quote:
           'Transformed Our Business with Innovative Tech! The outcomes were beyond what we imagined. The process was smooth and transparent from start to finish.',
-        name: 'Mark Williams',
+        name: 'Võ Hoàng Nam',
       },
       {
         stars: 5,
         quote:
           'Sculpted User Experiences Beyond Imagination! The UI/UX improvements increased our engagement significantly. Truly a talented and professional team.',
-        name: 'Emily Clark',
+        name: 'Đặng Thị Mai Linh',
       },
     ],
   },
@@ -144,21 +144,21 @@ export const HOME = {
         category: 'Design',
         title:
           'The Power of UI/UX: Creating Engaging Digital Experiences',
-        author: 'Ben Taylor',
+        author: 'Nguyễn Văn Bình',
         date: '15 May 2025',
         image: '/home/blog-1.png',
       },
       {
         category: 'Development',
         title: 'Agile Development: The Key to Flexibility',
-        author: 'Jane Lewis',
+        author: 'Trần Thị Lan',
         date: '12 Dec 2025',
         image: '/home/blog-2.png',
       },
       {
         category: 'Management',
         title: 'Media App Development: Watch in 2026',
-        author: 'Sarah Mitchell',
+        author: 'Lê Quốc Anh',
         date: '10 Jan 2026',
         image: '/home/blog-3.png',
       },
@@ -279,19 +279,19 @@ export const HOME_I18N = {
           stars: 5,
           quote:
             'Giải pháp xuất sắc, vượt kỳ vọng! Làm việc với KOOLA thật tuyệt vời. Họ lắng nghe nhu cầu và bàn giao sản phẩm đúng hạn.',
-          name: 'Mary Johnson',
+          name: 'Phạm Thanh Hà',
         },
         {
           stars: 5,
           quote:
             'Chuyển đổi doanh nghiệp bằng công nghệ sáng tạo! Kết quả vượt xa tưởng tượng. Quy trình suôn sẻ và minh bạch từ đầu đến cuối.',
-          name: 'Mark Williams',
+          name: 'Võ Hoàng Nam',
         },
         {
           stars: 5,
           quote:
             'Trải nghiệm người dùng được “tạc” ngoài sức tưởng tượng! Cải tiến UI/UX giúp tăng tương tác rõ rệt. Một đội ngũ chuyên nghiệp.',
-          name: 'Emily Clark',
+          name: 'Đặng Thị Mai Linh',
         },
       ],
     },
@@ -330,22 +330,22 @@ export const HOME_I18N = {
         {
           category: 'Thiết kế',
           title: 'Sức mạnh của UI/UX: Tạo trải nghiệm số hấp dẫn',
-          author: 'Ben Taylor',
-          date: '15 May 2023',
+          author: 'Nguyễn Văn Bình',
+          date: '15 Th5 2025',
           image: '/home/blog-1.png',
         },
         {
           category: 'Phát triển',
           title: 'Phát triển Agile: Chìa khóa của sự linh hoạt',
-          author: 'Jane Lewis',
-          date: '12 May 2023',
+          author: 'Trần Thị Lan',
+          date: '12 Th12 2025',
           image: '/home/blog-2.png',
         },
         {
           category: 'Quản lý',
-          title: 'Phát triển ứng dụng Media: Xu hướng 2023',
-          author: 'Sarah Mitchell',
-          date: '10 May 2023',
+          title: 'Phát triển ứng dụng Media: Xu hướng 2026',
+          author: 'Lê Quốc Anh',
+          date: '10 Th1 2026',
           image: '/home/blog-3.png',
         },
       ],
