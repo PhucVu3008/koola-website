@@ -46,3 +46,13 @@ export const updateApplicationStatus = async (applicationId: number, status: str
 export const updateJobStatus = async (id: number, status: 'draft' | 'published' | 'archived') => {
   return await adminJobRepository.updateJobStatus(id, status);
 };
+
+export const listAllApplications = async (filters: adminJobRepository.ApplicationListFilters) => {
+  return await adminJobRepository.listAllApplications(filters);
+};
+
+export const countAllApplications = async (
+  filters: Omit<adminJobRepository.ApplicationListFilters, 'limit' | 'offset'>
+) => {
+  return await adminJobRepository.countAllApplications(filters);
+};

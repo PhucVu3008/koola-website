@@ -8,6 +8,7 @@ const jobsRoutes: FastifyPluginAsync = async (server) => {
   server.addHook('preHandler', authorize(['admin', 'manager', 'editor']));
 
   server.get('/', { schema: adminJobSchemas.list, handler: adminJobController.listJobs });
+  server.get('/applications', { schema: adminJobSchemas.listAllApplications, handler: adminJobController.listAllApplications });
   server.get('/:id', { schema: adminJobSchemas.getById, handler: adminJobController.getJobById });
   server.post('/', { schema: adminJobSchemas.create, handler: adminJobController.createJob });
   server.put('/:id', { schema: adminJobSchemas.update, handler: adminJobController.updateJob });

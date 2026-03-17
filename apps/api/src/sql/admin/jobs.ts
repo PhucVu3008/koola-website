@@ -242,3 +242,60 @@ export const UPDATE_APPLICATION_STATUS = `
   WHERE id = $1
   RETURNING id
 `;
+
+/**
+ * LIST_ALL_APPLICATIONS
+ *
+ * List all job applications across all jobs with filters.
+ * Joins job_posts to include job title.
+ *
+ * Parameters:
+ * - $1 status (nullable)
+ * - $2 job_id (nullable)
+ * - $3 search term (nullable, matches full_name or email via ILIKE)
+ * - $4 limit
+ * - $5 offset
+ */
+export const LIST_ALL_APPLICATIONS = `
+  SELECT
+    ja.id,
+    ja.job_id,
+    ja.full_name,
+    ja.email,
+    ja.phone,
+    ja.linkedin_url,
+    ja.portfolio_url,
+    ja.resume_asset_id,
+    ja.cover_letter,
+    ja.status,
+    ja.created_at,
+    jp.title AS job_title,
+    jp.slug AS job_slug,
+    jp.locale AS job_locale,
+    ma.filename AS resume_filename,
+    ma.storage_path AS resume_path
+  FROM job_applications ja
+  JOIN job_posts jp ON ja.job_id = jp.id
+  LEFT JOIN media_assets ma ON ja.resume_asset_id = ma.id
+  WHERE ($1::text IS NULL OR ja.status = $1)
+    AND ($2::int IS NULL OR ja.job_id = $2)
+    AND ($3::text IS NULL OR ja.full_name ILIKE '%' || $3 || '%' OR ja.email ILIKE '%' || $3 || '%')
+  ORDER BY ja.created_at DESC
+  LIMIT $4 OFFSET $5
+`;
+
+/**
+ * COUNT_ALL_APPLICATIONS
+ *
+ * Parameters:
+ * - $1 status (nullable)
+ * - $2 job_id (nullable)
+ * - $3 search term (nullable)
+ */
+export const COUNT_ALL_APPLICATIONS = `
+  SELECT COUNT(*) AS count
+  FROM job_applications ja
+  WHERE ($1::text IS NULL OR ja.status = $1)
+    AND ($2::int IS NULL OR ja.job_id = $2)
+    AND ($3::text IS NULL OR ja.full_name ILIKE '%' || $3 || '%' OR ja.email ILIKE '%' || $3 || '%')
+`;

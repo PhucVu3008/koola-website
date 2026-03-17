@@ -649,6 +649,26 @@ class AdminApiClient {
     },
 
     /**
+     * List all applications across all jobs with filters and pagination
+     */
+    listAllApplications: async (params: {
+      status?: string;
+      job_id?: number;
+      search?: string;
+      page?: number;
+      pageSize?: number;
+    }): Promise<ApiResponse> => {
+      const query = new URLSearchParams();
+      if (params.status) query.set('status', params.status);
+      if (params.job_id) query.set('job_id', params.job_id.toString());
+      if (params.search) query.set('search', params.search);
+      if (params.page) query.set('page', params.page.toString());
+      if (params.pageSize) query.set('pageSize', params.pageSize.toString());
+
+      return this.request(`/v1/admin/jobs/applications?${query}`);
+    },
+
+    /**
      * Update application status
      */
     updateApplicationStatus: async (

@@ -49,6 +49,14 @@ export interface JobListFilters {
   offset: number;
 }
 
+export interface ApplicationListFilters {
+  status?: string | null;
+  jobId?: number | null;
+  search?: string | null;
+  limit: number;
+  offset: number;
+}
+
 export interface JobCreateInput {
   locale: string;
   title: string;
@@ -180,4 +188,30 @@ export const updateJobStatus = async (
     JobsSQL.UPDATE_JOB_STATUS,
     [id, status]
   );
+};
+
+/**
+ * List all applications across all jobs with filters
+ */
+export const listAllApplications = async (filters: ApplicationListFilters) => {
+  const { status, jobId, search, limit, offset } = filters;
+  return await query<JobApplication & { job_title: string; job_slug: string; job_locale: string }>(
+    JobsSQL.LIST_ALL_APPLICATIONS,
+    [status ?? null, jobId ?? null, search ?? null, limit, offset]
+  );
+};
+
+/**
+ * Count all applications with filters
+ */
+export const countAllApplications = async (
+  filters: Omit<ApplicationListFilters, 'limit' | 'offset'>
+): Promise<number> => {
+  const { status, jobId, search } = filters;
+  const result = await query<{ count: string }>(JobsSQL.COUNT_ALL_APPLICATIONS, [
+    status ?? null,
+    jobId ?? null,
+    search ?? null,
+  ]);
+  return Number(result[0]?.count ?? 0);
 };

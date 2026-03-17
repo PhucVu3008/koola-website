@@ -265,6 +265,7 @@ export const adminMediaSchemas = {
 // ─── Admin: Jobs ─────────────────────────────────────────────────
 export const adminJobSchemas = {
   list: { tags: ['Admin Jobs'], security: bearerSecurity },
+  listAllApplications: { tags: ['Admin Jobs'], security: bearerSecurity },
   getById: { tags: ['Admin Jobs'], params: idParam, security: bearerSecurity },
   create: { tags: ['Admin Jobs'], security: bearerSecurity },
   update: { tags: ['Admin Jobs'], params: idParam, security: bearerSecurity },

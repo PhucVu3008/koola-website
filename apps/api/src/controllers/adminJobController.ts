@@ -53,6 +53,14 @@ const updateApplicationStatusSchema = z.object({
   status: z.enum(['pending', 'reviewing', 'shortlisted', 'rejected', 'accepted']),
 });
 
+const listAllApplicationsQuerySchema = z.object({
+  status: z.enum(['pending', 'reviewing', 'shortlisted', 'rejected', 'accepted']).optional(),
+  job_id: z.coerce.number().int().positive().optional(),
+  search: z.string().max(200).optional(),
+  page: z.coerce.number().int().positive().default(1),
+  pageSize: z.coerce.number().int().positive().max(100).default(20),
+});
+
 /**
  * GET /v1/admin/jobs
  * List job posts with pagination
@@ -313,7 +321,7 @@ export const updateApplicationStatus = async (request: FastifyRequest, reply: Fa
     }
     
     await adminJobService.updateApplicationStatus(applicationId, status);
-    
+
     return reply.send(
       successResponse({ id: applicationId, status })
     );
@@ -327,6 +335,41 @@ export const updateApplicationStatus = async (request: FastifyRequest, reply: Fa
             issues: error.issues,
           }
         )
+      );
+    }
+    throw error;
+  }
+};
+
+/**
+ * GET /v1/admin/jobs/applications
+ * List all applications across all jobs with filters and pagination
+ */
+export const listAllApplications = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const { status, job_id, search, page, pageSize } = listAllApplicationsQuerySchema.parse(request.query);
+
+    const offset = (page - 1) * pageSize;
+
+    const [applications, total] = await Promise.all([
+      adminJobService.listAllApplications({ status, jobId: job_id, search, limit: pageSize, offset }),
+      adminJobService.countAllApplications({ status, jobId: job_id, search }),
+    ]);
+
+    return reply.send(
+      successResponse(applications, {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+      })
+    );
+  } catch (error: any) {
+    if (error.name === 'ZodError') {
+      return reply.status(400).send(
+        errorResponse(ErrorCodes.VALIDATION_ERROR, 'Invalid query parameters', {
+          issues: error.issues,
+        })
       );
     }
     throw error;
