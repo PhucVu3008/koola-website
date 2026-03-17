@@ -70,16 +70,26 @@ export function JobApplicationForm({ data }: { data: JobApplicationFormData }) {
     setError('');
 
     const formData = new FormData(e.currentTarget);
-    
-    // Add phone from state (managed separately from FormData)
-    if (phone) {
-      formData.set('phone', phone);
-    }
+
+    // Build JSON payload (Fastify expects application/json)
+    const payload: Record<string, string> = {
+      fullName: formData.get('fullName') as string,
+      email: formData.get('email') as string,
+      phone: phone || '',
+    };
+    const linkedIn = formData.get('linkedIn') as string;
+    const portfolio = formData.get('portfolio') as string;
+    const coverLetter = formData.get('coverLetter') as string;
+    if (linkedIn) payload.linkedIn = linkedIn;
+    if (portfolio) payload.portfolio = portfolio;
+    if (coverLetter) payload.coverLetter = coverLetter;
 
     try {
-      const response = await fetch(`/api/jobs/${data.jobSlug}/apply?locale=${data.locale}`, {
+      // POST through nginx → Fastify (/api stripped, /v1/jobs/... forwarded)
+      const response = await fetch(`/api/v1/jobs/${data.jobSlug}/apply?locale=${data.locale}`, {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {

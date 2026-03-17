@@ -4,14 +4,14 @@ import { NextRequest, NextResponse } from 'next/server';
  * POST /api/jobs/[slug]/apply
  *
  * Handles job application submission.
- * Forwards the request to the backend API.
+ * Forwards the request to the backend API (server-side proxy).
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const { searchParams } = new URL(request.url);
     const locale = searchParams.get('locale') || 'en';
 
@@ -25,7 +25,6 @@ export async function POST(
     const linkedIn = formData.get('linkedIn') as string;
     const portfolio = formData.get('portfolio') as string;
     const coverLetter = formData.get('coverLetter') as string;
-    const resumeFile = formData.get('resume') as File | null;
 
     // Validate required fields
     if (!fullName || !email || !phone) {
@@ -35,8 +34,6 @@ export async function POST(
       );
     }
 
-    // TODO: Handle file upload to backend
-    // For now, just send JSON data without file
     const applicationData = {
       fullName,
       email,
@@ -46,13 +43,11 @@ export async function POST(
       coverLetter: coverLetter || undefined,
     };
 
-    // Forward to backend API
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
+    // Use server-side URL (Docker internal network), fallback to public URL
+    const baseUrl = process.env.API_BASE_URL_SERVER || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
     const response = await fetch(`${baseUrl}/v1/jobs/${slug}/apply?locale=${locale}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(applicationData),
     });
 
