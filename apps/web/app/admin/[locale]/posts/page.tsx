@@ -14,7 +14,7 @@ interface Props {
 export default function AdminPostsPage({ params }: Props) {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [locale, setLocale] = useState(params.locale || 'en');
+  const [locale, setLocale] = useState('en');
   const [status, setStatus] = useState<string>('');
 
   useEffect(() => {
