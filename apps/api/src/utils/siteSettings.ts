@@ -106,7 +106,7 @@ export const getAdminPanelUrl = async (): Promise<string> => {
     return urlFromDb;
   }
 
-  return process.env.ADMIN_PANEL_URL || 'http://localhost:3000/en/admin';
+  return process.env.ADMIN_PANEL_URL || 'https://koola.vn/en/admin';
 };
 
 /**
