@@ -234,7 +234,7 @@ export function SiteFooter({
             {[
               {
                 label: 'LinkedIn',
-                href: (site as any).social_links?.linkedin ?? '#',
+                href: (site as any).social_links?.linkedin || 'https://koola.vn',
                 icon: (
                   <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
                     <path fill="currentColor" d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0.5 23.5h4V7.98h-4V23.5zM8.02 7.98h3.83v2.12h.05c.53-1 1.82-2.17 3.74-2.17 4 0 4.74 2.63 4.74 6.04v7.53h-4v-6.68c0-1.59-.03-3.63-2.21-3.63-2.21 0-2.55 1.73-2.55 3.52v6.79h-4V7.98z" />
@@ -243,7 +243,7 @@ export function SiteFooter({
               },
               {
                 label: 'Facebook',
-                href: (site as any).social_links?.facebook ?? '#',
+                href: (site as any).social_links?.facebook || 'https://koola.vn',
                 icon: (
                   <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
                     <path fill="currentColor" d="M13.5 22v-8h2.7l.4-3H13.5V9.1c0-.87.24-1.46 1.5-1.46H16.7V5.02c-.3-.04-1.33-.12-2.52-.12-2.49 0-4.18 1.52-4.18 4.3V11H7.5v3H10v8h3.5z" />
@@ -252,7 +252,7 @@ export function SiteFooter({
               },
               {
                 label: 'Twitter',
-                href: (site as any).social_links?.twitter ?? '#',
+                href: (site as any).social_links?.twitter || 'https://koola.vn',
                 icon: (
                   <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
                     <path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23.2 22h-6.2l-4.9-6.3L6.5 22H3.4l7.3-8.4L1 2h6.4l4.4 5.7L18.9 2zm-1.1 18h1.7L7.3 3.9H5.5L17.8 20z" />

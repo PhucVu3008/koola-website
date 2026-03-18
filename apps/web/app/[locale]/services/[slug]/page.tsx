@@ -179,27 +179,27 @@ export default async function ServiceDetailRoute({
         {
           name: 'WhatsApp',
           icon: <MessageCircle className="h-5 w-5" />,
-          href: 'https://wa.me/1234567890',
+          href: 'https://koola.vn',
         },
         {
           name: 'Instagram',
           icon: <Instagram className="h-5 w-5" />,
-          href: 'https://instagram.com/koola',
+          href: 'https://koola.vn',
         },
         {
           name: 'Twitter',
           icon: <Twitter className="h-5 w-5" />,
-          href: 'https://twitter.com/koola',
+          href: 'https://koola.vn',
         },
         {
           name: 'Discord',
           icon: <Hash className="h-5 w-5" />,
-          href: 'https://discord.gg/koola',
+          href: 'https://koola.vn',
         },
         {
           name: 'Facebook',
           icon: <Facebook className="h-5 w-5" />,
-          href: 'https://facebook.com/koola',
+          href: 'https://koola.vn',
         },
       ],
     },
