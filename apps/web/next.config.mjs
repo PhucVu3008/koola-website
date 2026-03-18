@@ -25,6 +25,12 @@ const nextConfig = {
         hostname: 'koola.vn',
         pathname: '/uploads/**',
       },
+      {
+        protocol: 'http',
+        hostname: 'api',
+        port: '4000',
+        pathname: '/uploads/**',
+      },
     ],
   },
   async rewrites() {

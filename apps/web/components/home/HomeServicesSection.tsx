@@ -1,5 +1,6 @@
 import { getServices } from '../../src/lib/api/services';
 import { ServicesGrid } from '../services/ServicesGrid';
+import { resolveImageUrl } from '../../src/lib/image-url';
 
 type HomeServicesSectionProps = {
   locale: 'en' | 'vi';
@@ -29,7 +30,7 @@ export async function HomeServicesSection({ locale, title }: HomeServicesSection
       id: item.id,
       slug: item.slug,
       title: item.title,
-      imageUrl: item.hero_image_url || `/services/${item.slug_group || item.slug}.jpg`,
+      imageUrl: resolveImageUrl(item.hero_image_url) || `/services/${item.slug_group || item.slug}.jpg`,
       order: index + 1,
     })),
   };

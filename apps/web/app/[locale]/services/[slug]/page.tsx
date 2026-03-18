@@ -6,6 +6,7 @@ import { ServiceDetailPage } from '../../../../components/service-detail';
 import { getServiceBySlug } from '../../../../src/lib/api/services';
 import { getDictionary } from '../../../../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../../../../src/i18n/locales';
+import { resolveImageUrl } from '../../../../src/lib/image-url';
 import {
   generateServiceSchema,
   generateFAQPageSchema,
@@ -134,7 +135,7 @@ export default async function ServiceDetailRoute({
   // Transform API data into component props
   const pageData = {
     hero: {
-      backgroundImage: data.service.hero_image_url || `/services/${imageSlug}.jpg`,
+      backgroundImage: resolveImageUrl(data.service.hero_image_url) || `/services/${imageSlug}.jpg`,
       breadcrumbs: [
         { label: dict.serviceDetail.breadcrumbs.home, href: `/${locale}` },
         { label: dict.serviceDetail.breadcrumbs.services, href: `/${locale}/services` },
@@ -153,7 +154,7 @@ export default async function ServiceDetailRoute({
     },
     content: {
       highlightTitle: data.service.excerpt || dict.serviceDetail.content.highlightPrefix,
-      coverImage: data.service.hero_image_url || `/services/${imageSlug}.jpg`,
+      coverImage: resolveImageUrl(data.service.hero_image_url) || `/services/${imageSlug}.jpg`,
       heading: data.service.title,
       content: data.service.content_md || data.service.excerpt || '', // Pass full markdown content as string
       images: (data.images ?? []).map((img: any) => ({
@@ -221,7 +222,7 @@ export default async function ServiceDetailRoute({
           slug: s.slug,
           title: s.title,
           excerpt: s.excerpt || '',
-          imageUrl: s.hero_image_url || `/services/${s.slug_group || s.slug}.jpg`,
+          imageUrl: resolveImageUrl(s.hero_image_url) || `/services/${s.slug_group || s.slug}.jpg`,
           type: 'service' as const,
         })).slice(0, 3) || [],
     },

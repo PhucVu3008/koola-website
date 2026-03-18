@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
 import { getServices, getServicesPage } from '../../../src/lib/api/services';
 import { getDictionary } from '../../../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../../../src/i18n/locales';
+import { resolveImageUrl } from '../../../src/lib/image-url';
 
 export async function generateMetadata({
   params,
@@ -55,7 +56,7 @@ export default async function ServicesPageRoute({
         slug: item.slug,
         title: item.title,
         excerpt: item.excerpt || '',
-        imageUrl: item.hero_image_url || `/services/${item.slug_group || item.slug}.jpg`,
+        imageUrl: resolveImageUrl(item.hero_image_url) || `/services/${item.slug_group || item.slug}.jpg`,
         category: item.categories?.[0]?.name ?? item.tags?.[0]?.name,
         iconName: item.icon_name,
       })),
