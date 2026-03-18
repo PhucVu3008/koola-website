@@ -37,8 +37,8 @@ RUN npm install
 # Copy source code
 COPY apps/api/src ./apps/api/src
 
-# Build from workspace root
-RUN npm run build --workspace=apps/api
+# Build from workspace root (limit heap for low-memory servers)
+RUN NODE_OPTIONS="--max-old-space-size=512" npm run build --workspace=apps/api
 
 # Production Stage
 FROM node:20-alpine AS production
