@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 
 import { PageLayout } from '../../components/layout/PageLayout';
 import { LoadingScreen } from '../../components/ui/LoadingScreen';
+import { CookieBanner } from '../../components/CookieBanner';
 import { getSiteSettings, type SiteSettingsPayload } from '../../src/lib/api/site';
 import { getDictionary, getSupportedLocales } from '../../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../../src/i18n/locales';
@@ -194,6 +195,7 @@ export default async function LocaleLayout({
           {children}
         </PageLayout>
         <LoadingScreen />
+        <CookieBanner locale={locale} />
       </body>
     </html>
   );
