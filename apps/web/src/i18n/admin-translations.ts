@@ -37,7 +37,6 @@ export type AdminTranslations = {
     passwordPlaceholder: string;
     signInButton: string;
     signingIn: string;
-    defaultCredentials: string;
   };
   
   // Dashboard
@@ -122,7 +121,6 @@ export const ADMIN_TRANSLATIONS: Record<'en' | 'vi', AdminTranslations> = {
       passwordPlaceholder: 'Password',
       signInButton: 'Sign in',
       signingIn: 'Signing in...',
-      defaultCredentials: 'Default: admin@koola.com / admin123',
     },
     dashboard: {
       title: 'Dashboard',
@@ -195,7 +193,6 @@ export const ADMIN_TRANSLATIONS: Record<'en' | 'vi', AdminTranslations> = {
       passwordPlaceholder: 'Mật khẩu',
       signInButton: 'Đăng nhập',
       signingIn: 'Đang đăng nhập...',
-      defaultCredentials: 'Mặc định: admin@koola.com / admin123',
     },
     dashboard: {
       title: 'Tổng quan',

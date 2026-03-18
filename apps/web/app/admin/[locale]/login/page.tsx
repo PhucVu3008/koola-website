@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { Globe } from 'lucide-react';
+import { Globe, Eye, EyeOff } from 'lucide-react';
 import { loginAdmin, isAuthenticated } from '@/lib/admin-auth';
 import { getAdminTranslations } from '@/i18n/admin-translations';
 
@@ -22,6 +22,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,16 +112,26 @@ export default function AdminLoginPage() {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 {t.login.passwordLabel}
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder={t.login.passwordPlaceholder}
-              />
+              <div className="relative mt-1">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder={t.login.passwordPlaceholder}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -132,10 +143,6 @@ export default function AdminLoginPage() {
             >
               {loading ? t.login.signingIn : t.login.signInButton}
             </button>
-          </div>
-
-          <div className="text-xs text-gray-500 text-center">
-            {t.login.defaultCredentials}
           </div>
         </form>
       </div>
