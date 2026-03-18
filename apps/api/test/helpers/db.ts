@@ -48,9 +48,21 @@ export const resetTestDb = async () => {
         service_faqs,
         service_related,
         service_related_posts,
+        service_case_studies,
+        service_categories,
+        service_tags,
         leads,
         newsletter_subscribers,
-        media_assets
+        media_assets,
+        job_posts,
+        job_applications,
+        ads,
+        case_studies,
+        case_study_metrics,
+        email_notifications,
+        login_attempts,
+        service_benefits,
+        service_images
       RESTART IDENTITY CASCADE;
     `);
 

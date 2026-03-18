@@ -14,5 +14,6 @@ export default defineConfig({
     hookTimeout: 60_000,
     testTimeout: 60_000,
     pool: 'threads',
+    fileParallelism: false,
   },
 });
