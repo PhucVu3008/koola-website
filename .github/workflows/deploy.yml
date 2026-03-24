@@ -184,32 +184,35 @@ jobs:
       # -----------------------------------------------------------------------
       # Trên VPS: giải nén artifacts → rebuild Docker images → restart containers
       # Build Docker rất nhẹ vì chỉ COPY files đã build sẵn, không compile
+      # NOTE: Dùng ENDSSH không có dấu nháy đơn để ${{ secrets.* }} được expand
       # -----------------------------------------------------------------------
       - name: 🐳 Deploy on VPS
+        env:
+          VPS_PROJECT_PATH: ${{ secrets.VPS_PROJECT_PATH }}
         run: |
           ssh -i ~/.ssh/deploy_key \
               -p ${{ secrets.VPS_PORT }} \
               -o StrictHostKeyChecking=no \
-              ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+              ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+              "bash -s" << ENDSSH
 
             set -e
-            cd ${{ secrets.VPS_PROJECT_PATH }}
+            cd "${VPS_PROJECT_PATH}"
 
             echo "============================================"
-            echo "🚀 Starting deployment at $(date)"
-            echo "🔖 Commit: $(git rev-parse --short HEAD 2>/dev/null || echo 'N/A')"
+            echo "🚀 Starting deployment at \$(date)"
             echo "============================================"
 
             # --- Giải nén build artifacts (ghi đè lên dist và .next) ---
             echo ""
-            echo "� [1/4] Extracting build artifacts..."
+            echo "📦 [1/4] Extracting build artifacts..."
             tar -xzf build-artifacts.tar.gz
             rm build-artifacts.tar.gz
             echo "✅ Artifacts extracted"
 
             # --- Rebuild Docker images (nhanh: chỉ COPY, không compile) ---
             echo ""
-            echo "� [2/4] Rebuilding Docker images..."
+            echo "🐳 [2/4] Rebuilding Docker images..."
             docker compose -f docker-compose.production.yml \
               --env-file .env.production.local \
               build --no-cache api web
@@ -228,7 +231,7 @@ jobs:
 
             echo ""
             echo "============================================"
-            echo "✅ Deployment completed at $(date)"
+            echo "✅ Deployment completed at \$(date)"
             echo "============================================"
             echo ""
             echo "📊 Container status:"
