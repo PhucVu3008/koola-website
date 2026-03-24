@@ -74,8 +74,8 @@ export function SiteHeader({ locale }: { locale: string }) {
 
   const linkClass = (href: string) =>
     isActive(href)
-      ? `fluid-text-sm font-semibold ${scrolled ? 'text-brand-700' : 'text-white'}`
-      : `fluid-text-sm font-medium ${scrolled ? 'text-slate-700 hover:text-slate-900' : 'text-white/70 hover:text-white'}`;
+      ? `fluid-text-base font-semibold ${scrolled ? 'text-brand-700' : 'text-white'}`
+      : `fluid-text-base font-medium ${scrolled ? 'text-slate-700 hover:text-slate-900' : 'text-white/70 hover:text-white'}`;
   
   const mobileLinkClass = (href: string) =>
     isActive(href)
@@ -144,7 +144,9 @@ export function SiteHeader({ locale }: { locale: string }) {
 
   return (
     <>
-      <header className={`w-full fixed top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm' : 'bg-transparent'}`}>
+      <header className={`w-full fixed top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-md shadow-sm' : 'bg-transparent'}`}
+        style={{ borderBottom: scrolled ? '1px solid rgba(148,163,184,0.3)' : '1px solid transparent' }}
+      >
         {/* Full-width background, contained content */}
         <div className="w-full">
           <div className="fluid-container">
