@@ -9,8 +9,10 @@
     "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "next lint"
   },
+  "optionalDependencies": {
+    "@next/swc-darwin-arm64": "^14.2.33"
+  },
   "dependencies": {
-    "@next/swc-darwin-arm64": "^14.2.33",
     "clsx": "^2.1.1",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.562.0",
