@@ -1,137 +1,253 @@
 # =============================================================================
 # .github/workflows/deploy.yml
 #
-# CI/CD Pipeline: Auto-deploy lên VPS khi push vào branch main
+# CI/CD Pipeline: Build trên GitHub Actions → Deploy lên VPS
+#
+# Tại sao build trên GitHub Actions thay vì VPS?
+#   - VPS chỉ có 1.9GB RAM + 2GB disk trống → không đủ để build Next.js
+#   - GitHub Actions runner có 7GB RAM (miễn phí) → build thoải mái
 #
 # Flow:
-#   1. Developer push code lên GitHub (branch main)
-#   2. GitHub Actions SSH vào VPS
-#   3. VPS: git pull → build Next.js → docker compose build & up
+#   1. Push code lên GitHub (branch main)
+#   2. GitHub Actions: build API (tsc) + build Next.js standalone (trên runner Linux)
+#   3. Nén build artifacts thành .tar.gz
+#   4. SCP copy artifact sang VPS
+#   5. VPS: giải nén → docker compose build (chỉ COPY file, không compile) → up
 #
-# Secrets cần cấu hình tại GitHub → Settings → Secrets and variables → Actions:
-#   - VPS_SSH_PRIVATE_KEY : Nội dung file ~/.ssh/koola_cicd (private key)
+# Secrets cần cấu hình tại:
+#   GitHub → Settings → Secrets and variables → Actions → New repository secret
+#
+#   - VPS_SSH_PRIVATE_KEY : Nội dung file ~/.ssh/koola_cicd (toàn bộ từ BEGIN đến END)
 #   - VPS_HOST            : 14.224.233.11
 #   - VPS_PORT            : 5555
 #   - VPS_USER            : koola
 #   - VPS_PROJECT_PATH    : /home/koola/koola-website
 # =============================================================================
 
-name: 🚀 Deploy to Production VPS
+name: 🚀 Build & Deploy to Production VPS
 
 on:
   push:
     branches:
       - main
-  # Cho phép chạy thủ công từ GitHub Actions tab
+  # Cho phép chạy thủ công từ tab Actions trên GitHub
   workflow_dispatch:
 
 jobs:
-  deploy:
-    name: Deploy to VPS
+  # ---------------------------------------------------------------------------
+  # JOB 1: Build artifacts trên GitHub Actions runner (Linux, 7GB RAM)
+  # ---------------------------------------------------------------------------
+  build:
+    name: 🔨 Build (API + Web)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
 
     steps:
-      # -----------------------------------------------------------------------
-      # 1. Checkout code (để lấy thông tin commit cho log)
-      # -----------------------------------------------------------------------
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
+      - name: ⚙️ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
       # -----------------------------------------------------------------------
-      # 2. SSH vào VPS và thực hiện deploy
-      #    - git pull: lấy code mới nhất
-      #    - npm ci: cài dependencies nếu có thay đổi package-lock.json
-      #    - build Next.js: build standalone output (trên VPS, đúng platform)
-      #    - docker compose build & up: rebuild images và restart containers
+      # Cài dependencies ở root (npm workspaces)
+      # -----------------------------------------------------------------------
+      - name: 📦 Install root dependencies
+        run: npm ci
+
+      # -----------------------------------------------------------------------
+      # Build API: TypeScript → JavaScript (dist/)
+      # Dockerfile production stage chỉ cần: apps/api/dist/
+      # -----------------------------------------------------------------------
+      - name: � Build API (TypeScript → dist)
+        run: npm run build --workspace=apps/api
+
+      # -----------------------------------------------------------------------
+      # Build Next.js standalone
+      # Dockerfile.web chỉ COPY: apps/web/.next/standalone, static, public
+      # Chạy trên Linux runner → binary platform khớp với VPS Ubuntu
+      # -----------------------------------------------------------------------
+      - name: 🔨 Build Next.js (standalone output)
+        run: npm run build --workspace=apps/web
+        env:
+          # Cần đặt NEXT_PUBLIC vars lúc build vì chúng được inline vào JS bundle
+          NEXT_PUBLIC_API_BASE_URL: https://koola.vn/api
+          NEXT_PUBLIC_SITE_URL: https://koola.vn
+          # Server-side URL (dùng cho SSG trong build, trỏ vào mock hoặc skip)
+          API_BASE_URL_SERVER: http://localhost:4000
+
+      # -----------------------------------------------------------------------
+      # Nén artifacts: chỉ lấy những gì cần thiết để rebuild Docker images
+      #   - apps/api/dist/             → Dockerfile production stage
+      #   - apps/web/.next/standalone/ → Dockerfile.web
+      #   - apps/web/.next/static/     → Dockerfile.web
+      #   - apps/web/public/           → Dockerfile.web
+      #   - apps/web/.env.production   → Dockerfile.web (COPY vào image)
+      #   - package*.json              → npm ci trong Docker
+      #   - apps/api/package.json      → npm ci trong Docker
+      #   - apps/web/package.json      → npm ci trong Docker
+      # -----------------------------------------------------------------------
+      - name: 📦 Create web .env.production for Docker image
+        run: |
+          # File này bị gitignore nhưng Dockerfile.web cần COPY vào image
+          # Không có secrets — chỉ là public URLs
+          cat > apps/web/.env.production << 'EOF'
+          NODE_ENV=production
+          NEXT_PUBLIC_API_BASE_URL=https://koola.vn/api
+          NEXT_PUBLIC_SITE_URL=https://koola.vn
+          API_BASE_URL_SERVER=http://api:4000
+          EOF
+
+      - name: 📦 Package build artifacts
+        run: |
+          tar -czf build-artifacts.tar.gz \
+            apps/api/dist \
+            apps/web/.next/standalone \
+            apps/web/.next/static \
+            apps/web/public \
+            apps/web/.env.production \
+            package.json \
+            package-lock.json \
+            apps/api/package.json \
+            apps/web/package.json
+
+          echo "📦 Artifact size: $(du -sh build-artifacts.tar.gz | cut -f1)"
+
+      - name: 📤 Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: build-artifacts.tar.gz
+          retention-days: 3
+
+  # ---------------------------------------------------------------------------
+  # JOB 2: Deploy lên VPS (chỉ chạy khi build thành công)
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: 🚀 Deploy to VPS
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 15
+
+    steps:
+      - name: 📥 Checkout code (để lấy Dockerfile, docker-compose, nginx, migrations)
+        uses: actions/checkout@v4
+
+      - name: 📥 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      # -----------------------------------------------------------------------
+      # Setup SSH key để kết nối VPS
       # -----------------------------------------------------------------------
       - name: 🔑 Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          # Thêm host key để tránh prompt "authenticity of host"
           ssh-keyscan -p ${{ secrets.VPS_PORT }} ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
 
-      - name: 🚀 Deploy on VPS
+      # -----------------------------------------------------------------------
+      # Copy artifacts + source files cần thiết sang VPS
+      # Dùng rsync để chỉ copy file thay đổi (nhanh hơn scp toàn bộ)
+      # -----------------------------------------------------------------------
+      - name: 📤 Copy source files to VPS
+        run: |
+          # Copy config files (Dockerfile, docker-compose, nginx, migrations)
+          # --exclude node_modules, .next (sẽ được giải nén từ artifact)
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no" \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='apps/web/.next' \
+            --exclude='apps/api/dist' \
+            --exclude='apps/web/node_modules' \
+            --exclude='apps/api/node_modules' \
+            --exclude='.env*' \
+            --exclude='uploads' \
+            --exclude='*.tar.gz' \
+            ./ \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PROJECT_PATH }}/
+
+      - name: � Copy build artifacts to VPS
+        run: |
+          scp -i ~/.ssh/deploy_key \
+              -P ${{ secrets.VPS_PORT }} \
+              -o StrictHostKeyChecking=no \
+              build-artifacts.tar.gz \
+              ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PROJECT_PATH }}/
+
+      # -----------------------------------------------------------------------
+      # Trên VPS: giải nén artifacts → rebuild Docker images → restart containers
+      # Build Docker rất nhẹ vì chỉ COPY files đã build sẵn, không compile
+      # -----------------------------------------------------------------------
+      - name: 🐳 Deploy on VPS
         run: |
           ssh -i ~/.ssh/deploy_key \
               -p ${{ secrets.VPS_PORT }} \
               -o StrictHostKeyChecking=no \
-              ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
-              "bash -s" << 'DEPLOY_SCRIPT'
+              ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
 
-            set -e  # Dừng ngay nếu có lỗi
-
-            PROJECT_DIR="${{ secrets.VPS_PROJECT_PATH }}"
-            COMPOSE_FILE="docker-compose.production.yml"
-            ENV_FILE=".env.production.local"
+            set -e
+            cd ${{ secrets.VPS_PROJECT_PATH }}
 
             echo "============================================"
             echo "🚀 Starting deployment at $(date)"
+            echo "🔖 Commit: $(git rev-parse --short HEAD 2>/dev/null || echo 'N/A')"
             echo "============================================"
 
-            # --- Vào thư mục project ---
-            cd "$PROJECT_DIR"
-
-            # --- Pull code mới nhất từ GitHub ---
+            # --- Giải nén build artifacts (ghi đè lên dist và .next) ---
             echo ""
-            echo "📥 [1/4] Pulling latest code from GitHub..."
-            git pull origin main
+            echo "� [1/4] Extracting build artifacts..."
+            tar -xzf build-artifacts.tar.gz
+            rm build-artifacts.tar.gz
+            echo "✅ Artifacts extracted"
 
-            # Hiển thị commit đang deploy
-            echo "✅ Now at commit: $(git log --oneline -1)"
-
-            # --- Cài Node dependencies nếu package-lock.json thay đổi ---
+            # --- Rebuild Docker images (nhanh: chỉ COPY, không compile) ---
             echo ""
-            echo "📦 [2/4] Installing dependencies (if changed)..."
-            npm ci --ignore-scripts 2>/dev/null || npm install --ignore-scripts
+            echo "� [2/4] Rebuilding Docker images..."
+            docker compose -f docker-compose.production.yml \
+              --env-file .env.production.local \
+              build --no-cache api web
 
-            # --- Build Next.js standalone (chạy trên VPS đúng platform Linux) ---
+            # --- Rolling restart: up -d thay thế containers cũ ---
             echo ""
-            echo "🔨 [3/4] Building Next.js frontend..."
-            cd apps/web
-            npm ci 2>/dev/null || npm install
-            npm run build
-            cd "$PROJECT_DIR"
+            echo "♻️  [3/4] Restarting containers..."
+            docker compose -f docker-compose.production.yml \
+              --env-file .env.production.local \
+              up -d --remove-orphans
 
-            # --- Build và restart Docker containers ---
+            # --- Dọn dẹp dangling images để tiết kiệm disk (VPS chỉ còn 2GB) ---
             echo ""
-            echo "🐳 [4/4] Rebuilding and restarting Docker containers..."
-            docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" build --no-cache api web
-            docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d --remove-orphans
-
-            # --- Xóa dangling images để tiết kiệm disk ---
-            echo ""
-            echo "🧹 Cleaning up unused Docker images..."
+            echo "🧹 [4/4] Cleaning up old Docker images..."
             docker image prune -f
 
             echo ""
             echo "============================================"
             echo "✅ Deployment completed at $(date)"
             echo "============================================"
-
-            # --- Kiểm tra trạng thái containers ---
             echo ""
             echo "📊 Container status:"
-            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep koola
+            docker ps --format "table {{.Names}}\t{{.Status}}" | grep koola || true
 
-          DEPLOY_SCRIPT
+          ENDSSH
 
-      # -----------------------------------------------------------------------
-      # 3. Thông báo kết quả (optional — thêm Slack/Discord webhook nếu muốn)
-      # -----------------------------------------------------------------------
-      - name: ✅ Deployment successful
+      - name: ✅ Notify success
         if: success()
         run: |
-          echo "🎉 Deployment to VPS completed successfully!"
-          echo "Commit: ${{ github.sha }}"
-          echo "By: ${{ github.actor }}"
+          echo "🎉 Deploy thành công!"
+          echo "   Commit : ${{ github.sha }}"
+          echo "   Branch : ${{ github.ref_name }}"
+          echo "   By     : ${{ github.actor }}"
 
-      - name: ❌ Deployment failed
+      - name: ❌ Notify failure
         if: failure()
         run: |
-          echo "💥 Deployment FAILED!"
-          echo "Commit: ${{ github.sha }}"
-          echo "By: ${{ github.actor }}"
-          echo "Check the logs above for details."
+          echo "💥 Deploy THẤT BẠI!"
+          echo "   Commit : ${{ github.sha }}"
+          echo "   By     : ${{ github.actor }}"
+          echo "   → Xem log ở tab Actions để debug"
