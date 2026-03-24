@@ -127,16 +127,21 @@ jobs:
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
             "set -e && \
              cd ${{ secrets.VPS_PROJECT_PATH }} && \
-             echo 'Step 1: Extracting artifacts...' && \
+             echo 'Step 1: Free disk space (prune build cache)...' && \
+             docker builder prune -af && \
+             docker image prune -f && \
+             df -h / && \
+             echo 'Step 2: Extracting artifacts...' && \
              tar -xzf build-artifacts.tar.gz && \
              rm -f build-artifacts.tar.gz && \
-             echo 'Step 2: Building Docker images...' && \
-             docker compose -f docker-compose.production.yml --env-file .env.production.local build --no-cache api web && \
-             echo 'Step 3: Restarting containers...' && \
+             echo 'Step 3: Building Docker images...' && \
+             docker compose -f docker-compose.production.yml --env-file .env.production.local build api web && \
+             echo 'Step 4: Restarting containers...' && \
              docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --remove-orphans && \
-             echo 'Step 4: Pruning old images...' && \
+             echo 'Step 5: Pruning old images...' && \
              docker image prune -f && \
              echo 'Deployment complete!' && \
+             df -h / && \
              docker ps --format 'table {{.Names}}\t{{.Status}}'"
 
       - name: Report result
