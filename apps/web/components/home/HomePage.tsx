@@ -6,8 +6,6 @@ import { HeroSection } from './HeroSection';
 import { HomeServicesSection } from './HomeServicesSection';
 import { ValuePropositionSlider } from './ValuePropositionSlider';
 import { BlogPreviewGrid } from './BlogPreviewGrid';
-import { TeamRolesPreview } from './TeamRolesPreview';
-import { PrimaryCTASection } from './PrimaryCTASection';
 
 /**
  * Home page composition.
@@ -76,19 +74,8 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
           </Section>
         </RevealOnScroll>
 
-        <RevealOnScroll delayMs={480} hoverParallax>
-          <Section tone="white">
-            <TeamRolesPreview data={{ ...data.team, ctaHref: `/${locale}/contact` }} />
-          </Section>
-        </RevealOnScroll>
-
         </div>
       </div>
-
-      {/* CTA — full width, outside container */}
-      <RevealOnScroll delayMs={560} hoverParallax>
-        <PrimaryCTASection data={{ ...data.primaryCta, ctaHref: `/${locale}/contact` }} />
-      </RevealOnScroll>
     </>
   );
 }

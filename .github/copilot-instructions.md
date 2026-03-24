@@ -630,3 +630,28 @@ Never hardcode secrets.
 - Do not implement backend via Next.js API routes.
 - Do not write insecure SQL (no string concatenation).
 - Do not change DB schema without migrations and query updates.
+
+---
+
+## Product Decisions (UI/UX — MUST respect)
+
+### Home Page
+- **TeamRolesPreview section ("Hãy xây dựng đội ngũ")** is REMOVED. Do not re-add it.
+- **PrimaryCTASection** at the bottom of home page is REMOVED. Do not re-add it.
+- Home page sections order: Hero → Services → ValueProposition → Blog.
+
+### Cookie Banner
+- `CookieBanner` component is **permanently hidden** (returns `null`).
+- Do not re-enable it without explicit product decision.
+
+### Footer (`SiteFooter`)
+- **Social icons**: Zalo ONLY — links to `https://zalo.me/0941508468` (phone: 0941 508 468).
+- LinkedIn, Facebook, Twitter/X icons are REMOVED. Do not re-add them.
+- Layout: 3 columns (Brand+Contact info | Navigation | Newsletter) + compact bottom bar.
+- No extra whitespace sections (removed the standalone company info card).
+
+### CI/CD
+- VPS: `koola@14.224.233.11 -p 5555` (Ubuntu, 1.9GB RAM, ~2GB disk free).
+- **Build on GitHub Actions runner** (7GB RAM), NOT on VPS — VPS lacks RAM/disk for Next.js build.
+- Workflow: `.github/workflows/deploy.yml` — build artifacts → rsync → docker compose build (COPY only) → up.
+- After every code change, build on Mac (or GitHub Actions) and deploy: `rsync` artifacts → VPS → `docker compose build web && up -d web`.
