@@ -13,7 +13,7 @@ uploads/
 coverage/
 .vscode/
 .idea/
-.github/
+# .github/ — bỏ ignore để GitHub Actions workflows được commit
 .next/
 *.tsbuildinfo
 

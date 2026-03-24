@@ -1,0 +1,137 @@
+# =============================================================================
+# .github/workflows/deploy.yml
+#
+# CI/CD Pipeline: Auto-deploy lên VPS khi push vào branch main
+#
+# Flow:
+#   1. Developer push code lên GitHub (branch main)
+#   2. GitHub Actions SSH vào VPS
+#   3. VPS: git pull → build Next.js → docker compose build & up
+#
+# Secrets cần cấu hình tại GitHub → Settings → Secrets and variables → Actions:
+#   - VPS_SSH_PRIVATE_KEY : Nội dung file ~/.ssh/koola_cicd (private key)
+#   - VPS_HOST            : 14.224.233.11
+#   - VPS_PORT            : 5555
+#   - VPS_USER            : koola
+#   - VPS_PROJECT_PATH    : /home/koola/koola-website
+# =============================================================================
+
+name: 🚀 Deploy to Production VPS
+
+on:
+  push:
+    branches:
+      - main
+  # Cho phép chạy thủ công từ GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      # -----------------------------------------------------------------------
+      # 1. Checkout code (để lấy thông tin commit cho log)
+      # -----------------------------------------------------------------------
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------
+      # 2. SSH vào VPS và thực hiện deploy
+      #    - git pull: lấy code mới nhất
+      #    - npm ci: cài dependencies nếu có thay đổi package-lock.json
+      #    - build Next.js: build standalone output (trên VPS, đúng platform)
+      #    - docker compose build & up: rebuild images và restart containers
+      # -----------------------------------------------------------------------
+      - name: 🔑 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Thêm host key để tránh prompt "authenticity of host"
+          ssh-keyscan -p ${{ secrets.VPS_PORT }} ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: 🚀 Deploy on VPS
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+              -p ${{ secrets.VPS_PORT }} \
+              -o StrictHostKeyChecking=no \
+              ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+              "bash -s" << 'DEPLOY_SCRIPT'
+
+            set -e  # Dừng ngay nếu có lỗi
+
+            PROJECT_DIR="${{ secrets.VPS_PROJECT_PATH }}"
+            COMPOSE_FILE="docker-compose.production.yml"
+            ENV_FILE=".env.production.local"
+
+            echo "============================================"
+            echo "🚀 Starting deployment at $(date)"
+            echo "============================================"
+
+            # --- Vào thư mục project ---
+            cd "$PROJECT_DIR"
+
+            # --- Pull code mới nhất từ GitHub ---
+            echo ""
+            echo "📥 [1/4] Pulling latest code from GitHub..."
+            git pull origin main
+
+            # Hiển thị commit đang deploy
+            echo "✅ Now at commit: $(git log --oneline -1)"
+
+            # --- Cài Node dependencies nếu package-lock.json thay đổi ---
+            echo ""
+            echo "📦 [2/4] Installing dependencies (if changed)..."
+            npm ci --ignore-scripts 2>/dev/null || npm install --ignore-scripts
+
+            # --- Build Next.js standalone (chạy trên VPS đúng platform Linux) ---
+            echo ""
+            echo "🔨 [3/4] Building Next.js frontend..."
+            cd apps/web
+            npm ci 2>/dev/null || npm install
+            npm run build
+            cd "$PROJECT_DIR"
+
+            # --- Build và restart Docker containers ---
+            echo ""
+            echo "🐳 [4/4] Rebuilding and restarting Docker containers..."
+            docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" build --no-cache api web
+            docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d --remove-orphans
+
+            # --- Xóa dangling images để tiết kiệm disk ---
+            echo ""
+            echo "🧹 Cleaning up unused Docker images..."
+            docker image prune -f
+
+            echo ""
+            echo "============================================"
+            echo "✅ Deployment completed at $(date)"
+            echo "============================================"
+
+            # --- Kiểm tra trạng thái containers ---
+            echo ""
+            echo "📊 Container status:"
+            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep koola
+
+          DEPLOY_SCRIPT
+
+      # -----------------------------------------------------------------------
+      # 3. Thông báo kết quả (optional — thêm Slack/Discord webhook nếu muốn)
+      # -----------------------------------------------------------------------
+      - name: ✅ Deployment successful
+        if: success()
+        run: |
+          echo "🎉 Deployment to VPS completed successfully!"
+          echo "Commit: ${{ github.sha }}"
+          echo "By: ${{ github.actor }}"
+
+      - name: ❌ Deployment failed
+        if: failure()
+        run: |
+          echo "💥 Deployment FAILED!"
+          echo "Commit: ${{ github.sha }}"
+          echo "By: ${{ github.actor }}"
+          echo "Check the logs above for details."
