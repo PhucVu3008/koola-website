@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { logger } from '../src/lib/logger';
 
@@ -151,12 +152,22 @@ export function SiteHeader({ locale }: { locale: string }) {
         <div className="w-full">
           <div className="fluid-container">
             <div className="flex items-center justify-between" style={{ height: 'clamp(3.5rem, 8vh, 4.5rem)' }}>
-              {/* Logo - Fluid size */}
+              {/* Logo */}
               <Link
                 href={`/${baseLocale}`}
-                className={`z-50 font-semibold tracking-tight fluid-text-base transition-colors duration-300 ${scrolled ? 'text-slate-900' : 'text-white'}`}
+                className="z-50 flex items-center gap-2"
               >
-                KOOLA
+                <Image
+                  src="/images/koola-logo.png"
+                  alt="KOOLA"
+                  width={36}
+                  height={36}
+                  className="rounded-xl"
+                  priority
+                />
+                <span className={`font-semibold tracking-tight fluid-text-base transition-colors duration-300 ${scrolled ? 'text-slate-900' : 'text-white'}`}>
+                  KOOLA
+                </span>
               </Link>
 
               {/* Desktop Navigation - Hidden on mobile */}

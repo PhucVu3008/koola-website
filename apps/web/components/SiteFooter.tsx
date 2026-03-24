@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
+import Image from 'next/image';
 
 import type { SiteSettingsPayload } from '../src/lib/api/site';
 import { getDictionary } from '../src/i18n/getDictionary';
@@ -37,12 +38,6 @@ export function SiteFooter({
     { label: dict.nav.contact, href: withLocale('/contact') },
   ];
 
-  const legalLinks = [
-    { label: dict.footer.terms, href: withLocale('/terms') },
-    { label: dict.footer.privacy, href: withLocale('/privacy') },
-    { label: dict.footer.cookies, href: withLocale('/cookies') },
-  ];
-
   // Zalo deep link — opens chat with phone number 0941508468
   const zaloHref = 'https://zalo.me/0941508468';
 
@@ -56,9 +51,13 @@ export function SiteFooter({
           {/* Col 1: Brand + Company info */}
           <div className="flex flex-col gap-4">
             <a href={withLocale('/')} className="inline-flex items-center gap-2 w-fit">
-              <div className="grid place-items-center rounded-xl bg-slate-50 w-9 h-9">
-                <span className="font-bold text-indigo-600 text-base">K</span>
-              </div>
+              <Image
+                src="/images/koola-logo.png"
+                alt="KOOLA"
+                width={36}
+                height={36}
+                className="rounded-xl"
+              />
               <span className="font-semibold text-slate-900 text-base">KOOLA</span>
             </a>
 
@@ -183,15 +182,6 @@ export function SiteFooter({
             © {new Date().getFullYear()} KOOLA. {locale === 'vi' ? 'Bảo lưu mọi quyền.' : 'All rights reserved.'}
           </span>
 
-          {/* Legal links */}
-          <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-4 order-1 sm:order-2">
-            {legalLinks.map((l) => (
-              <a key={l.label} href={l.href} className="text-xs text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap">
-                {l.label}
-              </a>
-            ))}
-          </nav>
-
           {/* Zalo social icon */}
           <div className="flex items-center order-3">
             <a
@@ -201,9 +191,9 @@ export function SiteFooter({
               aria-label="Chat with us on Zalo"
               className="grid place-items-center rounded-full border border-slate-200 text-[#0068FF] hover:border-[#0068FF]/40 hover:bg-[#0068FF]/5 transition-all w-9 h-9"
             >
-              {/* Official Zalo icon shape */}
-              <svg viewBox="0 0 48 48" className="w-5 h-5" fill="currentColor" aria-hidden="true">
-                <path d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm-2.5 28.5H16v-14h5.5v14zM18.75 17a2.25 2.25 0 110-4.5 2.25 2.25 0 010 4.5zM36 32.5h-5.3l-6.2-8.3v8.3H19v-14h5.3l6.2 8.3V18.5H36v14z"/>
+              {/* Zalo official icon — source: Zalo brand assets */}
+              <svg viewBox="0 0 100 100" className="w-5 h-5" fill="currentColor" aria-hidden="true">
+                <path d="M50 5C25.15 5 5 25.15 5 50c0 9.14 2.7 17.65 7.34 24.77L5 95l21.05-6.73C33.02 92.7 41.26 95 50 95c24.85 0 45-20.15 45-45S74.85 5 50 5zm-8.5 55.7L32.8 70.3l-9.3-9.6 9.7-9.3-9.4-14.9h9.4l6.3 9.9 8-9.9h9l-13.3 16.3 8 7.9zm24.3 9.6c-7.7 0-14.6-3.4-19.3-8.8l4.1-4.5c3.5 4.3 8.8 7 14.6 7 5.1 0 9.2-2.1 9.2-5.5 0-3-2.6-4.7-8.7-6.3-8.5-2.2-14-5.4-14-12 0-6.7 5.9-11.5 14.2-11.5 6.1 0 11.5 2.3 15.3 6l-4 4.6c-3-3-7.2-4.9-11.4-4.9-4.5 0-7.3 2-7.3 4.8 0 2.9 2.6 4.3 8.9 6 9 2.4 13.8 5.8 13.8 12.4 0 6.9-5.9 12.7-15.4 12.7z"/>
               </svg>
             </a>
           </div>
