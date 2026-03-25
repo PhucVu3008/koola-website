@@ -50,15 +50,14 @@ export function SiteFooter({
 
           {/* Col 1: Brand + Company info */}
           <div className="flex flex-col gap-4">
-            <a href={withLocale('/')} className="inline-flex items-center gap-2 w-fit">
+            <a href={withLocale('/')} className="inline-flex items-center w-fit" aria-label="KOOLA – Trang chủ">
               <Image
                 src="/images/koola-logo.png"
                 alt="KOOLA"
-                width={36}
-                height={36}
-                className="rounded-xl"
+                width={120}
+                height={52}
+                className="h-10 w-auto object-contain"
               />
-              <span className="font-semibold text-slate-900 text-base">KOOLA</span>
             </a>
 
             <div className="text-sm text-slate-500 leading-relaxed space-y-1">
@@ -189,12 +188,17 @@ export function SiteFooter({
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Chat with us on Zalo"
-              className="grid place-items-center rounded-full border border-slate-200 text-[#0068FF] hover:border-[#0068FF]/40 hover:bg-[#0068FF]/5 transition-all w-9 h-9"
+              className="grid place-items-center rounded-full border border-slate-200 hover:border-[#2962FF]/40 hover:bg-[#2962FF]/5 transition-all w-9 h-9"
             >
-              {/* Zalo official icon — source: Zalo brand assets */}
-              <svg viewBox="0 0 100 100" className="w-5 h-5" fill="currentColor" aria-hidden="true">
-                <path d="M50 5C25.15 5 5 25.15 5 50c0 9.14 2.7 17.65 7.34 24.77L5 95l21.05-6.73C33.02 92.7 41.26 95 50 95c24.85 0 45-20.15 45-45S74.85 5 50 5zm-8.5 55.7L32.8 70.3l-9.3-9.6 9.7-9.3-9.4-14.9h9.4l6.3 9.9 8-9.9h9l-13.3 16.3 8 7.9zm24.3 9.6c-7.7 0-14.6-3.4-19.3-8.8l4.1-4.5c3.5 4.3 8.8 7 14.6 7 5.1 0 9.2-2.1 9.2-5.5 0-3-2.6-4.7-8.7-6.3-8.5-2.2-14-5.4-14-12 0-6.7 5.9-11.5 14.2-11.5 6.1 0 11.5 2.3 15.3 6l-4 4.6c-3-3-7.2-4.9-11.4-4.9-4.5 0-7.3 2-7.3 4.8 0 2.9 2.6 4.3 8.9 6 9 2.4 13.8 5.8 13.8 12.4 0 6.9-5.9 12.7-15.4 12.7z"/>
-              </svg>
+              <Image
+                src="/images/zalo-icon.svg"
+                alt="Zalo"
+                width={24}
+                height={24}
+                className="w-6 h-6"
+                aria-hidden="true"
+                unoptimized
+              />
             </a>
           </div>
 

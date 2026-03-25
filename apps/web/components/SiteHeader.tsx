@@ -155,19 +155,17 @@ export function SiteHeader({ locale }: { locale: string }) {
               {/* Logo */}
               <Link
                 href={`/${baseLocale}`}
-                className="z-50 flex items-center gap-2"
+                className="z-50 flex items-center"
+                aria-label="KOOLA – Trang chủ"
               >
                 <Image
                   src="/images/koola-logo.png"
                   alt="KOOLA"
-                  width={36}
-                  height={36}
-                  className="rounded-xl"
+                  width={120}
+                  height={52}
+                  className="h-10 w-auto object-contain"
                   priority
                 />
-                <span className={`font-semibold tracking-tight fluid-text-base transition-colors duration-300 ${scrolled ? 'text-slate-900' : 'text-white'}`}>
-                  KOOLA
-                </span>
               </Link>
 
               {/* Desktop Navigation - Hidden on mobile */}
