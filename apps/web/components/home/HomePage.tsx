@@ -1,5 +1,6 @@
 import { getHomeData } from '../../src/lib/home/homeData';
 import { getPageBySlug } from '../../src/lib/api/pages';
+import { listPosts } from '../../src/lib/api/posts';
 import { Section } from '../ui/Section';
 import { RevealOnScroll } from '../ui/RevealOnScroll';
 import { HeroSection } from './HeroSection';
@@ -29,6 +30,15 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
     cmsData = await getPageBySlug({ slug: 'home', locale });
   } catch (error) {
     console.warn('[HomePage] Failed to load CMS data, using fallback:', error);
+  }
+
+  // Fetch latest published posts for blog section
+  let homePosts: any[] = [];
+  try {
+    const postsResult = await listPosts({ locale, page: 1, pageSize: 6, sort: 'newest' });
+    homePosts = postsResult.posts;
+  } catch (error) {
+    console.warn('[HomePage] Failed to load posts:', error);
   }
 
   // Helper to get section payload from CMS
@@ -70,7 +80,11 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
 
         <RevealOnScroll delayMs={400} hoverParallax>
           <Section tone="white">
-            <BlogPreviewGrid data={data.blog} />
+            <BlogPreviewGrid
+              data={data.blog}
+              posts={homePosts.length > 0 ? homePosts : undefined}
+              locale={locale}
+            />
           </Section>
         </RevealOnScroll>
 

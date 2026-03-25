@@ -51,6 +51,23 @@ export default function AdminPostsPage({ params }: Props) {
     }
   };
 
+  const handleToggleStatus = async (id: number, currentStatus: string) => {
+    // published → archived (ẩn), archived/draft → published
+    const nextStatus = currentStatus === 'published' ? 'archived' : 'published';
+    const label = nextStatus === 'published' ? 'publish' : 'archive (hide)';
+    if (!confirm(`Are you sure you want to ${label} this post?`)) return;
+
+    try {
+      await adminApi.updatePost(id, {
+        status: nextStatus,
+        ...(nextStatus === 'published' ? { published_at: new Date().toISOString() } : {}),
+      });
+      loadPosts();
+    } catch (error: any) {
+      alert(error.message || 'Failed to update post status');
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -161,6 +178,17 @@ export default function AdminPostsPage({ params }: Props) {
                     >
                       Edit
                     </Link>
+                    <button
+                      onClick={() => handleToggleStatus(post.id, post.status)}
+                      className={`mr-4 ${
+                        post.status === 'published'
+                          ? 'text-yellow-600 hover:text-yellow-900'
+                          : 'text-green-600 hover:text-green-900'
+                      }`}
+                      title={post.status === 'published' ? 'Archive (hide from public)' : 'Publish (show on site)'}
+                    >
+                      {post.status === 'published' ? 'Hide' : 'Publish'}
+                    </button>
                     <button
                       onClick={() => handleDelete(post.id, post.title)}
                       className="text-red-600 hover:text-red-900"
