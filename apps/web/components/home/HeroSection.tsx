@@ -10,6 +10,8 @@ export type HeroSectionData = {
   label: string;
   headline: readonly string[];
   subhead: string;
+  /** Trust badge text shown below CTAs (desktop full text). Localised per locale. */
+  trustBadge?: string;
   primaryCta: { label: string; href: string };
   secondaryCta: { label: string; href: string };
   image: { src: string; alt: string };
@@ -297,7 +299,7 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
             className="text-center"
             style={{ fontSize: 'clamp(0.75rem, 1.8vw, 0.875rem)' }}
           >
-            {isMobile ? 'Your Digital Growth Partner' : 'Empowering businesses with innovative digital solutions'}
+            {isMobile ? (data.trustBadge ?? 'Your Digital Growth Partner').split(' ').slice(0, 4).join(' ') : (data.trustBadge ?? 'Empowering businesses with innovative digital solutions')}
           </span>
         </div>
       </div>

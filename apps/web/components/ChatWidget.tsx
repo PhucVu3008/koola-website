@@ -247,7 +247,7 @@ export function ChatWidget({ locale }: { locale: string }) {
     <>
       {/* Chat Panel */}
       {open && (
-        <div className="fixed bottom-40 right-4 z-50 flex h-[520px] w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/10 lg:bottom-24">
+        <div className="fixed bottom-40 right-4 z-[55] flex h-[520px] w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/10 lg:bottom-24">
           {/* Header */}
           <div className="flex items-center gap-3 rounded-t-2xl bg-gradient-to-r from-brand-600 to-brand-700 px-4 py-3 text-white">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
@@ -393,7 +393,7 @@ export function ChatWidget({ locale }: { locale: string }) {
       )}
 
       {/* Floating Bubble + Greeting wrapper */}
-      <div className="fixed bottom-24 right-4 z-50 lg:bottom-8 flex flex-col items-end gap-3">
+      <div className="fixed bottom-24 right-4 z-[60] lg:bottom-8 flex flex-col items-end gap-3">
 
         {/* Phone icon — absolutely positioned, slide up từ vị trí toggle button */}
         <a
@@ -459,9 +459,9 @@ export function ChatWidget({ locale }: { locale: string }) {
 
         {/* Chat AI bubble — luôn ở dưới cùng, popup greeting anchor vào đây */}
         <div className="relative">
-          {/* Popup greeting bubble — anchor sang trái của chat bubble */}
+          {/* Popup greeting bubble — z-[60] để nằm trên chat panel */}
           {popupVisible && !open && (
-            <div className="absolute bottom-1 right-[4.5rem] animate-in fade-in slide-in-from-right-2 duration-300">
+            <div className="absolute bottom-1 right-[4.5rem] z-[60] animate-in fade-in slide-in-from-right-2 duration-300">
               <div
                 className="relative whitespace-nowrap cursor-pointer rounded-2xl bg-white px-4 py-3 text-sm text-gray-700 shadow-lg ring-1 ring-black/10"
                 onClick={() => { setPopupVisible(false); setPopupDismissed(true); setOpen(true); }}

@@ -9,6 +9,7 @@ export const HOME = {
     label: 'TECH SERVICES',
     headline: ['KOOLA', 'Innovate,', 'Create, Elevate'],
     subhead: 'Unlocking Possibilities, One Code at a Time',
+    trustBadge: 'Empowering businesses with innovative digital solutions',
     primaryCta: { label: 'Sign projects', href: '/contact' },
     secondaryCta: { label: 'Get Started', href: '/services' },
     image: {
@@ -196,6 +197,7 @@ export const HOME_I18N = {
       label: 'DỊCH VỤ CÔNG NGHỆ',
       headline: ['KOOLA', 'Đổi mới,', 'Tạo dựng, Nâng tầm'],
       subhead: 'Mở khóa tiềm năng, từng dòng code một',
+      trustBadge: 'Trao quyền cho doanh nghiệp bằng giải pháp số sáng tạo',
       primaryCta: { label: 'Ký dự án', href: '/contact' },
       secondaryCta: { label: 'Bắt đầu', href: '/services' },
       image: {
