@@ -10,6 +10,42 @@ These instructions are **hard constraints**. If a request conflicts with them, e
 
 ---
 
+## -00) Deployment Rule (HARD CONSTRAINT — MUST FOLLOW)
+
+### NEVER deploy manually to VPS. ALL deployments MUST go through CI/CD.
+
+**After completing ANY code change or task:**
+1. `git add` the changed files
+2. `git commit -m "..."` with a clear message
+3. `git push origin main`
+4. CI/CD (GitHub Actions) will automatically build and deploy to production
+
+**Prohibited:**
+- ❌ Running `docker compose build` manually on VPS
+- ❌ Running `docker compose up` manually on VPS
+- ❌ Copying files directly to VPS with `scp` or `rsync` to deploy
+- ❌ SSH into VPS to restart containers as a deployment step
+
+**Exception:** Emergency hotfix when CI/CD is broken — must be documented and followed up with a CI/CD fix commit.
+
+**CI/CD pipeline:** push to `main` → GitHub Actions builds on ubuntu-latest runner → rsync source + artifact → docker compose build (COPY only) on VPS → containers restart.
+
+**Monitor:** https://github.com/PhucVu3008/koola-website/actions
+
+---
+
+## Company Information (MUST use everywhere)
+
+- **Vietnamese:** CÔNG TY TNHH GIẢI PHÁP CÔNG NGHỆ QUỐC TẾ KOOLA
+- **English:** KOOLA INTERNATIONAL TECHNOLOGY SOLUTIONS CO., LTD.
+- **Email:** info@koola.vn
+- **Phone:** 0941 508 468
+- **Zalo:** https://zalo.me/0941508468
+
+Do NOT use old company name "AN BÌNH / AN BINH" or old email "sales@anbinhfoods.com" anywhere.
+
+---
+
 ## -0) Execution Environment: Docker-first workflow (MUST)
 
 This project is run **inside Docker** (via `docker-compose`).

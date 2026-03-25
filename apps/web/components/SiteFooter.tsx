@@ -54,15 +54,15 @@ export function SiteFooter({
               <Image
                 src="/images/koola-logo.png"
                 alt="KOOLA"
-                width={120}
-                height={52}
-                className="h-10 w-auto object-contain"
+                width={160}
+                height={70}
+                className="h-14 w-auto object-contain"
               />
             </a>
 
             <div className="text-sm text-slate-500 leading-relaxed space-y-1">
               <p className="font-medium text-slate-700 text-xs uppercase tracking-wide">
-                {locale === 'vi' ? 'CÔNG TY TNHH THỰC PHẨM QUỐC TẾ AN BÌNH' : 'AN BINH INTERNATIONAL FOODS CO., LTD'}
+                {locale === 'vi' ? 'CÔNG TY TNHH GIẢI PHÁP CÔNG NGHỆ QUỐC TẾ KOOLA' : 'KOOLA INTERNATIONAL TECHNOLOGY SOLUTIONS CO., LTD.'}
               </p>
               <p>
                 <a
@@ -82,8 +82,8 @@ export function SiteFooter({
                 </a>
               </p>
               <p>
-                <a href="mailto:sales@anbinhfoods.com" className="hover:text-brand-600 transition-colors">
-                  sales@anbinhfoods.com
+                <a href="mailto:info@koola.vn" className="hover:text-brand-600 transition-colors">
+                  info@koola.vn
                 </a>
               </p>
             </div>
