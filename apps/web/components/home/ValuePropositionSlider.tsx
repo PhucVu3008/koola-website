@@ -147,21 +147,21 @@ export function ValuePropositionSlider({
       <div className="relative">
         {/* Mobile: 1 cột, Tablet: 2 cột, Desktop: 3 cột */}
         <div
-          className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7 transition-[opacity,transform] duration-200 ease-out will-change-[opacity,transform] ${gridAnimClass}`}
+          className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7 items-stretch transition-[opacity,transform] duration-200 ease-out will-change-[opacity,transform] ${gridAnimClass}`}
         >
           {windowItems.map((it) => (
-            <div 
-              key={it.title} 
-              className="group perspective-1000"
+            <div
+              key={it.title}
+              className="group flex"
               style={{ perspective: '1000px' }}
             >
-              {/* Animated gradient border wrapper */}
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-200 via-emerald-200 to-teal-200 p-[1px] transition-all duration-500 group-hover:from-emerald-300 group-hover:via-teal-300 group-hover:to-cyan-300 group-hover:shadow-lg group-hover:shadow-emerald-200/50">
-                {/* 3D tilt effect on card */}
-                <Card className="relative p-7 transition-transform duration-500 ease-out group-hover:scale-[1.02] group-hover:[transform:rotateX(2deg)_rotateY(-2deg)]">
+              {/* Animated gradient border wrapper — flex so inner card stretches to same height */}
+              <div className="relative flex w-full overflow-hidden rounded-2xl bg-gradient-to-br from-slate-200 via-emerald-200 to-teal-200 p-[1px] transition-all duration-500 group-hover:from-emerald-300 group-hover:via-teal-300 group-hover:to-cyan-300 group-hover:shadow-lg group-hover:shadow-emerald-200/50">
+                {/* Card fills full height of the wrapper */}
+                <Card className="relative flex w-full flex-col p-7 transition-transform duration-500 ease-out group-hover:scale-[1.02] group-hover:[transform:rotateX(2deg)_rotateY(-2deg)]">
                   {/* Shine overlay effect */}
                   <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-white/0 via-white/20 to-white/0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                  
+
                   <ValueIcon name={it.icon} />
                   <div className="relative mt-5 text-base font-semibold text-slate-900 transition-colors duration-300 group-hover:text-emerald-700">
                     {it.title}
