@@ -34,10 +34,18 @@ jobs:
           NEXT_PUBLIC_API_BASE_URL: https://koola.vn/api
           NEXT_PUBLIC_SITE_URL: https://koola.vn
           API_BASE_URL_SERVER: http://localhost:4000
+          # GA4 Measurement ID — set as GitHub Actions Secret: NEXT_PUBLIC_GA_MEASUREMENT_ID
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_GA_MEASUREMENT_ID }}
 
       - name: Create env file for Docker
         run: |
-          printf 'NODE_ENV=production\nNEXT_PUBLIC_API_BASE_URL=https://koola.vn/api\nNEXT_PUBLIC_SITE_URL=https://koola.vn\nAPI_BASE_URL_SERVER=http://api:4000\n' > apps/web/.env.production
+          {
+            echo "NODE_ENV=production"
+            echo "NEXT_PUBLIC_API_BASE_URL=https://koola.vn/api"
+            echo "NEXT_PUBLIC_SITE_URL=https://koola.vn"
+            echo "API_BASE_URL_SERVER=http://api:4000"
+            echo "NEXT_PUBLIC_GA_MEASUREMENT_ID=${{ secrets.NEXT_PUBLIC_GA_MEASUREMENT_ID }}"
+          } > apps/web/.env.production
           cat apps/web/.env.production
 
       - name: Package artifacts

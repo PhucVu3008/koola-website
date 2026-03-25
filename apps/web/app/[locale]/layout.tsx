@@ -7,6 +7,7 @@ import { Roboto } from 'next/font/google';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { LoadingScreen } from '../../components/ui/LoadingScreen';
 import { CookieBanner } from '../../components/CookieBanner';
+import { GoogleAnalytics } from '../../components/analytics/GoogleAnalytics';
 import { getSiteSettings, type SiteSettingsPayload } from '../../src/lib/api/site';
 import { getDictionary, getSupportedLocales } from '../../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../../src/i18n/locales';
@@ -220,6 +221,8 @@ export default async function LocaleLayout({
         </PageLayout>
         <LoadingScreen />
         <CookieBanner locale={locale} />
+        {/* Google Analytics 4 — loads after interactive, non-blocking */}
+        <GoogleAnalytics />
       </body>
     </html>
   );

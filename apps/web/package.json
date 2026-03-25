@@ -13,6 +13,7 @@
     "@next/swc-darwin-arm64": "^14.2.33"
   },
   "dependencies": {
+    "@next/third-parties": "^16.2.1",
     "clsx": "^2.1.1",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.562.0",

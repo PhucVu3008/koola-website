@@ -3,6 +3,15 @@ import { z } from 'zod';
 const EnvSchema = z.object({
   NEXT_PUBLIC_API_BASE_URL: z.string().url(),
   API_BASE_URL_SERVER: z.string().url().optional(),
+  /**
+   * Google Analytics 4 Measurement ID.
+   * Format: G-XXXXXXXXXX
+   * Optional — when absent, GA script is silently skipped (safe for local dev).
+   */
+  NEXT_PUBLIC_GA_MEASUREMENT_ID: z
+    .string()
+    .regex(/^G-[A-Z0-9]+$/, 'Must match GA4 format: G-XXXXXXXXXX')
+    .optional(),
 });
 
 /**
@@ -19,6 +28,7 @@ export const env = (() => {
   const parsed = EnvSchema.safeParse({
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
     API_BASE_URL_SERVER: process.env.API_BASE_URL_SERVER,
+    NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
   });
 
   if (!parsed.success) {
