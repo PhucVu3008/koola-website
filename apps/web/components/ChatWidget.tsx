@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { MessageCircle, X, Send, Bot } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -391,7 +392,36 @@ export function ChatWidget({ locale }: { locale: string }) {
       )}
 
       {/* Floating Bubble + Greeting wrapper */}
-      <div className="fixed bottom-24 right-4 z-50 lg:bottom-8">
+      <div className="fixed bottom-24 right-4 z-50 lg:bottom-8 flex flex-col items-center gap-3">
+
+        {/* Phone icon — gọi trực tiếp */}
+        <a
+          href="tel:0941508468"
+          aria-label="Gọi 0941 508 468"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 transition-transform hover:scale-105"
+        >
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
+            <path d="M6.62 10.79a15.053 15.053 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/>
+          </svg>
+        </a>
+
+        {/* Zalo icon — mở chat Zalo */}
+        <a
+          href="https://zalo.me/0941508468"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Nhắn tin Zalo 0941 508 468"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg shadow-black/10 transition-transform hover:scale-105"
+        >
+          <Image
+            src="/images/zalo-icon.svg"
+            alt="Zalo"
+            width={28}
+            height={28}
+            className="h-7 w-7"
+            unoptimized
+          />
+        </a>
         {/* Popup greeting bubble — anchored relative to the bubble */}
         {popupVisible && !open && (
           <div className="absolute bottom-0 right-[4.5rem] animate-in fade-in slide-in-from-right-2 duration-300">
