@@ -148,7 +148,14 @@ jobs:
              docker image inspect koola-website-web > /dev/null 2>&1 || (echo 'ERROR: web image not built' && exit 1) && \
              echo 'Step 4: Restarting containers...' && \
              docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --remove-orphans && \
-             echo 'Step 5: Pruning old images...' && \
+             echo 'Step 5: Running DB migrations...' && \
+             sleep 5 && \
+             for f in migrations/0*.sql; do \
+               echo \"  → \$f\" && \
+               docker compose -f docker-compose.production.yml --env-file .env.production.local exec -T postgres \
+                 psql -U koola_user -d koola_db < \"\$f\" 2>&1 | grep -v '^$' || true; \
+             done && \
+             echo 'Step 6: Pruning old images...' && \
              docker image prune -f && \
              echo 'Deployment complete!' && \
              df -h / && \
