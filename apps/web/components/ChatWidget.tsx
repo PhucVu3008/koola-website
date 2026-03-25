@@ -60,6 +60,7 @@ function saveMessages(msgs: Message[]) {
 export function ChatWidget({ locale }: { locale: string }) {
   const pathname = usePathname() ?? '';
   const [open, setOpen] = useState(false);
+  const [contactsOpen, setContactsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>(loadMessages);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -394,34 +395,49 @@ export function ChatWidget({ locale }: { locale: string }) {
       {/* Floating Bubble + Greeting wrapper */}
       <div className="fixed bottom-24 right-4 z-50 lg:bottom-8 flex flex-col items-center gap-3">
 
-        {/* Phone icon — gọi trực tiếp */}
+        {/* Phone icon — ẩn/hiện theo contactsOpen */}
         <a
           href="tel:0941508468"
           aria-label="Gọi 0941 508 468"
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 transition-transform hover:scale-105"
+          className={[
+            'relative flex h-14 w-14 items-center justify-center rounded-full',
+            'bg-gradient-to-br from-emerald-400 to-emerald-600 text-white',
+            'shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:scale-105',
+            contactsOpen
+              ? 'opacity-100 translate-y-0 pointer-events-auto'
+              : 'opacity-0 translate-y-4 pointer-events-none',
+          ].join(' ')}
         >
-          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
+          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor" aria-hidden="true">
             <path d="M6.62 10.79a15.053 15.053 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/>
           </svg>
         </a>
 
-        {/* Zalo icon — mở chat Zalo */}
+        {/* Zalo icon — ẩn/hiện theo contactsOpen */}
         <a
           href="https://zalo.me/0941508468"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Nhắn tin Zalo 0941 508 468"
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg shadow-black/10 transition-transform hover:scale-105"
+          className={[
+            'relative flex h-14 w-14 items-center justify-center rounded-full',
+            'bg-gradient-to-br from-[#1a73e8] to-[#0d47a1]',
+            'shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-105',
+            contactsOpen
+              ? 'opacity-100 translate-y-0 pointer-events-auto'
+              : 'opacity-0 translate-y-4 pointer-events-none',
+          ].join(' ')}
         >
           <Image
             src="/images/zalo-icon.svg"
             alt="Zalo"
-            width={28}
-            height={28}
-            className="h-7 w-7"
+            width={30}
+            height={30}
+            className="h-[30px] w-[30px] brightness-0 invert"
             unoptimized
           />
         </a>
+
         {/* Popup greeting bubble — anchored relative to the bubble */}
         {popupVisible && !open && (
           <div className="absolute bottom-0 right-[4.5rem] animate-in fade-in slide-in-from-right-2 duration-300">
@@ -443,7 +459,25 @@ export function ChatWidget({ locale }: { locale: string }) {
           </div>
         )}
 
-        {/* Bubble button */}
+        {/* Toggle contacts button — nút mở/đóng Phone + Zalo */}
+        <button
+          onClick={() => setContactsOpen((v) => !v)}
+          className={[
+            'relative flex h-14 w-14 items-center justify-center rounded-full text-white',
+            'shadow-lg transition-all duration-300 hover:scale-105',
+            contactsOpen
+              ? 'bg-gradient-to-br from-slate-500 to-slate-700 shadow-slate-500/30 rotate-45'
+              : 'bg-gradient-to-br from-orange-400 to-orange-600 shadow-orange-500/30',
+          ].join(' ')}
+          aria-label={contactsOpen ? 'Đóng liên hệ' : 'Mở liên hệ'}
+        >
+          {/* Headset icon */}
+          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor" aria-hidden="true">
+            <path d="M12 1C7.03 1 3 5.03 3 10v3a2 2 0 0 0 2 2h1a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H5.07A7.008 7.008 0 0 1 12 3c3.72 0 6.75 2.9 6.93 6.57 0 .01.01.02.01.03H18a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h1v1c0 1.1-.9 2-2 2h-2.18A2 2 0 0 0 13 17h-2a2 2 0 1 0 0 4h2a2 2 0 0 0 1.82-1.18L17 19.82A4 4 0 0 0 21 16v-5.93C20.97 5.07 16.97 1 12 1z"/>
+          </svg>
+        </button>
+
+        {/* Bubble button — chat AI */}
         <button
           onClick={() => setOpen((o) => !o)}
           className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-lg shadow-brand-500/30 transition-transform hover:scale-105"
