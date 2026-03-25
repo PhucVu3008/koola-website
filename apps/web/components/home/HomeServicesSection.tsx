@@ -8,13 +8,8 @@ type HomeServicesSectionProps = {
 };
 
 /**
- * Home page services section — reuses the same image-based card grid
- * from the dedicated Services page.
- *
- * Displays the first 6 services with links to detail pages.
- *
- * @param locale - Current locale (en/vi)
- * @param title - Section title (from i18n)
+ * Home page services section — reuses the image-based card grid.
+ * No outer padding wrapper — ServicesGrid fills the fluid-container from HomePage.
  */
 export async function HomeServicesSection({ locale, title }: HomeServicesSectionProps) {
   const servicesData = await getServices({

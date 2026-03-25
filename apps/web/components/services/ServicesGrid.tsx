@@ -20,27 +20,27 @@ export type ServicesGridData = {
 /**
  * Services Masonry Grid
  *
- * 2 rows x 3 columns grid of service cards.
- * Each card: large image, top-left number (01..06), title overlay bottom-left.
+ * Fully fluid layout — fills available width at every breakpoint.
+ * Mobile: 1 col | Tablet: 2 cols | Desktop: 3 cols | Wide (≥1280px): 3 cols, taller cards
+ * No outer container — parent (fluid-container in HomePage) controls the max-width.
  */
 export function ServicesGrid({ data, locale }: { data: ServicesGridData; locale: string }) {
   return (
-    <section className="bg-white py-10 sm:py-16 lg:py-20">
-      <div className="container px-4 sm:px-6">
-        {/* Section Title */}
-        <div className="mb-8 sm:mb-12 lg:mb-16 text-center">
-          <h2 className="inline-flex items-center gap-2 sm:gap-3 text-xl sm:text-2xl font-semibold text-slate-900">
-            <span className="inline-block h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-gradient-to-br from-emerald-400 to-green-500" />
-            {data.title}
-          </h2>
-        </div>
+    <section className="bg-white">
+      {/* Section Title */}
+      <div className="mb-8 sm:mb-10 lg:mb-12">
+        <h2 className="inline-flex items-center gap-2 sm:gap-3 text-xl sm:text-2xl lg:text-3xl font-semibold text-slate-900">
+          <span className="inline-block h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex-shrink-0" />
+          {data.title}
+        </h2>
+      </div>
 
-        {/* Responsive Grid: 1 col mobile, 2 cols tablet, 3 cols desktop */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {data.items.map((item, index) => (
-            <ServiceCard key={item.id} item={item} order={index + 1} locale={locale} delay={index * 100} />
-          ))}
-        </div>
+      {/* Fluid Grid: expands to fill available width.
+          col height scales with viewport via aspect-ratio so cards are always proportional. */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+        {data.items.map((item, index) => (
+          <ServiceCard key={item.id} item={item} order={index + 1} locale={locale} delay={index * 100} />
+        ))}
       </div>
     </section>
   );
@@ -64,7 +64,7 @@ function ServiceCard({
     <Link
       ref={ref}
       href={`/${locale}/services/${item.slug}`}
-      className="group relative block h-[220px] sm:h-[280px] lg:h-[320px] overflow-hidden rounded-xl sm:rounded-2xl shadow-lg transition-all duration-700"
+      className="group relative block h-[220px] sm:h-[280px] lg:h-[320px] xl:h-[360px] 2xl:h-[400px] overflow-hidden rounded-xl sm:rounded-2xl shadow-lg transition-all duration-700"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

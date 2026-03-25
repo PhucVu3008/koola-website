@@ -151,8 +151,8 @@ a {
   max-width: min(1600px, 100vw);
   margin-left: auto;
   margin-right: auto;
-  padding-left: clamp(1rem, 4vw, 3rem);
-  padding-right: clamp(1rem, 4vw, 3rem);
+  padding-left: clamp(1rem, 4vw, 4rem);
+  padding-right: clamp(1rem, 4vw, 4rem);
 }
 
 .fluid-container-wide {
