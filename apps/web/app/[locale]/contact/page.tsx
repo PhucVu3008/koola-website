@@ -49,7 +49,7 @@ export default async function ContactRoute({
     info: {
       title: dict.contact.info.title,
       emailLabel: dict.contact.info.email,
-      email: 'info@koola.vn',
+      email: 'sales@anbinhfoods.com',
       phoneLabel: dict.contact.info.phone,
       phone: '0941 508 468',
       addressLabel: dict.contact.info.address,

@@ -82,8 +82,8 @@ export function SiteFooter({
                 </a>
               </p>
               <p>
-                <a href="mailto:info@koola.vn" className="hover:text-brand-600 transition-colors">
-                  info@koola.vn
+                <a href="mailto:sales@anbinhfoods.com" className="hover:text-brand-600 transition-colors">
+                  sales@anbinhfoods.com
                 </a>
               </p>
             </div>
@@ -181,13 +181,26 @@ export function SiteFooter({
             © {new Date().getFullYear()} KOOLA. {locale === 'vi' ? 'Bảo lưu mọi quyền.' : 'All rights reserved.'}
           </span>
 
-          {/* Zalo social icon */}
-          <div className="flex items-center order-3">
+          {/* Social / contact icons */}
+          <div className="flex items-center gap-2 order-3">
+
+            {/* Phone — gọi trực tiếp */}
+            <a
+              href="tel:0941508468"
+              aria-label="Gọi điện 0941 508 468"
+              className="grid place-items-center rounded-full border border-slate-200 text-slate-500 hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-600 transition-all w-9 h-9"
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
+                <path d="M6.62 10.79a15.053 15.053 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/>
+              </svg>
+            </a>
+
+            {/* Zalo */}
             <a
               href={zaloHref}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Chat with us on Zalo"
+              aria-label="Nhắn tin Zalo 0941 508 468"
               className="grid place-items-center rounded-full border border-slate-200 hover:border-[#2962FF]/40 hover:bg-[#2962FF]/5 transition-all w-9 h-9"
             >
               <Image
@@ -200,6 +213,18 @@ export function SiteFooter({
                 unoptimized
               />
             </a>
+
+            {/* Email */}
+            <a
+              href="mailto:sales@anbinhfoods.com"
+              aria-label="Email sales@anbinhfoods.com"
+              className="grid place-items-center rounded-full border border-slate-200 text-slate-500 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-600 transition-all w-9 h-9"
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
+                <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/>
+              </svg>
+            </a>
+
           </div>
 
         </div>

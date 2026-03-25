@@ -422,7 +422,7 @@ Cảm ơn bạn đã liên hệ với KOOLA!
 Chúng tôi đã nhận được thông tin của bạn và đội ngũ của chúng tôi sẽ xem xét yêu cầu trong thời gian sớm nhất. Bạn sẽ nhận được phản hồi trong vòng 48 giờ làm việc.
 
 Nếu có bất kỳ câu hỏi gấp nào, vui lòng liên hệ trực tiếp qua:
-- Email: info@koola.vn
+- Email: sales@anbinhfoods.com
 - Điện thoại: 0941 508 468
 
 Trân trọng,
@@ -439,7 +439,7 @@ Thank you for reaching out to KOOLA!
 We have received your inquiry and our team will review it as soon as possible. You can expect a response within 48 business hours.
 
 If you have any urgent questions, please contact us directly:
-- Email: info@koola.vn
+- Email: sales@anbinhfoods.com
 - Phone: 0941 508 468
 
 Best regards,
@@ -520,7 +520,7 @@ const buildLeadAutoReplyHtml = (lead: { full_name: string; email: string }): str
 
         <p class="body-text">Nếu có bất kỳ câu hỏi gấp nào, vui lòng liên hệ trực tiếp:</p>
         <div style="margin: 12px 0 0;">
-          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:info@koola.vn" style="color: #2563eb; text-decoration: none;">info@koola.vn</a></p>
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:sales@anbinhfoods.com" style="color: #2563eb; text-decoration: none;">sales@anbinhfoods.com</a></p>
           <p style="margin: 6px 0; font-size: 14px; color: #475569;">📞 Điện thoại: <a href="tel:0941508468" style="color: #2563eb; text-decoration: none;">0941 508 468</a></p>
         </div>
 
@@ -539,7 +539,7 @@ const buildLeadAutoReplyHtml = (lead: { full_name: string; email: string }): str
 
         <p class="body-text">For any urgent matters, feel free to contact us directly:</p>
         <div style="margin: 12px 0 0;">
-          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:info@koola.vn" style="color: #2563eb; text-decoration: none;">info@koola.vn</a></p>
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:sales@anbinhfoods.com" style="color: #2563eb; text-decoration: none;">sales@anbinhfoods.com</a></p>
           <p style="margin: 6px 0; font-size: 14px; color: #475569;">📞 Phone: <a href="tel:0941508468" style="color: #2563eb; text-decoration: none;">0941 508 468</a></p>
         </div>
 
@@ -590,7 +590,7 @@ Cảm ơn bạn đã ứng tuyển vị trí "${application.job_title}" tại KO
 Chúng tôi đã nhận được hồ sơ của bạn và đội ngũ tuyển dụng sẽ xem xét trong thời gian sớm nhất. Bạn sẽ nhận được phản hồi trong vòng 48 giờ làm việc.
 
 Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ trực tiếp qua:
-- Email: info@koola.vn
+- Email: sales@anbinhfoods.com
 - Điện thoại: 0941 508 468
 
 Trân trọng,
@@ -607,7 +607,7 @@ Thank you for applying for the "${application.job_title}" position at KOOLA!
 We have received your application and our recruitment team will review it as soon as possible. You can expect to hear back from us within 48 business hours.
 
 If you have any questions, please contact us directly:
-- Email: info@koola.vn
+- Email: sales@anbinhfoods.com
 - Phone: 0941 508 468
 
 Best regards,
@@ -686,7 +686,7 @@ const buildJobApplicationAutoReplyHtml = (application: {
         </div>
         <p class="body-text">Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ trực tiếp:</p>
         <div style="margin: 12px 0 0;">
-          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:info@koola.vn" style="color: #7c3aed; text-decoration: none;">info@koola.vn</a></p>
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:sales@anbinhfoods.com" style="color: #7c3aed; text-decoration: none;">sales@anbinhfoods.com</a></p>
           <p style="margin: 6px 0; font-size: 14px; color: #475569;">📞 Điện thoại: <a href="tel:0941508468" style="color: #7c3aed; text-decoration: none;">0941 508 468</a></p>
         </div>
         <hr class="divider">
@@ -700,7 +700,7 @@ const buildJobApplicationAutoReplyHtml = (application: {
         </div>
         <p class="body-text">If you have any questions, feel free to contact us directly:</p>
         <div style="margin: 12px 0 0;">
-          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:info@koola.vn" style="color: #7c3aed; text-decoration: none;">info@koola.vn</a></p>
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:sales@anbinhfoods.com" style="color: #7c3aed; text-decoration: none;">sales@anbinhfoods.com</a></p>
           <p style="margin: 6px 0; font-size: 14px; color: #475569;">📞 Phone: <a href="tel:0941508468" style="color: #7c3aed; text-decoration: none;">0941 508 468</a></p>
         </div>
         <div class="signature">
@@ -744,7 +744,7 @@ Cảm ơn bạn đã đăng ký nhận thông tin từ KOOLA!
 Từ giờ, bạn sẽ nhận được những cập nhật mới nhất về dịch vụ, xu hướng công nghệ và các cơ hội hợp tác từ chúng tôi.
 
 Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ:
-- Email: info@koola.vn
+- Email: sales@anbinhfoods.com
 - Điện thoại: 0941 508 468
 
 Trân trọng,
@@ -761,7 +761,7 @@ Thank you for subscribing to KOOLA's newsletter!
 From now on, you will receive the latest updates on our services, technology trends, and partnership opportunities.
 
 If you have any questions, feel free to contact us:
-- Email: info@koola.vn
+- Email: sales@anbinhfoods.com
 - Phone: 0941 508 468
 
 Best regards,
@@ -841,7 +841,7 @@ const buildNewsletterWelcomeHtml = (_subscriber: { email: string }): string => `
 
         <p class="body-text">Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ:</p>
         <div style="margin: 12px 0 0;">
-          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:info@koola.vn" style="color: #059669; text-decoration: none;">info@koola.vn</a></p>
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:sales@anbinhfoods.com" style="color: #059669; text-decoration: none;">sales@anbinhfoods.com</a></p>
           <p style="margin: 6px 0; font-size: 14px; color: #475569;">📞 Điện thoại: <a href="tel:0941508468" style="color: #059669; text-decoration: none;">0941 508 468</a></p>
         </div>
 
@@ -865,7 +865,7 @@ const buildNewsletterWelcomeHtml = (_subscriber: { email: string }): string => `
 
         <p class="body-text">If you have any questions, feel free to contact us:</p>
         <div style="margin: 12px 0 0;">
-          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:info@koola.vn" style="color: #059669; text-decoration: none;">info@koola.vn</a></p>
+          <p style="margin: 6px 0; font-size: 14px; color: #475569;">📧 Email: <a href="mailto:sales@anbinhfoods.com" style="color: #059669; text-decoration: none;">sales@anbinhfoods.com</a></p>
           <p style="margin: 6px 0; font-size: 14px; color: #475569;">📞 Phone: <a href="tel:0941508468" style="color: #059669; text-decoration: none;">0941 508 468</a></p>
         </div>
 
