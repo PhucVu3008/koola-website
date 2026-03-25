@@ -36,6 +36,7 @@ export function ServicesMidQuote({ data }: { data: ServicesMidQuoteData }) {
                 src={data.imageUrl}
                 alt="Team collaboration"
                 fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
               />
             </div>

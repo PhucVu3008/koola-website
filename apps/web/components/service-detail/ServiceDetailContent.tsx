@@ -44,7 +44,7 @@ export function ServiceDetailContent({ data }: { data: ServiceDetailContentData 
       <div
         className="relative aspect-[16/9] overflow-hidden rounded-2xl sm:rounded-3xl bg-slate-100 shadow-lg sm:shadow-xl"
       >
-        <Image src={data.coverImage} alt={data.heading} fill className="object-cover" />
+        <Image src={data.coverImage} alt={data.heading} fill sizes="(max-width: 1024px) 100vw, 800px" className="object-cover" />
         <div className="absolute inset-0 ring-1 ring-inset ring-slate-900/10" />
       </div>
 
@@ -83,6 +83,7 @@ export function ServiceDetailContent({ data }: { data: ServiceDetailContentData 
                   src={img.url}
                   alt={img.alt}
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 ring-1 ring-inset ring-slate-900/10" />

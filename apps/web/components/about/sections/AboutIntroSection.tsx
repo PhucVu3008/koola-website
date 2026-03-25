@@ -31,8 +31,9 @@ export function AboutIntroSection({ data }: { data: AboutIntroSectionData }) {
             src={data.image.src} 
             alt={data.image.alt} 
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 448px, 380px"
             className="object-cover"
-            quality={95}
+            quality={85}
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-blue-500/5 pointer-events-none" />

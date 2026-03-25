@@ -30,7 +30,7 @@ export function ServiceDetailHero({ data }: { data: ServiceDetailHeroData }) {
     <section className="relative h-[500px] sm:h-[600px] w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 pb-16 sm:pb-24">
       {/* Background Image */}
       <div className="absolute inset-0 overflow-hidden">
-        <Image src={data.backgroundImage} alt={data.title} fill className="object-cover opacity-40" priority />
+        <Image src={data.backgroundImage} alt={data.title} fill sizes="100vw" className="object-cover opacity-40" priority />
         {/* Enhanced gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/50 to-slate-900/90" />
         

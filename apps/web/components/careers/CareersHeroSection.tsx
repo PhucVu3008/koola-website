@@ -39,6 +39,7 @@ export function CareersHeroSection({ data }: { data: CareersHeroSectionData }) {
           src={data.imageUrl}
           alt={data.imageAlt}
           fill
+          sizes="100vw"
           className="object-cover"
           priority
         />

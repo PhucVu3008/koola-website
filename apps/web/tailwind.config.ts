@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import defaultTheme from 'tailwindcss/defaultTheme';
 
 const config: Config = {
   content: [
@@ -25,6 +26,13 @@ const config: Config = {
       },
     },
     extend: {
+      /**
+       * font-sans → Roboto (via CSS variable set by next/font/google).
+       * Falls back to system-ui for any edge case where the variable is absent.
+       */
+      fontFamily: {
+        sans: ['var(--font-roboto)', ...defaultTheme.fontFamily.sans],
+      },
       colors: {
         brand: {
           50: '#eef2ff',

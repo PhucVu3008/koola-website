@@ -23,9 +23,9 @@ export function ServicesCTASection({ data }: { data: ServicesCTASectionData }) {
           src={data.image}
           alt=""
           fill
+          sizes="100vw"
           className="object-cover grayscale"
-          quality={85}
-          unoptimized
+          quality={75}
           priority
         />
         <div className="absolute inset-0 bg-black/60" />

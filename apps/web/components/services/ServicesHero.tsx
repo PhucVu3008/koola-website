@@ -38,6 +38,7 @@ export function ServicesHero({ data }: { data: ServicesHeroData }) {
           src={data.backgroundImage}
           alt={data.title}
           fill
+          sizes="100vw"
           className="object-cover opacity-90"
           priority
         />

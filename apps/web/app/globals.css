@@ -17,6 +17,11 @@ body {
 
 body {
   @apply bg-white text-slate-900 antialiased;
+  /* Roboto is set via --font-roboto CSS variable (next/font/google).
+     font-sans in Tailwind resolves to var(--font-roboto) via tailwind.config.ts.
+     This explicit declaration ensures Roboto applies to all text including
+     elements outside Tailwind's scope (e.g., third-party widgets). */
+  font-family: var(--font-roboto), system-ui, -apple-system, sans-serif;
 }
 
 a {

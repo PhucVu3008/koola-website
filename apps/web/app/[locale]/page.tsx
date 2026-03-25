@@ -5,7 +5,12 @@ import { getDictionary } from '../../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../../src/i18n/locales';
 import { getPageBySlug } from '../../src/lib/api/pages';
 
-export const dynamic = 'force-dynamic';
+/**
+ * Revalidate home page every 5 minutes (ISR) instead of force-dynamic.
+ * This allows the page to be cached and served as static HTML for performance,
+ * while still picking up CMS changes within a reasonable time.
+ */
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,

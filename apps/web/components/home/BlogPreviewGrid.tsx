@@ -117,6 +117,7 @@ export function BlogPreviewGrid({ data }: { data: BlogPreviewGridData }) {
                 alt={it.title}
                 width={420}
                 height={240}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="h-40 w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.06]"
               />
               <div className="flex flex-1 flex-col p-6">

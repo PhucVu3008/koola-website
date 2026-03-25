@@ -101,11 +101,12 @@ export function HeroSection({ data }: { data: HeroSectionData }) {
         <div className="absolute inset-0 z-[2] pointer-events-none">
           <Image
             src={data.overlayImage}
-            alt="Hero overlay"
+            alt=""
             fill
             className="object-cover"
             priority
-            quality={100}
+            quality={85}
+            sizes="100vw"
           />
         </div>
       )}

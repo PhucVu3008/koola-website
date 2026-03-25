@@ -28,8 +28,9 @@ export function OurStorySection({ data }: { data: OurStorySectionData }) {
             src={data.image.src} 
             alt={data.image.alt} 
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 448px, 420px"
             className="object-cover"
-            quality={95}
+            quality={85}
             priority
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-500/8 via-transparent to-brand-500/8" />

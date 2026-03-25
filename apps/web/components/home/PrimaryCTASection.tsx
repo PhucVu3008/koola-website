@@ -23,9 +23,9 @@ export function PrimaryCTASection({ data }: { data: PrimaryCTASectionData }) {
           src={data.image}
           alt=""
           fill
+          sizes="100vw"
           className="object-cover grayscale"
-          quality={85}
-          unoptimized
+          quality={75}
           priority
         />
         <div className="absolute inset-0 bg-black/60" />

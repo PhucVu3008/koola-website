@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 import { notFound } from 'next/navigation';
+import { Roboto } from 'next/font/google';
 
 import { PageLayout } from '../../components/layout/PageLayout';
 import { LoadingScreen } from '../../components/ui/LoadingScreen';
@@ -17,6 +18,20 @@ import {
 } from '../../src/lib/seo/structuredData';
 
 import '../globals.css';
+
+/**
+ * Roboto loaded here (locale layout) so the font variable is available
+ * on the <html> tag that sets `lang`. next/font deduplicates the request
+ * automatically — no double-download even though it's also in root layout.
+ */
+const roboto = Roboto({
+  subsets: ['latin', 'vietnamese'],
+  weight: ['300', '400', '500', '700'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-roboto',
+  preload: true,
+});
 
 /**
  * Generate static params so supported locales are pre-rendered.
@@ -117,8 +132,10 @@ export default async function LocaleLayout({
   );
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className={roboto.variable}>
       <head>
+        {/* Preconnect to API origin to reduce DNS + TLS handshake latency */}
+        <link rel="preconnect" href={process.env.NEXT_PUBLIC_SITE_URL ?? ''} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(schemas) }}
@@ -137,6 +154,9 @@ export default async function LocaleLayout({
               align-items: center;
               justify-content: center;
               background: #fff;
+              /* contain prevents layout recalculations from propagating */
+              contain: strict;
+              will-change: opacity;
             }
             #loading-screen.loading-fade-out {
               opacity: 0;
@@ -149,7 +169,7 @@ export default async function LocaleLayout({
               margin-bottom: 12px;
             }
             #loading-screen .ls-text {
-              font-family: system-ui, -apple-system, sans-serif;
+              font-family: var(--font-roboto), system-ui, -apple-system, sans-serif;
               font-size: 20px;
               font-weight: 600;
               letter-spacing: -0.025em;
@@ -162,12 +182,16 @@ export default async function LocaleLayout({
               background: #e0e7ff;
               border-radius: 2px;
               overflow: hidden;
+              /* contain the bar animation to its own layer */
+              contain: strict;
             }
             #loading-screen .ls-bar-fill {
               width: 40%;
               height: 100%;
               background: #4f46e5;
               border-radius: 2px;
+              /* Use transform only — avoids reflow */
+              will-change: transform;
               animation: lsSlide 1.2s ease-in-out infinite;
             }
             @keyframes lsSlide {
