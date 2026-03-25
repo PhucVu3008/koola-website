@@ -6,11 +6,11 @@ import { isLocale, type Locale } from '../../src/i18n/locales';
 import { getPageBySlug } from '../../src/lib/api/pages';
 
 /**
- * Revalidate home page every 5 minutes (ISR) instead of force-dynamic.
- * This allows the page to be cached and served as static HTML for performance,
- * while still picking up CMS changes within a reasonable time.
+ * force-dynamic: home page fetches from CMS API (not available at build time).
+ * ISR is not viable here because the API server only runs at runtime (Docker).
+ * Pages are rendered on first request and cached by the Next.js server.
  */
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
