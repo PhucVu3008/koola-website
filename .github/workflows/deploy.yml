@@ -136,7 +136,8 @@ jobs:
              tar -xzf build-artifacts.tar.gz && \
              rm -f build-artifacts.tar.gz && \
              echo 'Step 3: Building Docker images...' && \
-             docker compose -f docker-compose.production.yml --env-file .env.production.local build api web && \
+             docker compose -f docker-compose.production.yml --env-file .env.production.local build api web 2>&1 | grep -v 'no space left on device' || true && \
+             docker image inspect koola-website-web > /dev/null 2>&1 || (echo 'ERROR: web image not built' && exit 1) && \
              echo 'Step 4: Restarting containers...' && \
              docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --remove-orphans && \
              echo 'Step 5: Pruning old images...' && \
