@@ -9,8 +9,14 @@ on:
 jobs:
   build:
     name: Build API and Web
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    runs-on: ubuntu-la             echo 'Step 6: Running DB migrations...' && \
+             sleep 5 && \
+             for f in migrations/0*.sql; do \
+               echo \"  → \$f\" && \
+               docker compose -f docker-compose.production.yml --env-file .env.production.local exec -T postgres \
+                 psql -U koola_user -d koola_db < \"\$f\" 2>&1 | grep -v '^$' || true; \
+             done && \
+             echo 'Step 7: Pruning old images...' && \ timeout-minutes: 25
 
     steps:
       - name: Checkout code
@@ -118,6 +124,15 @@ jobs:
             ./ \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PROJECT_PATH }}/
 
+      - name: Rsync seed images to VPS
+        # Copy blog cover images (seeded in DB) to a staging dir on VPS.
+        # They will be injected into the Docker uploads volume after containers start.
+        run: |
+          rsync -az \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no" \
+            apps/web/public/blog/ \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PROJECT_PATH }}/seed-images/
+
       - name: Copy artifact to VPS
         run: |
           scp \
@@ -148,14 +163,23 @@ jobs:
              docker image inspect koola-website-web > /dev/null 2>&1 || (echo 'ERROR: web image not built' && exit 1) && \
              echo 'Step 4: Restarting containers...' && \
              docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --remove-orphans && \
-             echo 'Step 5: Running DB migrations...' && \
+             echo 'Step 5: Injecting seed images into uploads volume...' && \
+             SEED_DIR=seed-images && \
+             VOL=$(docker compose -f docker-compose.production.yml ps -q api) && \
+             docker cp \$SEED_DIR/ai-dev.jpg      \$VOL:/app/uploads/media/1769413291677-il87hb.jpeg 2>/dev/null || true && \
+             docker cp \$SEED_DIR/ai-dev.jpg      \$VOL:/app/uploads/media/1769413672864-t6qokd.jpeg 2>/dev/null || true && \
+             docker cp \$SEED_DIR/security.jpg    \$VOL:/app/uploads/media/1769415314697-28qmx0.jpeg 2>/dev/null || true && \
+             docker cp \$SEED_DIR/cloud.jpg       \$VOL:/app/uploads/media/1769416953770-4m8ceu.jpeg 2>/dev/null || true && \
+             docker cp \$SEED_DIR/automation.jpg  \$VOL:/app/uploads/media/1769418615778-tvmvkz.jpg  2>/dev/null || true && \
+             docker cp \$SEED_DIR/iot.jpg         \$VOL:/app/uploads/media/1769418974548-qacbw9.jpeg 2>/dev/null || true && \
+             echo 'Step 6: Running DB migrations...' && \
              sleep 5 && \
              for f in migrations/0*.sql; do \
                echo \"  → \$f\" && \
                docker compose -f docker-compose.production.yml --env-file .env.production.local exec -T postgres \
                  psql -U koola_user -d koola_db < \"\$f\" 2>&1 | grep -v '^$' || true; \
              done && \
-             echo 'Step 6: Pruning old images...' && \
+             echo 'Step 7: Pruning old images...' && \
              docker image prune -f && \
              echo 'Deployment complete!' && \
              df -h / && \
