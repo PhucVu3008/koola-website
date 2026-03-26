@@ -66,7 +66,7 @@ export function SiteFooter({
               </p>
               <p>
                 <a
-                  href="https://www.google.com/maps/search/?api=1&query=Số+58+đường+3+thôn+4+Đức+Hạnh+Đức+Linh+Bình+Thuận+Vietnam"
+                  href="https://www.google.com/maps/search/?api=1&query=58+đường+3+thôn+4+Đức+Hạnh+Đức+Linh+Bình+Thuận+Vietnam"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-brand-600 transition-colors"

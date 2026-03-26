@@ -646,17 +646,6 @@ For each content type with i18n:
 
 ---
 
-## Environment Variables (Suggested)
-### Backend (`apps/api`)
-- `DATABASE_URL=postgresql://...`
-- `JWT_ACCESS_SECRET=...`
-- `JWT_REFRESH_SECRET=...`
-- `CORS_ORIGIN=http://localhost:3000`
-- `PORT=4000`
-
-### Frontend (`apps/web`)
-- `NEXT_PUBLIC_API_BASE_URL=http://localhost:4000`
-
 Never hardcode secrets.
 
 ---
