@@ -167,7 +167,8 @@ jobs:
 
           echo "Step 5: Injecting seed images into uploads volume..."
           SEED_DIR=seed-images
-          API_CTR=\$(docker compose -f docker-compose.production.yml ps -q api)
+          # Use docker ps instead of docker compose ps to avoid env-var interpolation errors
+          API_CTR=\$(docker ps --filter "name=api-prod" --format "{{.ID}}" | head -1)
           if [ -n "\$API_CTR" ] && [ -d "\$SEED_DIR" ]; then
             docker exec "\$API_CTR" mkdir -p /app/uploads/media
             docker cp "\$SEED_DIR/ai-dev.jpg"     "\$API_CTR:/app/uploads/media/1769413291677-il87hb.jpeg" 2>/dev/null || true
@@ -176,18 +177,24 @@ jobs:
             docker cp "\$SEED_DIR/cloud.jpg"      "\$API_CTR:/app/uploads/media/1769416953770-4m8ceu.jpeg" 2>/dev/null || true
             docker cp "\$SEED_DIR/automation.jpg" "\$API_CTR:/app/uploads/media/1769418615778-tvmvkz.jpg"  2>/dev/null || true
             docker cp "\$SEED_DIR/iot.jpg"        "\$API_CTR:/app/uploads/media/1769418974548-qacbw9.jpeg" 2>/dev/null || true
-            echo "  v Seed images injected"
+            echo "  v Seed images injected (container: \$API_CTR)"
           else
-            echo "  ! Skipped: container or seed-images/ not found"
+            echo "  ! Skipped: API container not found or seed-images/ missing"
           fi
 
           echo "Step 6: Running DB migrations..."
           sleep 5
-          for f in migrations/0*.sql; do
-            echo "  -> \$f"
-            docker compose -f docker-compose.production.yml --env-file .env.production.local exec -T postgres \
-              psql -U koola_user -d koola_db < "\$f" 2>&1 | grep -v '^\$' || true
-          done
+          # Use docker ps to find postgres container by name, avoiding env-var interpolation issues
+          PG_CTR=\$(docker ps --filter "name=postgres-prod" --format "{{.ID}}" | head -1)
+          if [ -z "\$PG_CTR" ]; then
+            echo "  ! WARNING: postgres container not found, skipping migrations"
+          else
+            for f in migrations/0*.sql; do
+              echo "  -> \$f"
+              docker exec -i "\$PG_CTR" psql -U koola_user -d koola_db < "\$f" 2>&1 | grep -v '^\$' || true
+            done
+            echo "  v Migrations done"
+          fi
 
           echo "Step 7: Pruning old images..."
           docker image prune -f
