@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import type { PostPreview } from '../../src/lib/api/posts';
+import { resolveUploadUrl } from '../../src/lib/env';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -69,9 +70,7 @@ const DEFAULT_FALLBACK = '/blog/ai-dev.jpg';
 function resolveHeroImage(post: PostPreview): { src: string; isUploaded: boolean } {
   const storagePath = (post as any).hero_storage_path as string | null | undefined;
   if (storagePath) {
-    const base =
-      process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ?? 'http://localhost:4000';
-    return { src: `${base}/uploads/${storagePath}`, isUploaded: true };
+    return { src: resolveUploadUrl(storagePath), isUploaded: true };
   }
   return { src: SLUG_FALLBACK[post.slug] ?? DEFAULT_FALLBACK, isUploaded: false };
 }

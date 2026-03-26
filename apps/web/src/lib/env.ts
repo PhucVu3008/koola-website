@@ -40,3 +40,28 @@ export const env = (() => {
 
   return parsed.data;
 })();
+
+/**
+ * Resolve the base URL for uploaded media files served by the API.
+ *
+ * Problem: `NEXT_PUBLIC_API_BASE_URL` on production is `https://koola.vn/api`
+ * (because nginx strips the `/api` prefix before forwarding to Fastify).
+ * However, static uploads are served at `/uploads/*` — not under `/api/uploads/*`.
+ * Nginx has a separate `location /uploads/` that proxies directly without the prefix.
+ *
+ * Solution: strip any trailing `/api` path segment from the base URL so the
+ * final uploads URL is always `https://koola.vn/uploads/<path>`.
+ *
+ * Examples:
+ *   https://koola.vn/api  → https://koola.vn
+ *   http://localhost:4000 → http://localhost:4000  (unchanged, correct for dev)
+ *
+ * @param storagePath - e.g. "media/1769413291677-il87hb.jpeg"
+ * @returns Full URL to the uploaded file
+ */
+export function resolveUploadUrl(storagePath: string): string {
+  const raw = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
+  // Strip trailing slash, then strip trailing /api segment if present
+  const base = raw.replace(/\/$/, '').replace(/\/api$/, '');
+  return `${base}/uploads/${storagePath}`;
+}

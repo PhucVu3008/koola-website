@@ -6,6 +6,7 @@ import { Calendar, User, Tag, Folder } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { PostDetailPayload } from '../../src/lib/api/posts';
+import { resolveUploadUrl } from '../../src/lib/env';
 
 function formatDate(dateStr: string | null, locale: string): string {
   if (!dateStr) return '';
@@ -15,18 +16,12 @@ function formatDate(dateStr: string | null, locale: string): string {
 }
 
 function resolvePostImage(post: any): string {
-  if (post.hero_storage_path) {
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
-    return `${base}/uploads/${post.hero_storage_path}`;
-  }
+  if (post.hero_storage_path) return resolveUploadUrl(post.hero_storage_path);
   return '/home/blog-1.png';
 }
 
 function resolveRelatedImage(rp: any): string {
-  if (rp.hero_storage_path) {
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
-    return `${base}/uploads/${rp.hero_storage_path}`;
-  }
+  if (rp.hero_storage_path) return resolveUploadUrl(rp.hero_storage_path);
   return '/home/blog-1.png';
 }
 

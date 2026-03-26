@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Calendar, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { PostPreview, PostListMeta } from '../../src/lib/api/posts';
+import { resolveUploadUrl } from '../../src/lib/env';
 
 function formatDate(dateStr: string | null, locale: string): string {
   if (!dateStr) return '';
@@ -135,7 +136,7 @@ export function BlogListPage({
                     <Image
                       src={
                         post.hero_storage_path
-                          ? `${process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000'}/uploads/${post.hero_storage_path}`
+                          ? resolveUploadUrl(post.hero_storage_path)
                           : '/home/blog-1.png'
                       }
                       alt={post.title}
