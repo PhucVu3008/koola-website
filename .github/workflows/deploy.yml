@@ -9,14 +9,8 @@ on:
 jobs:
   build:
     name: Build API and Web
-    runs-on: ubuntu-la             echo 'Step 6: Running DB migrations...' && \
-             sleep 5 && \
-             for f in migrations/0*.sql; do \
-               echo \"  → \$f\" && \
-               docker compose -f docker-compose.production.yml --env-file .env.production.local exec -T postgres \
-                 psql -U koola_user -d koola_db < \"\$f\" 2>&1 | grep -v '^$' || true; \
-             done && \
-             echo 'Step 7: Pruning old images...' && \ timeout-minutes: 25
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
 
     steps:
       - name: Checkout code
@@ -126,7 +120,7 @@ jobs:
 
       - name: Rsync seed images to VPS
         # Copy blog cover images (seeded in DB) to a staging dir on VPS.
-        # They will be injected into the Docker uploads volume after containers start.
+        # These will be injected into the Docker uploads volume after containers start.
         run: |
           rsync -az \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no" \
@@ -148,42 +142,57 @@ jobs:
             -i ~/.ssh/deploy_key \
             -p ${{ secrets.VPS_PORT }} \
             -o StrictHostKeyChecking=no \
-            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
-            "set -e && \
-             cd ${{ secrets.VPS_PROJECT_PATH }} && \
-             echo 'Step 1: Free disk space (prune build cache)...' && \
-             docker builder prune -af && \
-             docker image prune -f && \
-             df -h / && \
-             echo 'Step 2: Extracting artifacts...' && \
-             tar -xzf build-artifacts.tar.gz && \
-             rm -f build-artifacts.tar.gz && \
-             echo 'Step 3: Building Docker images...' && \
-             docker compose -f docker-compose.production.yml --env-file .env.production.local build api web 2>&1 | grep -v 'no space left on device' || true && \
-             docker image inspect koola-website-web > /dev/null 2>&1 || (echo 'ERROR: web image not built' && exit 1) && \
-             echo 'Step 4: Restarting containers...' && \
-             docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --remove-orphans && \
-             echo 'Step 5: Injecting seed images into uploads volume...' && \
-             SEED_DIR=seed-images && \
-             VOL=$(docker compose -f docker-compose.production.yml ps -q api) && \
-             docker cp \$SEED_DIR/ai-dev.jpg      \$VOL:/app/uploads/media/1769413291677-il87hb.jpeg 2>/dev/null || true && \
-             docker cp \$SEED_DIR/ai-dev.jpg      \$VOL:/app/uploads/media/1769413672864-t6qokd.jpeg 2>/dev/null || true && \
-             docker cp \$SEED_DIR/security.jpg    \$VOL:/app/uploads/media/1769415314697-28qmx0.jpeg 2>/dev/null || true && \
-             docker cp \$SEED_DIR/cloud.jpg       \$VOL:/app/uploads/media/1769416953770-4m8ceu.jpeg 2>/dev/null || true && \
-             docker cp \$SEED_DIR/automation.jpg  \$VOL:/app/uploads/media/1769418615778-tvmvkz.jpg  2>/dev/null || true && \
-             docker cp \$SEED_DIR/iot.jpg         \$VOL:/app/uploads/media/1769418974548-qacbw9.jpeg 2>/dev/null || true && \
-             echo 'Step 6: Running DB migrations...' && \
-             sleep 5 && \
-             for f in migrations/0*.sql; do \
-               echo \"  → \$f\" && \
-               docker compose -f docker-compose.production.yml --env-file .env.production.local exec -T postgres \
-                 psql -U koola_user -d koola_db < \"\$f\" 2>&1 | grep -v '^$' || true; \
-             done && \
-             echo 'Step 7: Pruning old images...' && \
-             docker image prune -f && \
-             echo 'Deployment complete!' && \
-             df -h / && \
-             docker ps --format 'table {{.Names}}\t{{.Status}}'"
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+          set -e
+          cd ${{ secrets.VPS_PROJECT_PATH }}
+
+          echo "Step 1: Free disk space..."
+          docker builder prune -af
+          docker image prune -f
+          df -h /
+
+          echo "Step 2: Extracting artifacts..."
+          tar -xzf build-artifacts.tar.gz
+          rm -f build-artifacts.tar.gz
+
+          echo "Step 3: Building Docker images..."
+          docker compose -f docker-compose.production.yml --env-file .env.production.local build api web 2>&1 | grep -v 'no space left on device' || true
+          docker image inspect koola-website-web > /dev/null 2>&1 || (echo 'ERROR: web image not built' && exit 1)
+
+          echo "Step 4: Restarting containers..."
+          docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --remove-orphans
+
+          echo "Step 5: Injecting seed images into uploads volume..."
+          SEED_DIR=seed-images
+          API_CTR=$(docker compose -f docker-compose.production.yml ps -q api)
+          if [ -n "$API_CTR" ] && [ -d "$SEED_DIR" ]; then
+            docker exec "$API_CTR" mkdir -p /app/uploads/media
+            docker cp "$SEED_DIR/ai-dev.jpg"     "$API_CTR:/app/uploads/media/1769413291677-il87hb.jpeg" 2>/dev/null || true
+            docker cp "$SEED_DIR/ai-dev.jpg"     "$API_CTR:/app/uploads/media/1769413672864-t6qokd.jpeg" 2>/dev/null || true
+            docker cp "$SEED_DIR/security.jpg"   "$API_CTR:/app/uploads/media/1769415314697-28qmx0.jpeg" 2>/dev/null || true
+            docker cp "$SEED_DIR/cloud.jpg"      "$API_CTR:/app/uploads/media/1769416953770-4m8ceu.jpeg" 2>/dev/null || true
+            docker cp "$SEED_DIR/automation.jpg" "$API_CTR:/app/uploads/media/1769418615778-tvmvkz.jpg"  2>/dev/null || true
+            docker cp "$SEED_DIR/iot.jpg"        "$API_CTR:/app/uploads/media/1769418974548-qacbw9.jpeg" 2>/dev/null || true
+            echo "  ✓ Seed images injected"
+          else
+            echo "  ⚠ Skipped: container or seed-images/ not found"
+          fi
+
+          echo "Step 6: Running DB migrations..."
+          sleep 5
+          for f in migrations/0*.sql; do
+            echo "  → $f"
+            docker compose -f docker-compose.production.yml --env-file .env.production.local exec -T postgres \
+              psql -U koola_user -d koola_db < "$f" 2>&1 | grep -v '^$' || true
+          done
+
+          echo "Step 7: Pruning old images..."
+          docker image prune -f
+
+          echo "Deployment complete!"
+          df -h /
+          docker ps --format 'table {{.Names}}\t{{.Status}}'
+          ENDSSH
 
       - name: Report result
         if: always()
