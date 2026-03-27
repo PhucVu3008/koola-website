@@ -67,32 +67,32 @@ export function InteractiveButton(props: ButtonAsButtonProps | ButtonAsLinkProps
     minHeight: '52px', // Touch-friendly height (Material Design standard)
   };
 
-  // Variant classes - slightly adjusted for gradient overlay
+  // Variant classes — liquid glass system
   const variantClass =
     variant === 'primary'
-      ? 'bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800'
+      ? 'btn-glass btn-glass-primary'
       : variant === 'secondary'
-        ? 'border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 active:bg-white/30'
+        ? 'btn-glass btn-glass-secondary'
         : 'bg-transparent text-slate-900 hover:bg-slate-100 active:bg-slate-200';
 
   const cls = cx(base, variantClass, className);
 
-  // Gradient overlay styles - different for each variant
+  // Mouse-tracking radial gradient overlay — layers over the glass base for a dynamic depth effect
   const gradientStyle = variant === 'primary'
     ? {
         background: isHovered
           ? `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, 
-              rgba(255, 255, 255, 0.2) 0%, 
-              rgba(255, 255, 255, 0.1) 30%,
-              transparent 60%)`
+              rgba(255, 255, 255, 0.18) 0%, 
+              rgba(255, 255, 255, 0.08) 35%,
+              transparent 65%)`
           : 'transparent',
       }
     : variant === 'secondary'
       ? {
           background: isHovered
             ? `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, 
-                rgba(59, 130, 246, 0.15) 0%, 
-                rgba(147, 51, 234, 0.1) 40%,
+                rgba(255, 255, 255, 0.2) 0%, 
+                rgba(255, 255, 255, 0.08) 40%,
                 transparent 70%)`
             : 'transparent',
         }

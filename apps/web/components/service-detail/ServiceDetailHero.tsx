@@ -67,13 +67,13 @@ export function ServiceDetailHero({ data }: { data: ServiceDetailHeroData }) {
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:justify-end">
             <Link
               href={data.ctaSecondary.href}
-              className="inline-flex items-center justify-center gap-2 border-2 border-slate-300 bg-white px-6 sm:px-7 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-indigo-500 hover:bg-slate-50 hover:shadow-md"
+              className="btn-glass btn-glass-outline inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 text-sm font-semibold"
             >
               {data.ctaSecondary.label}
             </Link>
             <Link
               href={data.ctaPrimary.href}
-              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 px-6 sm:px-7 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-indigo-700 hover:to-violet-700 hover:shadow-xl hover:scale-105"
+              className="btn-glass btn-glass-primary inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 text-sm font-semibold"
             >
               {data.ctaPrimary.label}
             </Link>

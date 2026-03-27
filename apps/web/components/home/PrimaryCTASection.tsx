@@ -52,7 +52,7 @@ export function PrimaryCTASection({ data }: { data: PrimaryCTASectionData }) {
 
         <Link
           href={data.ctaHref || '/contact'}
-          className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-8 py-3 text-sm sm:text-base font-semibold text-brand-600 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
+          className="btn-glass btn-glass-secondary mt-8 inline-flex items-center gap-2 rounded-full px-8 py-3 text-sm sm:text-base font-semibold"
         >
           {data.ctaLabel}
           <span aria-hidden="true">→</span>

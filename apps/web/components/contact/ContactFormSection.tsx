@@ -210,7 +210,7 @@ export function ContactFormSection({ data }: ContactFormSectionProps) {
             <button
               type="submit"
               disabled={status === 'submitting'}
-              className="w-full rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+              className="btn-glass btn-glass-primary w-full rounded-xl px-6 py-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {status === 'submitting' ? data.submittingLabel : data.submitLabel}
             </button>

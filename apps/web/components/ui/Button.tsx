@@ -38,9 +38,9 @@ export function Button(props: ButtonAsButtonProps | ButtonAsLinkProps) {
 
   const variantClass =
     variant === 'primary'
-      ? 'bg-brand-600 text-white hover:bg-brand-700'
+      ? 'btn-glass btn-glass-primary'
       : variant === 'secondary'
-        ? 'border border-slate-200 bg-white text-slate-900 hover:bg-slate-50'
+        ? 'btn-glass btn-glass-outline'
         : 'bg-transparent text-slate-900 hover:bg-slate-100';
 
   const cls = cx(base, variantClass, className);
