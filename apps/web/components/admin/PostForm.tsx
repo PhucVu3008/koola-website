@@ -43,6 +43,14 @@ export default function PostForm({
     og_asset_id: '',
   });
 
+  /** Normalize a raw ID value (number, string, or object with .id) to a number. */
+  const toNumId = (v: any): number => {
+    if (typeof v === 'number') return v;
+    if (typeof v === 'string') return parseInt(v, 10);
+    if (v && typeof v === 'object') return toNumId(v.id);
+    return NaN;
+  };
+
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -58,11 +66,12 @@ export default function PostForm({
         published_at: initialData.published_at
           ? new Date(initialData.published_at).toISOString().slice(0, 16)
           : '',
+        // Normalize to numbers: DB returns BIGINT as strings via pg driver
         category_ids: Array.isArray(initialData.categories)
-          ? initialData.categories.map((c: any) => (typeof c === 'number' ? c : c.id))
+          ? initialData.categories.map(toNumId).filter((n) => !isNaN(n))
           : [],
         tag_ids: Array.isArray(initialData.tags)
-          ? initialData.tags.map((t: any) => (typeof t === 'number' ? t : t.id))
+          ? initialData.tags.map(toNumId).filter((n) => !isNaN(n))
           : [],
         hero_asset_id: initialData.hero_asset_id ? String(initialData.hero_asset_id) : '',
         og_asset_id: initialData.og_asset_id ? String(initialData.og_asset_id) : '',
@@ -137,21 +146,23 @@ export default function PostForm({
     }
   };
 
-  const toggleCategory = (categoryId: number) => {
+  const toggleCategory = (categoryId: any) => {
+    const id = toNumId(categoryId);
     setFormData((prev) => ({
       ...prev,
-      category_ids: prev.category_ids.includes(categoryId)
-        ? prev.category_ids.filter((id) => id !== categoryId)
-        : [...prev.category_ids, categoryId],
+      category_ids: prev.category_ids.includes(id)
+        ? prev.category_ids.filter((x) => x !== id)
+        : [...prev.category_ids, id],
     }));
   };
 
-  const toggleTag = (tagId: number) => {
+  const toggleTag = (tagId: any) => {
+    const id = toNumId(tagId);
     setFormData((prev) => ({
       ...prev,
-      tag_ids: prev.tag_ids.includes(tagId)
-        ? prev.tag_ids.filter((id) => id !== tagId)
-        : [...prev.tag_ids, tagId],
+      tag_ids: prev.tag_ids.includes(id)
+        ? prev.tag_ids.filter((x) => x !== id)
+        : [...prev.tag_ids, id],
     }));
   };
 
@@ -320,17 +331,20 @@ export default function PostForm({
               {categories.length === 0 ? (
                 <p className="text-sm text-gray-500">No categories available</p>
               ) : (
-                categories.map((category) => (
-                  <label key={category.id} className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={formData.category_ids.includes(category.id)}
-                      onChange={() => toggleCategory(category.id)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">{category.name}</span>
-                  </label>
-                ))
+                categories.map((category) => {
+                  const catId = toNumId(category.id);
+                  return (
+                    <label key={catId} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.category_ids.includes(catId)}
+                        onChange={() => toggleCategory(catId)}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">{category.name}</span>
+                    </label>
+                  );
+                })
               )}
             </div>
           </div>
@@ -342,20 +356,23 @@ export default function PostForm({
               {tags.length === 0 ? (
                 <p className="text-sm text-gray-500">No tags available</p>
               ) : (
-                tags.map((tag) => (
-                  <button
-                    key={tag.id}
-                    type="button"
-                    onClick={() => toggleTag(tag.id)}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                      formData.tag_ids.includes(tag.id)
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {tag.name}
-                  </button>
-                ))
+                tags.map((tag) => {
+                  const tagId = toNumId(tag.id);
+                  return (
+                    <button
+                      key={tagId}
+                      type="button"
+                      onClick={() => toggleTag(tagId)}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                        formData.tag_ids.includes(tagId)
+                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {tag.name}
+                    </button>
+                  );
+                })
               )}
             </div>
           </div>
