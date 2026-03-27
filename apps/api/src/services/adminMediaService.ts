@@ -11,9 +11,9 @@ import { pipeline } from 'stream/promises';
 import { createWriteStream } from 'fs';
 import { MultipartFile } from '@fastify/multipart';
 
-// Note: process.cwd() is /workspace (monorepo root)
-// API code is in /workspace/apps/api, so uploads go to /workspace/apps/api/uploads
-const UPLOAD_DIR = path.join(process.cwd(), 'apps', 'api', 'uploads');
+// In production Docker, UPLOAD_DIR=/app/uploads (volume mount from docker-compose).
+// Fallback to monorepo-relative path for local dev.
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), 'apps', 'api', 'uploads');
 
 // Ensure upload directory exists
 if (!fs.existsSync(UPLOAD_DIR)) {

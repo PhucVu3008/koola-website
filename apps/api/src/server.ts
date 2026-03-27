@@ -89,8 +89,9 @@ export const buildServer = async () => {
   });
 
   // Static files (serve uploaded media)
-  // Note: process.cwd() returns monorepo root (/workspace)
-  const uploadsPath = path.join(process.cwd(), 'apps', 'api', 'uploads');
+  // In production Docker, UPLOAD_DIR=/app/uploads (volume mount).
+  // Fallback to monorepo-relative path for local dev.
+  const uploadsPath = process.env.UPLOAD_DIR || path.join(process.cwd(), 'apps', 'api', 'uploads');
   await server.register(fastifyStatic, {
     root: uploadsPath,
     prefix: '/uploads/',
