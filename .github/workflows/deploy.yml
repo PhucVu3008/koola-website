@@ -107,7 +107,7 @@ jobs:
       - name: Rsync source to VPS
         run: |
           rsync -az --delete \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no" \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=30 -o ServerAliveInterval=15" \
             --exclude='.git' \
             --exclude='node_modules' \
             --exclude='apps/web/.next' \
@@ -126,7 +126,7 @@ jobs:
         # These will be injected into the Docker uploads volume after containers start.
         run: |
           rsync -az \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no" \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=30 -o ServerAliveInterval=15" \
             apps/web/public/blog/ \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PROJECT_PATH }}/seed-images/
 
@@ -136,6 +136,8 @@ jobs:
             -i ~/.ssh/deploy_key \
             -P ${{ secrets.VPS_PORT }} \
             -o StrictHostKeyChecking=no \
+            -o ConnectTimeout=30 \
+            -o ServerAliveInterval=15 \
             build-artifacts.tar.gz \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PROJECT_PATH }}/
 
@@ -147,6 +149,8 @@ jobs:
             -i ~/.ssh/deploy_key \
             -p ${{ secrets.VPS_PORT }} \
             -o StrictHostKeyChecking=no \
+            -o ConnectTimeout=30 \
+            -o ServerAliveInterval=15 \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << ENDSSH
           set -e
           # VPS_PROJECT_PATH is expanded here by the runner (unquoted heredoc)
