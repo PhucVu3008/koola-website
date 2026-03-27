@@ -11,8 +11,9 @@
 
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as LucideIcons from 'lucide-react';
+import { useScrollReveal } from '../../src/lib/ui/useScrollReveal';
 
 export type KeyBenefitItem = {
   title: string;
@@ -27,21 +28,30 @@ export type KeyBenefitsData = {
 };
 
 export function KeyBenefits({ data }: { data: KeyBenefitsData }) {
+  const { ref: sectionRef, visible } = useScrollReveal(0.1);
+
   return (
-    <section className="bg-gradient-to-b from-slate-50 to-white py-12 sm:py-16 lg:py-24">
+    <section ref={sectionRef as React.RefObject<HTMLElement>} className="bg-gradient-to-b from-slate-50 to-white py-12 sm:py-16 lg:py-24">
       <div className="container px-4 sm:px-6">
-        {/* Section Header - Enhanced + Responsive */}
-        <div className="mb-10 sm:mb-16 lg:mb-20 text-center">
+        {/* Section Header */}
+        <div
+          className="mb-10 sm:mb-16 lg:mb-20 text-center"
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.6s ease, transform 0.6s ease',
+          }}
+        >
           <h2 className="mb-3 sm:mb-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900">{data.title}</h2>
           {data.subtitle && (
             <p className="mx-auto max-w-3xl text-base sm:text-lg lg:text-xl leading-relaxed text-slate-600">{data.subtitle}</p>
           )}
         </div>
 
-        {/* Benefits Grid - Responsive: 1 col mobile, 2 cols tablet, 3 cols desktop */}
+        {/* Benefits Grid */}
         <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {data.items.map((item, index) => (
-            <BenefitCard key={index} item={item} delay={index * 150} />
+            <BenefitCard key={index} item={item} index={index} visible={visible} />
           ))}
         </div>
       </div>
@@ -49,16 +59,19 @@ export function KeyBenefits({ data }: { data: KeyBenefitsData }) {
   );
 }
 
-function BenefitCard({ item, delay }: { item: KeyBenefitItem; delay: number }) {
+function BenefitCard({ item, index, visible }: { item: KeyBenefitItem; index: number; visible: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
   return (
     <div
-      ref={ref}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-slate-200 bg-white p-6 sm:p-8 shadow-lg transition-all duration-700 hover:border-emerald-500 hover:shadow-2xl hover:scale-105"
+      className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border-2 border-slate-200 bg-white p-6 sm:p-8 shadow-lg transition-all duration-500 hover:border-indigo-400 hover:shadow-2xl hover:-translate-y-1"
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(32px)',
+        transition: `opacity 0.6s ease ${index * 120}ms, transform 0.6s ease ${index * 120}ms, box-shadow 0.3s, border-color 0.3s`,
+      }}
     >
       {/* Gradient accent on hover */}
       <div

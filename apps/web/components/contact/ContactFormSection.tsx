@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { createLead } from '../../src/lib/api/leads';
 import { PhoneInput } from '../ui/PhoneInput';
 import type { E164Number } from 'libphonenumber-js/core';
+import { useScrollReveal } from '../../src/lib/ui/useScrollReveal';
 
 export type ContactFormData = {
   title: string;
@@ -44,10 +45,17 @@ export function ContactFormSection({ data }: ContactFormSectionProps) {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [phone, setPhone] = useState<E164Number | undefined>();
+  const { ref, visible } = useScrollReveal(0.1);
 
   return (
     <section
+      ref={ref as React.RefObject<HTMLElement>}
       className="px-6 py-12"
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(24px)',
+        transition: 'opacity 0.7s ease, transform 0.7s ease',
+      }}
     >
       <div className="mx-auto max-w-screen-xl">
         <div className="mx-auto max-w-2xl">

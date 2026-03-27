@@ -1,6 +1,7 @@
 'use client';
 
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+import { useScrollReveal, revealStyle } from '../../src/lib/ui/useScrollReveal';
 
 export type ContactInfoData = {
   title: string;
@@ -20,11 +21,12 @@ export type ContactInfoSectionProps = {
 
 /**
  * Contact Information Section
- * 
  * Displays email, phone, address, and business hours with icons.
- * Uses scroll-triggered animation.
+ * Scroll-reveal stagger animation on cards.
  */
 export function ContactInfoSection({ data }: ContactInfoSectionProps) {
+  const { ref, visible } = useScrollReveal(0.1);
+
   const contactItems = [
     {
       icon: Mail,
@@ -54,21 +56,23 @@ export function ContactInfoSection({ data }: ContactInfoSectionProps) {
   ];
 
   return (
-    <section
-      className="px-6 py-12"
-    >
+    <section className="px-6 py-12">
       <div className="mx-auto max-w-screen-xl">
-        <h2 className="mb-8 text-2xl font-semibold text-slate-900 md:text-3xl">
+        <h2
+          className="mb-8 text-2xl font-semibold text-slate-900 md:text-3xl"
+          style={revealStyle(visible, 0)}
+        >
           {data.title}
         </h2>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div ref={ref as React.RefObject<HTMLDivElement>} className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {contactItems.map((item, index) => {
             const Icon = item.icon;
+            const cardStyle = revealStyle(visible, index + 1, { stagger: 100 });
             const content = (
               <>
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-100">
-                  <Icon className="h-6 w-6 text-brand-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100">
+                  <Icon className="h-6 w-6 text-indigo-600" />
                 </div>
                 <div className="mt-4">
                   <h3 className="text-sm font-medium text-slate-500">{item.label}</h3>
@@ -81,14 +85,16 @@ export function ContactInfoSection({ data }: ContactInfoSectionProps) {
               <a
                 key={index}
                 href={item.href}
+                style={cardStyle}
                 {...('external' in item && item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                className="rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:border-brand-300 hover:shadow-md"
+                className="rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:border-indigo-300 hover:shadow-md hover:-translate-y-0.5"
               >
                 {content}
               </a>
             ) : (
               <div
                 key={index}
+                style={cardStyle}
                 className="rounded-2xl border border-slate-200 bg-white p-6"
               >
                 {content}

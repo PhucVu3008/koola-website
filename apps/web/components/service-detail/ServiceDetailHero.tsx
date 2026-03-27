@@ -40,7 +40,7 @@ export function ServiceDetailHero({ data }: { data: ServiceDetailHeroData }) {
 
       {/* Content Card - Responsive overlapping */}
       <div className="container relative h-full px-4 sm:px-6">
-        <div className="absolute bottom-0 left-4 right-4 sm:left-6 sm:right-auto w-auto sm:w-full sm:max-w-3xl translate-y-12 sm:translate-y-20 rounded-2xl sm:rounded-3xl bg-white p-6 sm:p-10 lg:p-12 shadow-2xl">
+        <div className="absolute bottom-0 left-4 right-4 sm:left-6 sm:right-auto w-auto sm:w-full sm:max-w-3xl translate-y-12 sm:translate-y-20 bg-white p-6 sm:p-10 lg:p-12 shadow-2xl border-t-4 border-indigo-600">
           {/* Breadcrumbs */}
           <nav className="mb-3 sm:mb-5 flex items-center gap-2 text-xs sm:text-sm text-slate-500 overflow-x-auto">
             {data.breadcrumbs.map((item, index) => (
@@ -67,13 +67,13 @@ export function ServiceDetailHero({ data }: { data: ServiceDetailHeroData }) {
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:justify-end">
             <Link
               href={data.ctaSecondary.href}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-6 sm:px-7 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-emerald-500 hover:bg-slate-50 hover:shadow-md"
+              className="inline-flex items-center justify-center gap-2 border-2 border-slate-300 bg-white px-6 sm:px-7 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-indigo-500 hover:bg-slate-50 hover:shadow-md"
             >
               {data.ctaSecondary.label}
             </Link>
             <Link
               href={data.ctaPrimary.href}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 sm:px-7 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 px-6 sm:px-7 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-indigo-700 hover:to-violet-700 hover:shadow-xl hover:scale-105"
             >
               {data.ctaPrimary.label}
             </Link>

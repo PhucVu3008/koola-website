@@ -6,6 +6,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Calendar, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { PostPreview, PostListMeta } from '../../src/lib/api/posts';
 import { resolveUploadUrl } from '../../src/lib/env';
+import { useScrollReveal, revealStyle } from '../../src/lib/ui/useScrollReveal';
 
 function formatDate(dateStr: string | null, locale: string): string {
   if (!dateStr) return '';
@@ -30,6 +31,7 @@ export function BlogListPage({
   const router = useRouter();
   const pathname = usePathname();
   const isVI = locale === 'vi';
+  const { ref: gridRef, visible: gridVisible } = useScrollReveal(0.05);
 
   const navigate = (params: Record<string, string | undefined>) => {
     const sp = new URLSearchParams();
@@ -124,12 +126,13 @@ export function BlogListPage({
           </div>
         ) : (
           <>
-            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-              {posts.map((post) => (
+            <div ref={gridRef as React.RefObject<HTMLDivElement>} className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+              {posts.map((post, i) => (
                 <Link
                   key={post.id}
                   href={`/${locale}/blog/${post.slug}`}
-                  className="group block rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 overflow-hidden hover:shadow-lg hover:ring-blue-200 transition-all duration-300"
+                  style={revealStyle(gridVisible, i)}
+                  className="group block rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 overflow-hidden hover:shadow-lg hover:ring-blue-200 transition-shadow duration-300"
                 >
                   {/* Thumbnail */}
                   <div className="relative h-48 bg-slate-100 overflow-hidden">

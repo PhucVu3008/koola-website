@@ -1,5 +1,8 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useScrollReveal, revealStyle } from '../../src/lib/ui/useScrollReveal';
 
 export type ServiceOverviewItem = {
   id: number;
@@ -34,9 +37,14 @@ export function ServiceOverviewCard({
   viewMoreLabel,
 }: ServiceOverviewCardProps) {
   const detailHref = `/${locale}/services/${item.slug}`;
+  const { ref, visible } = useScrollReveal(0.1);
 
   return (
-    <article className="group grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center">
+    <article
+      ref={ref as React.RefObject<HTMLElement>}
+      style={revealStyle(visible, 0, { translateY: 32 })}
+      className="group grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center"
+    >
       {/* Text side */}
       <div className={`flex flex-col gap-4 ${reversed ? 'lg:order-2' : 'lg:order-1'}`}>
         {/* Category badge */}
