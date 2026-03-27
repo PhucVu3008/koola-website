@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { isAuthenticated, getStoredUser, logoutAdmin, type AdminUser } from '@/lib/admin-auth';
+import { hasPermission, getPrimaryRole, ROLE_LABELS } from '@/lib/permissions';
 import {
   LayoutDashboard,
   Wrench,
@@ -16,13 +17,13 @@ import {
   Mail,
   Newspaper,
   Menu,
-  X,
   ExternalLink,
   LogOut,
   User,
   Users,
   Briefcase,
   UserCheck,
+  Shield,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -92,68 +93,84 @@ export default function AdminLayout({ children, locale }: AdminLayoutProps) {
       name: locale === 'vi' ? 'Tổng quan' : 'Dashboard',
       href: `/admin/${locale}`,
       icon: LayoutDashboard,
+      show: true,
     },
     {
       name: locale === 'vi' ? 'Dịch vụ' : 'Services',
       href: `/admin/${locale}/services`,
       icon: Wrench,
+      show: true,
     },
     {
       name: locale === 'vi' ? 'Bài viết' : 'Posts',
       href: `/admin/${locale}/posts`,
       icon: FileText,
+      show: true,
     },
     {
       name: locale === 'vi' ? 'Danh mục' : 'Categories',
       href: `/admin/${locale}/categories`,
       icon: Folder,
+      show: true,
     },
     {
       name: locale === 'vi' ? 'Thẻ' : 'Tags',
       href: `/admin/${locale}/tags`,
       icon: Tag,
+      show: true,
     },
     {
       name: locale === 'vi' ? 'Trang' : 'Pages',
       href: `/admin/${locale}/pages`,
       icon: FileCode,
+      show: true,
     },
     {
       name: locale === 'vi' ? 'Điều hướng' : 'Navigation',
       href: `/admin/${locale}/navigation`,
       icon: NavIcon,
+      show: true,
     },
     {
       name: locale === 'vi' ? 'Tuyển dụng' : 'Jobs',
       href: `/admin/${locale}/jobs`,
       icon: Briefcase,
+      show: true,
     },
     {
       name: locale === 'vi' ? 'Hồ sơ ứng tuyển' : 'Applications',
       href: `/admin/${locale}/applications`,
       icon: UserCheck,
+      show: true,
     },
     {
       name: locale === 'vi' ? 'Người dùng' : 'Users',
       href: `/admin/${locale}/users`,
       icon: Users,
+      // Only admin and manager can view users
+      show: hasPermission(user, 'users:view'),
+      // Manager sees users but cannot modify — show a lock hint
+      viewOnly: !hasPermission(user, 'users:edit'),
     },
     {
       name: locale === 'vi' ? 'Cài đặt' : 'Site Settings',
       href: `/admin/${locale}/settings`,
       icon: Settings,
+      show: true,
     },
     {
       name: locale === 'vi' ? 'Liên hệ' : 'Leads',
       href: `/admin/${locale}/leads`,
       icon: Mail,
+      show: true,
     },
     {
       name: locale === 'vi' ? 'Bản tin' : 'Newsletter',
       href: `/admin/${locale}/newsletter`,
       icon: Newspaper,
+      show: true,
     },
-  ];
+  ].filter((item) => item.show);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -190,7 +207,7 @@ export default function AdminLayout({ children, locale }: AdminLayoutProps) {
           {/* Navigation */}
           <nav className="flex-1 py-6 space-y-1 overflow-y-auto overflow-x-hidden">
             {navigation.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
               const IconComponent = item.icon;
               return (
                 <div key={item.name} className="relative group">
@@ -205,13 +222,27 @@ export default function AdminLayout({ children, locale }: AdminLayoutProps) {
                     }`}
                   >
                     <IconComponent className={`w-5 h-5 flex-shrink-0 ${sidebarOpen ? 'mr-3' : ''}`} />
-                    {sidebarOpen && <span className="whitespace-nowrap">{item.name}</span>}
+                    {sidebarOpen && (
+                      <span className="whitespace-nowrap flex-1">{item.name}</span>
+                    )}
+                    {/* View-only lock badge (e.g. Users for manager) */}
+                    {sidebarOpen && item.viewOnly && (
+                      <span
+                        className="ml-1 text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
+                        title={locale === 'vi' ? 'Chỉ xem' : 'View only'}
+                      >
+                        {locale === 'vi' ? 'Xem' : 'View'}
+                      </span>
+                    )}
                   </Link>
-                  
+
                   {/* Tooltip for mini mode */}
                   {!sidebarOpen && (
                     <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 pointer-events-none">
                       {item.name}
+                      {item.viewOnly && (
+                        <span className="ml-2 text-yellow-400 text-xs">({locale === 'vi' ? 'Chỉ xem' : 'View only'})</span>
+                      )}
                       <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900"></div>
                     </div>
                   )}
@@ -225,25 +256,41 @@ export default function AdminLayout({ children, locale }: AdminLayoutProps) {
             sidebarOpen ? '' : 'flex flex-col items-center'
           }`}>
             {sidebarOpen ? (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-                    <User className="w-5 h-5" />
+              <div>
+                {/* Role badge */}
+                {(() => {
+                  const role = getPrimaryRole(user);
+                  if (!role) return null;
+                  const { en, vi: viLabel, color } = ROLE_LABELS[role];
+                  return (
+                    <div className="mb-3 flex items-center gap-2">
+                      <Shield className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${color}`}>
+                        {locale === 'vi' ? viLabel : en}
+                      </span>
+                    </div>
+                  );
+                })()}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                      <User className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">
+                        {user.full_name}
+                      </p>
+                      <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">
-                      {user.full_name}
-                    </p>
-                    <p className="text-xs text-gray-400 truncate">{user.email}</p>
-                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="text-gray-400 hover:text-red-400 transition-colors p-2 hover:bg-gray-700 rounded-lg"
+                    title={locale === 'vi' ? 'Đăng xuất' : 'Logout'}
+                  >
+                    <LogOut className="w-5 h-5" />
+                  </button>
                 </div>
-                <button
-                  onClick={handleLogout}
-                  className="text-gray-400 hover:text-red-400 transition-colors p-2 hover:bg-gray-700 rounded-lg"
-                  title={locale === 'vi' ? 'Đăng xuất' : 'Logout'}
-                >
-                  <LogOut className="w-5 h-5" />
-                </button>
               </div>
             ) : (
               <>
@@ -257,6 +304,12 @@ export default function AdminLayout({ children, locale }: AdminLayoutProps) {
                   <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 pointer-events-none">
                     <div className="font-semibold">{user.full_name}</div>
                     <div className="text-gray-400">{user.email}</div>
+                    {(() => {
+                      const role = getPrimaryRole(user);
+                      if (!role) return null;
+                      const { en, vi: viLabel } = ROLE_LABELS[role];
+                      return <div className="text-yellow-300 mt-0.5">{locale === 'vi' ? viLabel : en}</div>;
+                    })()}
                     <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900"></div>
                   </div>
                 </div>

@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { adminApi } from '@/lib/admin-api';
-import { Plus, Pencil, Trash2, Key, Power, PowerOff, AlertCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, Key, Power, PowerOff, AlertCircle, Eye, ShieldAlert } from 'lucide-react';
 import { getDictionary, type Locale } from '@/i18n/getDictionary';
+import { getStoredUser } from '@/lib/admin-auth';
+import { hasPermission } from '@/lib/permissions';
 
 interface User {
   id: number;
@@ -20,7 +22,14 @@ export default function UsersListPage({ params }: { params: { locale: string } }
   const router = useRouter();
   const { locale } = params;
   const [t, setT] = useState<any>(null);
-  
+  const [currentUser] = useState(() => getStoredUser());
+
+  // Derived permission flags
+  const canCreate = hasPermission(currentUser, 'users:create');
+  const canEdit   = hasPermission(currentUser, 'users:edit');
+  const canDelete = hasPermission(currentUser, 'users:delete');
+  const canToggle = hasPermission(currentUser, 'users:toggle');
+  const canChangePassword = hasPermission(currentUser, 'users:password');
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -125,14 +134,30 @@ export default function UsersListPage({ params }: { params: { locale: string } }
             {locale === 'vi' ? 'Quản lý tài khoản và phân quyền người dùng' : 'Manage user accounts and permissions'}
           </p>
         </div>
-        <button
-          onClick={() => router.push(`/admin/${locale}/users/new`)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          {t.admin.users.createButton}
-        </button>
+        {canCreate && (
+          <button
+            onClick={() => router.push(`/admin/${locale}/users/new`)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            {t.admin.users.createButton}
+          </button>
+        )}
       </div>
+
+      {/* View-only notice for manager */}
+      {!canEdit && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 flex items-start gap-3">
+          <ShieldAlert className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-amber-900">
+              {locale === 'vi'
+                ? 'Bạn chỉ có quyền xem danh sách người dùng. Liên hệ Admin để thay đổi.'
+                : 'You have read-only access to user accounts. Contact an Admin to make changes.'}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Error Alert */}
       {error && (
@@ -256,34 +281,50 @@ export default function UsersListPage({ params }: { params: { locale: string } }
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end gap-2">
-                    <button
-                      onClick={() => router.push(`/admin/${locale}/users/${user.id}`)}
-                      className="text-blue-600 hover:text-blue-900"
-                      title={t.admin.users.editButton}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => router.push(`/admin/${locale}/users/${user.id}/password`)}
-                      className="text-green-600 hover:text-green-900"
-                      title={t.admin.users.passwordButton}
-                    >
-                      <Key className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleToggleActive(user.id)}
-                      className={user.is_active ? 'text-yellow-600 hover:text-yellow-900' : 'text-green-600 hover:text-green-900'}
-                      title={t.admin.users.toggleActiveButton}
-                    >
-                      {user.is_active ? <PowerOff className="w-4 h-4" /> : <Power className="w-4 h-4" />}
-                    </button>
-                    <button
-                      onClick={() => handleDelete(user.id)}
-                      className="text-red-600 hover:text-red-900"
-                      title={t.admin.users.deleteButton}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {canEdit ? (
+                      <button
+                        onClick={() => router.push(`/admin/${locale}/users/${user.id}`)}
+                        className="text-blue-600 hover:text-blue-900"
+                        title={t.admin.users.editButton}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => router.push(`/admin/${locale}/users/${user.id}`)}
+                        className="text-gray-400 hover:text-gray-600"
+                        title={locale === 'vi' ? 'Xem chi tiết' : 'View details'}
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                    )}
+                    {canChangePassword && (
+                      <button
+                        onClick={() => router.push(`/admin/${locale}/users/${user.id}/password`)}
+                        className="text-green-600 hover:text-green-900"
+                        title={t.admin.users.passwordButton}
+                      >
+                        <Key className="w-4 h-4" />
+                      </button>
+                    )}
+                    {canToggle && (
+                      <button
+                        onClick={() => handleToggleActive(user.id)}
+                        className={user.is_active ? 'text-yellow-600 hover:text-yellow-900' : 'text-green-600 hover:text-green-900'}
+                        title={t.admin.users.toggleActiveButton}
+                      >
+                        {user.is_active ? <PowerOff className="w-4 h-4" /> : <Power className="w-4 h-4" />}
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button
+                        onClick={() => handleDelete(user.id)}
+                        className="text-red-600 hover:text-red-900"
+                        title={t.admin.users.deleteButton}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>

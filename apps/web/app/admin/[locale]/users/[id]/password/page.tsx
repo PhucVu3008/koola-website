@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { adminApi } from '@/lib/admin-api';
 import { Save, X, Loader2, AlertCircle, Key } from 'lucide-react';
 import { getDictionary, type Locale } from '@/i18n/getDictionary';
+import { getStoredUser } from '@/lib/admin-auth';
+import { hasPermission } from '@/lib/permissions';
 
 export default function ChangePasswordPage({ params }: { params: { locale: string; id: string } }) {
   const router = useRouter();
@@ -17,6 +19,14 @@ export default function ChangePasswordPage({ params }: { params: { locale: strin
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+
+  // Redirect non-admin immediately
+  useEffect(() => {
+    const user = getStoredUser();
+    if (!hasPermission(user, 'users:password')) {
+      router.replace(`/admin/${locale}/users`);
+    }
+  }, [locale, router]);
 
   // Load translations
   useEffect(() => {
