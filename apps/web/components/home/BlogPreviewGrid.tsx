@@ -185,7 +185,42 @@ export function BlogPreviewGrid({
   const goRef = useRef(go);
   goRef.current = go;
 
-  // Silent auto-advance — no visible progress indicator
+  // -------------------------------------------------------------------------
+  // Touch / swipe support
+  // -------------------------------------------------------------------------
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    pausedRef.current = true;
+  }, []);
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (touchStartX.current === null || touchStartY.current === null) return;
+      const dx = e.changedTouches[0].clientX - touchStartX.current;
+      const dy = e.changedTouches[0].clientY - touchStartY.current;
+      touchStartX.current = null;
+      touchStartY.current = null;
+      pausedRef.current = false;
+
+      // Ignore mostly-vertical swipes (scrolling)
+      if (Math.abs(dy) > Math.abs(dx)) return;
+      // Require at least 40px horizontal movement
+      if (Math.abs(dx) < 40) return;
+
+      if (dx < 0) {
+        // Swipe left → next
+        goRef.current(index + 1, 1);
+      } else {
+        // Swipe right → prev
+        goRef.current(index - 1, -1);
+      }
+    },
+    [index],
+  );
   useEffect(() => {
     if (maxStart === 0) return;
     const timer = setInterval(() => {
@@ -223,6 +258,8 @@ export function BlogPreviewGrid({
       className="space-y-7"
       onMouseEnter={() => { pausedRef.current = true; }}
       onMouseLeave={() => { pausedRef.current = false; }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
@@ -234,7 +271,7 @@ export function BlogPreviewGrid({
         </div>
 
         <div className="flex items-center gap-4">
-          {/* Slide indicators — pill dots, desktop only */}
+          {/* Slide indicators — pill dots */}
           {totalDots > 1 && (
             <div
               className="hidden sm:flex items-center gap-1.5"
@@ -256,6 +293,34 @@ export function BlogPreviewGrid({
                   }`}
                 />
               ))}
+            </div>
+          )}
+
+          {/* Prev / Next arrows — visible on all screen sizes when slides > 1 */}
+          {totalDots > 1 && (
+            <div className="hidden sm:flex items-center gap-1.5">
+              <button
+                type="button"
+                aria-label="Previous slide"
+                onClick={() => go(index - 1, -1)}
+                disabled={index === 0}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 disabled:opacity-30 hover:border-blue-400 hover:text-blue-600 transition-colors"
+              >
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 18 9 12l6-6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                aria-label="Next slide"
+                onClick={() => go(index + 1, 1)}
+                disabled={index === maxStart}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 disabled:opacity-30 hover:border-blue-400 hover:text-blue-600 transition-colors"
+              >
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
             </div>
           )}
 

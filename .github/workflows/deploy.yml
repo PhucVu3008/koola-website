@@ -167,19 +167,26 @@ jobs:
 
           echo "Step 5: Injecting seed images into uploads volume..."
           SEED_DIR=seed-images
+          echo "  seed-images dir contents:"
+          ls -la "\$SEED_DIR" 2>&1 || echo "  ! seed-images dir does not exist"
           # Use docker ps instead of docker compose ps to avoid env-var interpolation errors
+          echo "  All running containers:"
+          docker ps --format "    {{.ID}} {{.Names}}"
           API_CTR=\$(docker ps --filter "name=api-prod" --format "{{.ID}}" | head -1)
+          echo "  api-prod container ID: '\$API_CTR'"
           if [ -n "\$API_CTR" ] && [ -d "\$SEED_DIR" ]; then
             docker exec "\$API_CTR" mkdir -p /app/uploads/media
-            docker cp "\$SEED_DIR/ai-dev.jpg"     "\$API_CTR:/app/uploads/media/1769413291677-il87hb.jpeg" 2>/dev/null || true
-            docker cp "\$SEED_DIR/ai-dev.jpg"     "\$API_CTR:/app/uploads/media/1769413672864-t6qokd.jpeg" 2>/dev/null || true
-            docker cp "\$SEED_DIR/security.jpg"   "\$API_CTR:/app/uploads/media/1769415314697-28qmx0.jpeg" 2>/dev/null || true
-            docker cp "\$SEED_DIR/cloud.jpg"      "\$API_CTR:/app/uploads/media/1769416953770-4m8ceu.jpeg" 2>/dev/null || true
-            docker cp "\$SEED_DIR/automation.jpg" "\$API_CTR:/app/uploads/media/1769418615778-tvmvkz.jpg"  2>/dev/null || true
-            docker cp "\$SEED_DIR/iot.jpg"        "\$API_CTR:/app/uploads/media/1769418974548-qacbw9.jpeg" 2>/dev/null || true
+            docker cp "\$SEED_DIR/ai-dev.jpg"     "\$API_CTR:/app/uploads/media/1769413291677-il87hb.jpeg" && echo "    cp ai-dev -> 1769413291677 OK" || echo "    cp ai-dev -> 1769413291677 FAILED"
+            docker cp "\$SEED_DIR/ai-dev.jpg"     "\$API_CTR:/app/uploads/media/1769413672864-t6qokd.jpeg" && echo "    cp ai-dev -> 1769413672864 OK" || echo "    cp ai-dev -> 1769413672864 FAILED"
+            docker cp "\$SEED_DIR/security.jpg"   "\$API_CTR:/app/uploads/media/1769415314697-28qmx0.jpeg" && echo "    cp security OK" || echo "    cp security FAILED"
+            docker cp "\$SEED_DIR/cloud.jpg"      "\$API_CTR:/app/uploads/media/1769416953770-4m8ceu.jpeg" && echo "    cp cloud OK" || echo "    cp cloud FAILED"
+            docker cp "\$SEED_DIR/automation.jpg" "\$API_CTR:/app/uploads/media/1769418615778-tvmvkz.jpg"  && echo "    cp automation OK" || echo "    cp automation FAILED"
+            docker cp "\$SEED_DIR/iot.jpg"        "\$API_CTR:/app/uploads/media/1769418974548-qacbw9.jpeg" && echo "    cp iot OK" || echo "    cp iot FAILED"
+            echo "  Verifying files in container:"
+            docker exec "\$API_CTR" ls -la /app/uploads/media/ 2>&1
             echo "  v Seed images injected (container: \$API_CTR)"
           else
-            echo "  ! Skipped: API container not found or seed-images/ missing"
+            echo "  ! Skipped: API container not found (ID='\$API_CTR') or seed-images/ missing"
           fi
 
           echo "Step 6: Running DB migrations..."
