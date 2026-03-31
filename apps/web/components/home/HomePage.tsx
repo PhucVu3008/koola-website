@@ -72,37 +72,50 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
       {/* Hero Section - Full width, no wrapper */}
       <HeroSection data={heroData} />
 
-      {/* Main Content - Add container with padding to prevent horizontal overflow */}
-      <div className="fluid-container">
-        <div className="space-y-16 py-8">
+      {/* Main Content — subtle dot-grid background from Services section downward */}
+      <div className="relative">
+        {/* Faint dot grid pattern for depth */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle, rgba(99,102,241,0.055) 1px, transparent 1px)',
+            backgroundSize: '28px 28px',
+          }}
+        />
 
-        <RevealOnScroll delayMs={160} hoverParallax>
-            <HomeServicesSection locale={locale} title={servicesTitle} />
-        </RevealOnScroll>
+        <div className="fluid-container relative">
+          <div className="space-y-16 py-8">
 
-        <RevealOnScroll delayMs={320} hoverParallax>
-          <Section tone="white">
-            <ValuePropositionSlider data={data.valueProps} />
-          </Section>
-        </RevealOnScroll>
+          <RevealOnScroll delayMs={160} hoverParallax>
+              <HomeServicesSection locale={locale} title={servicesTitle} />
+          </RevealOnScroll>
 
-        <RevealOnScroll delayMs={400} hoverParallax>
-          <Section tone="white">
-            <BlogPreviewGrid
-              data={data.blog}
-              posts={homePosts.length > 0 ? homePosts : undefined}
-              locale={locale}
-            />
-          </Section>
-        </RevealOnScroll>
+          <RevealOnScroll delayMs={320} hoverParallax>
+            <Section tone="white">
+              <ValuePropositionSlider data={data.valueProps} />
+            </Section>
+          </RevealOnScroll>
 
+          <RevealOnScroll delayMs={400} hoverParallax>
+            <Section tone="white">
+              <BlogPreviewGrid
+                data={data.blog}
+                posts={homePosts.length > 0 ? homePosts : undefined}
+                locale={locale}
+              />
+            </Section>
+          </RevealOnScroll>
+
+          </div>
         </div>
-      </div>
 
-      {/* CTA — full-width, outside the fluid container */}
-      <RevealOnScroll delayMs={480}>
-        <PrimaryCTASection data={ctaData} />
-      </RevealOnScroll>
+        {/* CTA — full-width, outside the fluid container */}
+        <RevealOnScroll delayMs={480}>
+          <PrimaryCTASection data={ctaData} />
+        </RevealOnScroll>
+      </div>
     </>
   );
 }

@@ -26,14 +26,27 @@ export function ServicesPage({ data, locale }: { data: ServicesPageData; locale:
       {/* Hero Banner */}
       <ServicesHero data={data.hero} />
 
-      {/* Services Overview */}
-      <ServiceOverviewList data={data.servicesList} locale={locale} viewMoreLabel={data.viewMoreLabel} />
+      {/* Content sections with subtle dot-grid background */}
+      <div className="relative">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle, rgba(5,150,105,0.05) 1px, transparent 1px)',
+            backgroundSize: '28px 28px',
+          }}
+        />
 
-      {/* Mid-page Quote */}
-      <ServicesMidQuote data={data.midQuote} />
+        {/* Services Overview */}
+        <ServiceOverviewList data={data.servicesList} locale={locale} viewMoreLabel={data.viewMoreLabel} />
 
-      {/* CTA Banner */}
-      <ServicesCTASection data={data.cta} />
+        {/* Mid-page Quote */}
+        <ServicesMidQuote data={data.midQuote} />
+
+        {/* CTA Banner */}
+        <ServicesCTASection data={data.cta} />
+      </div>
     </div>
   );
 }

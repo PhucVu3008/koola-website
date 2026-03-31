@@ -27,7 +27,7 @@ export function ServicesHero({ data }: { data: ServicesHeroData }) {
 
   return (
     <section
-      className="relative w-full overflow-hidden rounded-b-[28px] sm:rounded-b-[42px] bg-gradient-to-br from-emerald-700 via-teal-600 to-cyan-600 -mt-[clamp(3.5rem,8vh,4.5rem)]"
+      className="relative w-full overflow-hidden bg-gradient-to-br from-emerald-700 via-teal-600 to-cyan-600 -mt-[clamp(3.5rem,8vh,4.5rem)]"
       style={{ height: 'calc(clamp(3.5rem,8vh,4.5rem) + clamp(300px,40vw,420px))' }}
       data-header-theme="dark"
       onMouseMove={handleMouseMove}
@@ -154,26 +154,8 @@ export function ServicesHero({ data }: { data: ServicesHeroData }) {
           />
         </div>
 
-        {/* Animated wave lines */}
-        <svg 
-          className="absolute bottom-0 left-0 w-full h-24 opacity-20 transition-transform duration-1000"
-          style={{
-            transform: `translateX(${(mousePosition.x - 50) / 10}px)`,
-          }}
-          viewBox="0 0 1200 100" 
-          preserveAspectRatio="none"
-        >
-          <path 
-            d="M0,50 Q300,20 600,50 T1200,50 L1200,100 L0,100 Z" 
-            fill="rgba(255,255,255,0.1)"
-            className="animate-float-slow"
-          />
-          <path 
-            d="M0,60 Q300,30 600,60 T1200,60 L1200,100 L0,100 Z" 
-            fill="rgba(251,191,36,0.1)"
-            className="animate-float-medium"
-          />
-        </svg>
+        {/* Fade to white at bottom (like Careers hero) */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white via-white/40 to-transparent" />
 
         {/* Dynamic radial glow following mouse */}
         <div 
