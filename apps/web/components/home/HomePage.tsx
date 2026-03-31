@@ -72,20 +72,42 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
       {/* Hero Section - Full width, no wrapper */}
       <HeroSection data={heroData} />
 
-      {/* Main Content — subtle dot-grid background from Services section downward */}
-      <div className="relative">
-        {/* Faint dot grid pattern for depth */}
+      {/* Main Content — subtle background from Services section downward */}
+      <div className="relative overflow-hidden">
+        {/* Dot grid overlay — mix-blend-mode: multiply renders on top of any bg-white children */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage:
-              'radial-gradient(circle, rgba(99,102,241,0.055) 1px, transparent 1px)',
-            backgroundSize: '28px 28px',
+              'radial-gradient(circle, rgba(99,102,241,0.22) 1.5px, transparent 1.5px)',
+            backgroundSize: '32px 32px',
+            mixBlendMode: 'multiply',
+            zIndex: 1,
+          }}
+        />
+        {/* Soft warm blob — top-right */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(251,191,36,0.07) 0%, transparent 70%)',
+            mixBlendMode: 'multiply',
+            zIndex: 1,
+          }}
+        />
+        {/* Soft cool blob — bottom-left */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-20 -left-40 h-[500px] w-[500px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
+            mixBlendMode: 'multiply',
+            zIndex: 1,
           }}
         />
 
-        <div className="fluid-container relative">
+        <div className="fluid-container relative" style={{ zIndex: 2 }}>
           <div className="space-y-16 py-8">
 
           <RevealOnScroll delayMs={160} hoverParallax>
@@ -112,9 +134,11 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
         </div>
 
         {/* CTA — full-width, outside the fluid container */}
-        <RevealOnScroll delayMs={480}>
-          <PrimaryCTASection data={ctaData} />
-        </RevealOnScroll>
+        <div className="relative" style={{ zIndex: 2 }}>
+          <RevealOnScroll delayMs={480}>
+            <PrimaryCTASection data={ctaData} />
+          </RevealOnScroll>
+        </div>
       </div>
     </>
   );

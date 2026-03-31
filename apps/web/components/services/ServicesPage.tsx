@@ -26,26 +26,55 @@ export function ServicesPage({ data, locale }: { data: ServicesPageData; locale:
       {/* Hero Banner */}
       <ServicesHero data={data.hero} />
 
-      {/* Content sections with subtle dot-grid background */}
-      <div className="relative">
+      {/* Content sections with visible dot-grid + soft gradient background */}
+      <div className="relative overflow-hidden">
+        {/* Dot grid — mix-blend-mode: multiply renders through bg-white child sections */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage:
-              'radial-gradient(circle, rgba(5,150,105,0.05) 1px, transparent 1px)',
-            backgroundSize: '28px 28px',
+              'radial-gradient(circle, rgba(5,150,105,0.20) 1.5px, transparent 1.5px)',
+            backgroundSize: '32px 32px',
+            mixBlendMode: 'multiply',
+            zIndex: 1,
+          }}
+        />
+        {/* Soft emerald blob — top-left */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(5,150,105,0.07) 0%, transparent 70%)',
+            mixBlendMode: 'multiply',
+            zIndex: 1,
+          }}
+        />
+        {/* Soft amber blob — bottom-right */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-20 -right-32 h-[400px] w-[400px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(251,191,36,0.07) 0%, transparent 70%)',
+            mixBlendMode: 'multiply',
+            zIndex: 1,
           }}
         />
 
         {/* Services Overview */}
-        <ServiceOverviewList data={data.servicesList} locale={locale} viewMoreLabel={data.viewMoreLabel} />
+        <div className="relative" style={{ zIndex: 2 }}>
+          <ServiceOverviewList data={data.servicesList} locale={locale} viewMoreLabel={data.viewMoreLabel} />
+        </div>
 
         {/* Mid-page Quote */}
-        <ServicesMidQuote data={data.midQuote} />
+        <div className="relative" style={{ zIndex: 2 }}>
+          <ServicesMidQuote data={data.midQuote} />
+        </div>
 
         {/* CTA Banner */}
-        <ServicesCTASection data={data.cta} />
+        <div className="relative" style={{ zIndex: 2 }}>
+          <ServicesCTASection data={data.cta} />
+        </div>
       </div>
     </div>
   );
