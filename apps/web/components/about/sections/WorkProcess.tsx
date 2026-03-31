@@ -11,9 +11,10 @@ export type WorkProcessData = {
 /**
  * Section 4: Work Process
  *
- * Clean typographic timeline layout. Steps are presented with large muted
- * ordinal numbers as visual anchors, a connecting rule on desktop, and
- * a vertical connector on mobile. No icon boxes — typography carries the design.
+ * Timeline layout with a single step-number pill as the only ordinal element.
+ * Desktop: horizontal connector line through pill centres; centre at h-6 (24px = 1.5rem).
+ * Mobile: vertical connector from bottom of each pill to top of next.
+ * No duplicate numbers or icon shapes.
  */
 export function WorkProcess({ data }: { data: WorkProcessData }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -55,17 +56,28 @@ export function WorkProcess({ data }: { data: WorkProcessData }) {
           <p className="mt-4 text-base leading-relaxed text-slate-500">{data.subtitle}</p>
         </div>
 
-        {/* Timeline */}
+        {/* Timeline grid */}
         <div ref={ref} className="relative">
 
-          {/* ── Desktop: horizontal connector ─────────────────────── */}
+          {/*
+            Desktop horizontal connector.
+            Pill height on desktop = h-12 = 48px → centre = 24px = 1.5rem.
+            The connector sits at top-[1.5rem] relative to the grid wrapper.
+            left/right are trimmed so the line runs pill-centre to pill-centre.
+          */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute top-[2.75rem] hidden lg:block"
-            style={{ left: '10%', right: '10%', height: '1px', background: 'linear-gradient(90deg, transparent, #c7d2fe 15%, #c7d2fe 85%, transparent)' }}
+            className="pointer-events-none absolute hidden lg:block"
+            style={{
+              top: '1.5rem',
+              left: 'calc(12.5% - 0px)',   /* centred on first pill */
+              right: 'calc(12.5% - 0px)',  /* centred on last pill */
+              height: '1px',
+              background: 'linear-gradient(90deg, transparent 0%, #c7d2fe 8%, #c7d2fe 92%, transparent 100%)',
+            }}
           />
 
-          <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {data.steps.map((s, i) => {
               const num = String(s.step).padStart(2, '0');
               return (
@@ -78,44 +90,39 @@ export function WorkProcess({ data }: { data: WorkProcessData }) {
                     transition: `opacity 0.6s ease ${i * 140}ms, transform 0.6s ease ${i * 140}ms`,
                   }}
                 >
-                  {/* ── Mobile: vertical connector ───────────────── */}
+                  {/* ── Mobile vertical connector (between steps) ── */}
                   {i < data.steps.length - 1 && (
                     <div
                       aria-hidden="true"
-                      className="absolute left-[1.45rem] top-[5.5rem] h-full w-px lg:hidden"
-                      style={{ background: 'linear-gradient(to bottom, #c7d2fe, transparent)' }}
+                      className="absolute lg:hidden"
+                      style={{
+                        left: '1.5rem',       /* centre of h-12 pill (w-12 → left edge + 24px = 1.5rem) */
+                        top: '3rem',          /* just below the pill */
+                        bottom: '0',
+                        width: '1px',
+                        background: 'linear-gradient(to bottom, #c7d2fe, transparent)',
+                      }}
                     />
                   )}
 
-                  {/* Step marker — number pill */}
-                  <div className="relative z-10 flex items-center gap-5 lg:flex-col lg:gap-0">
-                    <div className="flex-shrink-0">
-                      <div
-                        className="flex h-11 w-11 items-center justify-center rounded-full bg-white ring-2 ring-indigo-200 transition-all duration-300 group-hover:ring-indigo-500 group-hover:shadow-lg group-hover:shadow-indigo-100 lg:h-12 lg:w-12"
-                      >
-                        <span className="text-xs font-black tabular-nums text-indigo-600 group-hover:text-indigo-700">
-                          {num}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Content block */}
-                    <div className="pb-10 lg:pb-0 lg:mt-7 lg:px-3">
-                      {/* Large muted number — decorative */}
-                      <div
-                        aria-hidden="true"
-                        className="mb-1 select-none text-[3rem] font-black leading-none tabular-nums text-slate-100 lg:mb-2 lg:text-[3.5rem]"
-                      >
+                  {/* ── Step pill — the single ordinal element ── */}
+                  <div className="relative z-10 mb-6 lg:mb-0">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white ring-2 ring-indigo-200 shadow-sm transition-all duration-300 group-hover:ring-indigo-500 group-hover:shadow-md group-hover:shadow-indigo-100">
+                      <span className="text-sm font-bold tabular-nums text-indigo-600 group-hover:text-indigo-700 leading-none">
                         {num}
-                      </div>
-                      <h3 className="text-base font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors duration-200">
-                        {s.title}
-                      </h3>
-                      <div className="my-2 h-[2px] w-6 bg-indigo-400 lg:mx-auto transition-all duration-300 group-hover:w-10" />
-                      <p className="text-sm leading-relaxed text-slate-500 lg:max-w-[180px]">
-                        {s.description}
-                      </p>
+                      </span>
                     </div>
+                  </div>
+
+                  {/* ── Content ── */}
+                  <div className="pl-16 lg:pl-0 lg:mt-8 lg:px-4 -mt-12 lg:-mt-0 pb-10 lg:pb-0">
+                    <h3 className="text-base font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors duration-200">
+                      {s.title}
+                    </h3>
+                    <div className="my-2.5 h-px w-6 bg-indigo-300 lg:mx-auto transition-all duration-300 group-hover:w-10 group-hover:bg-indigo-500" />
+                    <p className="text-sm leading-relaxed text-slate-500 lg:max-w-[200px]">
+                      {s.description}
+                    </p>
                   </div>
                 </div>
               );

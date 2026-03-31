@@ -26,7 +26,9 @@ function useReveal() {
 }
 
 /**
- * Section 2: Our Story — timeline layout with tech corner brackets on image.
+ * Section 2: Our Story — timeline with diamond bullet markers (no numbers).
+ * Clean vertical rhythm: label → paragraphs connected by a thin gradient line,
+ * image with corner-bracket frame on the right.
  */
 export function OurStorySection({ data }: { data: OurStorySectionData }) {
   const { ref, visible } = useReveal();
@@ -45,28 +47,27 @@ export function OurStorySection({ data }: { data: OurStorySectionData }) {
 
             <div className="mt-8 space-y-0">
               {data.paragraphs.map((p, i) => (
-                <div key={i} className="relative flex gap-5 pb-8 last:pb-0">
-                  {/* Vertical connector */}
+                <div key={i} className="relative flex gap-5 pb-7 last:pb-0">
+                  {/* Vertical connector — stops before the last item */}
                   {i < data.paragraphs.length - 1 && (
                     <div
                       aria-hidden="true"
-                      className="absolute left-[15px] top-8 bottom-0 w-[2px] bg-gradient-to-b from-indigo-300 to-indigo-50"
+                      className="absolute left-[0.4375rem] top-5 bottom-0 w-px bg-gradient-to-b from-indigo-200 to-indigo-50"
                     />
                   )}
-                  {/* Step dot */}
-                  <div className="relative mt-1 flex-shrink-0">
+                  {/* Diamond bullet */}
+                  <div className="relative mt-[0.4rem] flex-shrink-0">
                     <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold shadow-sm transition-all ${
+                      aria-hidden="true"
+                      className={`h-3.5 w-3.5 rotate-45 rounded-[2px] border-2 transition-colors duration-300 ${
                         i === 0
-                          ? 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-indigo-200'
-                          : 'border-2 border-indigo-200 bg-white text-indigo-600'
+                          ? 'bg-indigo-500 border-indigo-500'
+                          : 'bg-white border-indigo-300'
                       }`}
-                    >
-                      {i + 1}
-                    </div>
+                    />
                   </div>
                   {/* Paragraph */}
-                  <div className="pt-1">
+                  <div className="pt-0.5">
                     <p className="text-base leading-7 text-slate-600">{p}</p>
                   </div>
                 </div>
@@ -92,7 +93,6 @@ export function OurStorySection({ data }: { data: OurStorySectionData }) {
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                   quality={85}
                 />
-                {/* Subtle gradient overlay */}
                 <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-tr from-indigo-900/20 via-transparent to-transparent" />
               </div>
             </div>
@@ -102,3 +102,4 @@ export function OurStorySection({ data }: { data: OurStorySectionData }) {
     </section>
   );
 }
+
