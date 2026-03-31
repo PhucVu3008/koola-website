@@ -420,6 +420,39 @@ a {
     inset 0 -1px 0 rgba(99, 102, 241, 0.08);
 }
 
+/* ─── Organic Morphing Blob Animations (About Hero) ──────────────────────── */
+@keyframes morph-blob {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  25%       { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+  50%       { border-radius: 50% 60% 30% 60% / 40% 40% 60% 50%; }
+  75%       { border-radius: 60% 40% 50% 40% / 60% 50% 40% 50%; }
+}
+
+@keyframes drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(50px, -70px) scale(1.06); }
+  66%       { transform: translate(-35px, 40px) scale(0.94); }
+}
+
+@keyframes drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(-60px, 50px) scale(0.94); }
+  66%       { transform: translate(40px, -30px) scale(1.06); }
+}
+
+@keyframes drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(35px, 65px) scale(1.04); }
+  66%       { transform: translate(-50px, -40px) scale(0.96); }
+}
+
+.animate-morph-blob   { animation: morph-blob 10s ease-in-out infinite; }
+.animate-morph-blob-2 { animation: morph-blob 13s ease-in-out infinite reverse; }
+.animate-morph-blob-3 { animation: morph-blob 16s ease-in-out infinite 2s; }
+.animate-drift-1      { animation: drift-1 18s ease-in-out infinite; }
+.animate-drift-2      { animation: drift-2 22s ease-in-out infinite 3s; }
+.animate-drift-3      { animation: drift-3 26s ease-in-out infinite 6s; }
+
 /* Reduce Motion for Accessibility */
 @media (prefers-reduced-motion: reduce) {
   *,

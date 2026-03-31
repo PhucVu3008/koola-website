@@ -7,6 +7,7 @@ import { HeroSection } from './HeroSection';
 import { HomeServicesSection } from './HomeServicesSection';
 import { ValuePropositionSlider } from './ValuePropositionSlider';
 import { BlogPreviewGrid } from './BlogPreviewGrid';
+import { PrimaryCTASection } from './PrimaryCTASection';
 
 /**
  * Home page composition.
@@ -59,6 +60,13 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
   // Use hard-coded data for sections not managed by CMS yet
   const data = fallbackData;
 
+  const ctaData = {
+    title: data.primaryCta.title,
+    ctaLabel: data.primaryCta.ctaLabel,
+    ctaHref: `/${locale}/contact`,
+    image: data.primaryCta.image,
+  };
+
   return (
     <>
       {/* Hero Section - Full width, no wrapper */}
@@ -90,6 +98,11 @@ export async function HomePage({ locale = 'en' }: { locale?: 'en' | 'vi' } = {})
 
         </div>
       </div>
+
+      {/* CTA — full-width, outside the fluid container */}
+      <RevealOnScroll delayMs={480}>
+        <PrimaryCTASection data={ctaData} />
+      </RevealOnScroll>
     </>
   );
 }
