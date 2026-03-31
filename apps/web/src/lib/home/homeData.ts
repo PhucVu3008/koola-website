@@ -179,7 +179,7 @@ export const HOME = {
   primaryCta: {
     title: "Ready to Transform Your Vision into Reality? Let's Get Started!",
     ctaLabel: 'Get Quote',
-    image: '/home/cta.jpg',
+    image: '/home/cta-mountain.jpg',
   },
 } as const;
 
@@ -366,7 +366,7 @@ export const HOME_I18N = {
     primaryCta: {
       title: 'Sẵn sàng biến tầm nhìn thành hiện thực? Bắt đầu ngay!',
       ctaLabel: 'Nhận báo giá',
-      image: '/home/cta.jpg',
+      image: '/home/cta-mountain.jpg',
     },
   },
 } as const;
