@@ -7,6 +7,7 @@ import { getCareersPage, getFeaturedJobs } from '../../../src/lib/api/careers';
 export const dynamic = 'force-dynamic';
 import { isLocale, type Locale } from '../../../src/i18n/locales';
 import { getDictionary } from '../../../src/i18n/getDictionary';
+import { generatePageAlternates } from '../../../src/lib/seo/alternates';
 
 export const revalidate = 300;
 
@@ -19,10 +20,12 @@ export async function generateMetadata({
   if (!isLocale(locale)) return {};
 
   const dict = await getDictionary(locale);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://koola.vn';
 
   return {
     title: dict.nav.careers,
     description: dict.meta.careersDescription,
+    alternates: generatePageAlternates(locale, '/careers', baseUrl),
   };
 }
 

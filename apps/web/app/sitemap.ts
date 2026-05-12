@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 import { getServices } from '../src/lib/api/services';
+import { listPosts } from '../src/lib/api/posts';
 import { getSupportedLocales } from '../src/i18n/getDictionary';
 
 export const dynamic = 'force-dynamic';
@@ -39,14 +40,27 @@ async function getJobs(locale: string) {
   }
 }
 
+/**
+ * Fetch all published blog posts for sitemap
+ */
+async function getAllPosts(locale: string) {
+  try {
+    const result = await listPosts({ locale, page: 1, pageSize: 500, sort: 'published_at' });
+    return result.posts;
+  } catch {
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '');
   const locales = getSupportedLocales();
 
   // Fetch data in parallel
-  const [servicesPerLocale, jobsPerLocale] = await Promise.all([
+  const [servicesPerLocale, jobsPerLocale, postsPerLocale] = await Promise.all([
     Promise.all(locales.map((locale) => getServices({ locale, page: 1, pageSize: 100, sort: 'order' }))),
     Promise.all(locales.map((locale) => getJobs(locale))),
+    Promise.all(locales.map((locale) => getAllPosts(locale))),
   ]);
 
   const now = new Date();
@@ -56,6 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/${locale}`, lastModified: now, priority: 1.0 },
     { url: `${baseUrl}/${locale}/about`, lastModified: now, priority: 0.8 },
     { url: `${baseUrl}/${locale}/services`, lastModified: now, priority: 0.9 },
+    { url: `${baseUrl}/${locale}/blog`, lastModified: now, priority: 0.9 },
     { url: `${baseUrl}/${locale}/careers`, lastModified: now, priority: 0.8 },
     { url: `${baseUrl}/${locale}/contact`, lastModified: now, priority: 0.7 },
     { url: `${baseUrl}/${locale}/terms`, lastModified: now, priority: 0.3 },
@@ -84,5 +99,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
   });
 
-  return [...staticEntries, ...dynamicServiceEntries, ...dynamicJobEntries];
+  // Dynamic blog post pages
+  const dynamicBlogEntries: MetadataRoute.Sitemap = postsPerLocale.flatMap((posts, idx) => {
+    const locale = locales[idx];
+    return posts.map((post) => ({
+      url: `${baseUrl}/${locale}/blog/${post.slug}`,
+      lastModified: post.published_at ? new Date(post.published_at) : now,
+      priority: 0.7,
+    }));
+  });
+
+  return [...staticEntries, ...dynamicServiceEntries, ...dynamicJobEntries, ...dynamicBlogEntries];
 }

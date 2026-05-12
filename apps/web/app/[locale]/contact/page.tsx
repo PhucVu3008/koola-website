@@ -6,6 +6,7 @@ import { ContactPage } from '../../../components/contact';
 import { isLocale, type Locale } from '../../../src/i18n/locales';
 import { getDictionary } from '../../../src/i18n/getDictionary';
 import type { ContactPageData } from '../../../components/contact/ContactPage';
+import { generatePageAlternates } from '../../../src/lib/seo/alternates';
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -18,10 +19,12 @@ export async function generateMetadata({
   if (!isLocale(locale)) return {};
 
   const dict = await getDictionary(locale);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://koola.vn';
 
   return {
     title: dict.meta.contactTitle,
     description: dict.meta.contactDescription,
+    alternates: generatePageAlternates(locale, '/contact', baseUrl),
   };
 }
 

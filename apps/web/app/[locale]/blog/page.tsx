@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { isLocale, type Locale } from '../../../src/i18n/locales';
 import { listPosts } from '../../../src/lib/api/posts';
 import { BlogListPage } from '../../../components/blog/BlogListPage';
+import { generatePageAlternates } from '../../../src/lib/seo/alternates';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,12 +12,14 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://koola.vn';
   return {
     title: locale === 'vi' ? 'Blog | KOOLA' : 'Blog | KOOLA',
     description:
       locale === 'vi'
         ? 'Các bài viết mới nhất về công nghệ, AI, bảo mật và chuyển đổi số từ đội ngũ KOOLA.'
         : 'Latest insights on technology, AI, security and digital transformation from the KOOLA team.',
+    alternates: generatePageAlternates(locale, '/blog', baseUrl),
   };
 }
 

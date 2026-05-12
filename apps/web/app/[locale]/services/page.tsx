@@ -9,6 +9,7 @@ import { getServices, getServicesPage } from '../../../src/lib/api/services';
 import { getDictionary } from '../../../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../../../src/i18n/locales';
 import { resolveImageUrl } from '../../../src/lib/image-url';
+import { generatePageAlternates } from '../../../src/lib/seo/alternates';
 
 export async function generateMetadata({
   params,
@@ -19,10 +20,12 @@ export async function generateMetadata({
   if (!isLocale(locale)) return {};
 
   const dict = getDictionary(locale);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://koola.vn';
 
   return {
     title: dict.meta.servicesTitle,
     description: dict.meta.servicesDescription,
+    alternates: generatePageAlternates(locale, '/services', baseUrl),
   };
 }
 

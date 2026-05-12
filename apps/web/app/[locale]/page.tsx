@@ -4,6 +4,7 @@ import { HomePage } from '../../components/home';
 import { getDictionary } from '../../src/i18n/getDictionary';
 import { isLocale, type Locale } from '../../src/i18n/locales';
 import { getPageBySlug } from '../../src/lib/api/pages';
+import { generatePageAlternates } from '../../src/lib/seo/alternates';
 
 /**
  * force-dynamic: home page fetches from CMS API (not available at build time).
@@ -21,6 +22,7 @@ export async function generateMetadata({
   if (!isLocale(locale)) return {};
 
   // Try to load CMS data for SEO
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://koola.vn';
   let cmsData: Awaited<ReturnType<typeof getPageBySlug>> | null = null;
   try {
     cmsData = await getPageBySlug({ slug: 'home', locale });
@@ -33,6 +35,7 @@ export async function generateMetadata({
     return {
       title: cmsData.page.seo_title || cmsData.page.title,
       description: cmsData.page.seo_description || undefined,
+      alternates: generatePageAlternates(locale, '', baseUrl),
     };
   }
 
@@ -41,6 +44,7 @@ export async function generateMetadata({
   return {
     title: dict.meta.homeTitle,
     description: dict.meta.homeDescription,
+    alternates: generatePageAlternates(locale, '', baseUrl),
   };
 }
 

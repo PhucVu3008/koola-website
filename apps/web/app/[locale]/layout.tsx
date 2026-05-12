@@ -55,10 +55,6 @@ export async function generateMetadata({
   const dict = getDictionary(locale);
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
-  const supported = getSupportedLocales();
-  const languages: Record<string, string> = {};
-  for (const l of supported) languages[l] = `/${l}`;
-
   // Generate structured data schemas
   const schemas = combineSchemas(
     generateOrganizationSchema(baseUrl),
@@ -72,10 +68,6 @@ export async function generateMetadata({
       template: `%s | ${dict.meta.siteName}`,
     },
     description: dict.meta.homeDescription,
-    alternates: {
-      canonical: `/${locale}`,
-      languages,
-    },
     openGraph: {
       type: 'website',
       locale,
