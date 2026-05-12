@@ -3,14 +3,14 @@
 # Stack production chạy trên máy local, expose ra internet qua Cloudflare Tunnel
 #
 # Services:
-#   postgres  — PostgreSQL database
-#   api       — Fastify API backend (production build)
-#   web       — Next.js frontend (standalone production build)
-#   nginx     — Reverse proxy (koola.vn → web/api)
+#   postgres    — PostgreSQL database
+#   api         — Fastify API backend (image từ GHCR, build trên CI)
+#   web         — Next.js frontend  (image từ GHCR, build trên CI)
+#   nginx       — Reverse proxy (koola.vn → web/api)
 #   cloudflared — Cloudflare Tunnel (expose localhost ra koola.vn)
 #
-# Khởi động:
-#   docker compose -f docker-compose.production.yml up -d --build
+# Khởi động (VPS chỉ cần pull, không build):
+#   docker compose -f docker-compose.production.yml up -d
 #
 # Xem logs:
 #   docker compose -f docker-compose.production.yml logs -f
@@ -47,10 +47,7 @@ services:
   # Fastify API Backend
   # ===========================================================================
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
+    image: ${KOOLA_API_IMAGE:-ghcr.io/phucvu3008/koola-website-api:latest}
     container_name: koola-api-prod
     restart: unless-stopped
     depends_on:
@@ -91,9 +88,7 @@ services:
   # Next.js Frontend (standalone build)
   # ===========================================================================
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile.web
+    image: ${KOOLA_WEB_IMAGE:-ghcr.io/phucvu3008/koola-website-web:latest}
     container_name: koola-web-prod
     restart: unless-stopped
     depends_on:

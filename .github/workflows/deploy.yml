@@ -1,16 +1,31 @@
 name: Build and Deploy to Production VPS
 
+# =============================================================================
+# Flow:
+#   1. build job  — Build JS, build Docker images, push to GHCR
+#                   (VPS không cần build gì)
+#   2. deploy job — Rsync config files, VPS chỉ docker pull + up
+# =============================================================================
+
 on:
   push:
     branches:
       - main
   workflow_dispatch:
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_API: ghcr.io/${{ github.repository_owner }}/koola-website-api
+  IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/koola-website-web
+
 jobs:
   build:
-    name: Build API and Web
+    name: Build and Push Docker Images
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout code
@@ -34,7 +49,6 @@ jobs:
           NEXT_PUBLIC_API_BASE_URL: https://koola.vn/api
           NEXT_PUBLIC_SITE_URL: https://koola.vn
           API_BASE_URL_SERVER: http://localhost:4000
-          # GA4 Measurement ID — public, safe to commit
           NEXT_PUBLIC_GA_MEASUREMENT_ID: G-Q1HY3MEZPC
 
       - name: Create env file for Docker
@@ -46,53 +60,54 @@ jobs:
             echo "API_BASE_URL_SERVER=http://api:4000"
             echo "NEXT_PUBLIC_GA_MEASUREMENT_ID=G-Q1HY3MEZPC"
           } > apps/web/.env.production
-          cat apps/web/.env.production
 
-      - name: Package artifacts
-        run: |
-          tar -czf build-artifacts.tar.gz \
-            apps/api/dist \
-            apps/web/.next/standalone \
-            apps/web/.next/static \
-            apps/web/public \
-            apps/web/.env.production \
-            package.json \
-            package-lock.json \
-            apps/api/package.json \
-            apps/web/package.json
-          du -sh build-artifacts.tar.gz
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          name: build-artifacts
-          path: build-artifacts.tar.gz
-          retention-days: 3
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          target: production
+          push: true
+          tags: |
+            ${{ env.IMAGE_API }}:latest
+            ${{ env.IMAGE_API }}:${{ github.sha }}
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.web
+          push: true
+          tags: |
+            ${{ env.IMAGE_WEB }}:latest
+            ${{ env.IMAGE_WEB }}:${{ github.sha }}
 
   deploy:
     name: Deploy to VPS
     runs-on: ubuntu-latest
     needs: build
-    timeout-minutes: 20
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: read
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
 
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.VPS_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          # Use longer timeout for ssh-keyscan to handle slow VPS responses
           ssh-keyscan -T 30 -p ${{ secrets.VPS_PORT }} ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
-          echo "SSH key fingerprint:"
-          ssh-keygen -lf ~/.ssh/deploy_key
 
       - name: Test SSH connection
         run: |
@@ -104,42 +119,20 @@ jobs:
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
             "echo 'SSH connection OK'"
 
-      - name: Free disk space on VPS
+      - name: Rsync config files to VPS
+        # Chỉ copy những file cần thiết để chạy — không copy source code hay build artifacts
         run: |
-          ssh -i ~/.ssh/deploy_key \
-            -p ${{ secrets.VPS_PORT }} \
-            -o StrictHostKeyChecking=no \
-            -o ConnectTimeout=30 \
-            -o ServerAliveInterval=15 \
-            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
-            "echo '=== Disk before cleanup ===' && df -h / && \
-             docker system prune -af 2>/dev/null || true && \
-             rm -rf ${{ secrets.VPS_PROJECT_PATH }}/apps/web/.next 2>/dev/null || true && \
-             rm -rf ${{ secrets.VPS_PROJECT_PATH }}/apps/api/dist 2>/dev/null || true && \
-             rm -rf ${{ secrets.VPS_PROJECT_PATH }}/node_modules 2>/dev/null || true && \
-             rm -f ${{ secrets.VPS_PROJECT_PATH }}/build-artifacts.tar.gz 2>/dev/null || true && \
-             echo '=== Disk after cleanup ===' && df -h /"
-
-      - name: Rsync source to VPS
-        run: |
-          rsync -az --delete \
+          rsync -az \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=30 -o ServerAliveInterval=15" \
-            --exclude='.git' \
-            --exclude='node_modules' \
-            --exclude='apps/web/.next' \
-            --exclude='apps/api/dist' \
-            --exclude='apps/web/node_modules' \
-            --exclude='apps/api/node_modules' \
-            --exclude='.env*' \
-            --exclude='uploads' \
-            --exclude='*.tar.gz' \
-            --exclude='apps/web/public' \
-            ./ \
+            docker-compose.production.yml \
+            nginx/ \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PROJECT_PATH }}/
+          rsync -az \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=30 -o ServerAliveInterval=15" \
+            migrations/ \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PROJECT_PATH }}/migrations/
 
       - name: Rsync seed images to VPS
-        # Copy blog cover images (seeded in DB) to a staging dir on VPS.
-        # These will be injected into the Docker uploads volume after containers start.
         # Non-fatal: seed images are optional, site works without them.
         continue-on-error: true
         run: |
@@ -148,20 +141,13 @@ jobs:
             apps/web/public/blog/ \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PROJECT_PATH }}/seed-images/
 
-      - name: Copy artifact to VPS
-        run: |
-          scp \
-            -i ~/.ssh/deploy_key \
-            -P ${{ secrets.VPS_PORT }} \
-            -o StrictHostKeyChecking=no \
-            -o ConnectTimeout=30 \
-            -o ServerAliveInterval=15 \
-            build-artifacts.tar.gz \
-            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PROJECT_PATH }}/
-
       - name: Deploy on VPS
         env:
           VPS_PROJECT_PATH: ${{ secrets.VPS_PROJECT_PATH }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+          IMAGE_API: ${{ env.IMAGE_API }}:${{ github.sha }}
+          IMAGE_WEB: ${{ env.IMAGE_WEB }}:${{ github.sha }}
         run: |
           ssh \
             -i ~/.ssh/deploy_key \
@@ -169,72 +155,56 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o ConnectTimeout=30 \
             -o ServerAliveInterval=15 \
-            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << ENDSSH
+            -o SendEnv=VPS_PROJECT_PATH,GHCR_TOKEN,GHCR_USER,IMAGE_API,IMAGE_WEB \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
           set -e
-          # VPS_PROJECT_PATH is expanded here by the runner (unquoted heredoc)
           cd "$VPS_PROJECT_PATH"
 
-          echo "Step 1: Free disk space..."
-          docker builder prune -af
-          docker image prune -f
-          df -h /
+          echo "Step 1: Login to GHCR..."
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 
-          echo "Step 2: Extracting artifacts..."
-          tar -xzf build-artifacts.tar.gz
-          rm -f build-artifacts.tar.gz
+          echo "Step 2: Pull new images..."
+          docker pull "$IMAGE_API"
+          docker pull "$IMAGE_WEB"
 
-          echo "Step 3: Building Docker images..."
-          DOCKER_BUILDKIT=0 docker compose -f docker-compose.production.yml --env-file .env.production.local build api web 2>&1 | grep -v 'no space left on device' || true
-          docker image inspect koola-website-web > /dev/null 2>&1 || (echo 'ERROR: web image not built' && exit 1)
-
-          echo "Step 4: Restarting containers..."
-          docker compose -f docker-compose.production.yml --env-file .env.production.local down --remove-orphans || true
+          echo "Step 3: Stop and remove old containers..."
           docker rm -f koola-postgres-prod koola-api-prod koola-web-prod koola-nginx-prod koola-cloudflared 2>/dev/null || true
           docker network rm koola-production-network 2>/dev/null || true
-          docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --remove-orphans
+
+          echo "Step 4: Start containers..."
+          KOOLA_API_IMAGE="$IMAGE_API" KOOLA_WEB_IMAGE="$IMAGE_WEB" \
+            docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --remove-orphans
 
           echo "Step 5: Injecting seed images into uploads volume..."
           SEED_DIR=seed-images
-          echo "  seed-images dir contents:"
-          ls -la "\$SEED_DIR" 2>&1 || echo "  ! seed-images dir does not exist"
-          # Use docker ps instead of docker compose ps to avoid env-var interpolation errors
-          echo "  All running containers:"
-          docker ps --format "    {{.ID}} {{.Names}}"
-          API_CTR=\$(docker ps --filter "name=api-prod" --format "{{.ID}}" | head -1)
-          echo "  api-prod container ID: '\$API_CTR'"
-          if [ -n "\$API_CTR" ] && [ -d "\$SEED_DIR" ]; then
-            docker exec "\$API_CTR" mkdir -p /app/uploads/media
-            docker cp "\$SEED_DIR/ai-dev.jpg"     "\$API_CTR:/app/uploads/media/1769413291677-il87hb.jpeg" && echo "    cp ai-dev -> 1769413291677 OK" || echo "    cp ai-dev -> 1769413291677 FAILED"
-            docker cp "\$SEED_DIR/ai-dev.jpg"     "\$API_CTR:/app/uploads/media/1769413672864-t6qokd.jpeg" && echo "    cp ai-dev -> 1769413672864 OK" || echo "    cp ai-dev -> 1769413672864 FAILED"
-            docker cp "\$SEED_DIR/security.jpg"   "\$API_CTR:/app/uploads/media/1769415314697-28qmx0.jpeg" && echo "    cp security OK" || echo "    cp security FAILED"
-            docker cp "\$SEED_DIR/cloud.jpg"      "\$API_CTR:/app/uploads/media/1769416953770-4m8ceu.jpeg" && echo "    cp cloud OK" || echo "    cp cloud FAILED"
-            docker cp "\$SEED_DIR/automation.jpg" "\$API_CTR:/app/uploads/media/1769418615778-tvmvkz.jpg"  && echo "    cp automation OK" || echo "    cp automation FAILED"
-            docker cp "\$SEED_DIR/iot.jpg"        "\$API_CTR:/app/uploads/media/1769418974548-qacbw9.jpeg" && echo "    cp iot OK" || echo "    cp iot FAILED"
-            echo "  Verifying files in container:"
-            docker exec "\$API_CTR" ls -la /app/uploads/media/ 2>&1
-            echo "  v Seed images injected (container: \$API_CTR)"
+          API_CTR=$(docker ps --filter "name=koola-api-prod" --format "{{.ID}}" | head -1)
+          if [ -n "$API_CTR" ] && [ -d "$SEED_DIR" ]; then
+            docker exec "$API_CTR" mkdir -p /app/uploads/media
+            for img in "$SEED_DIR"/*; do
+              fname=$(basename "$img")
+              docker cp "$img" "$API_CTR:/app/uploads/media/$fname" && echo "  cp $fname OK" || echo "  cp $fname FAILED"
+            done
           else
-            echo "  ! Skipped: API container not found (ID='\$API_CTR') or seed-images/ missing"
+            echo "  ! Skipped: container '$API_CTR' not found or seed-images/ missing"
           fi
 
           echo "Step 6: Running DB migrations..."
           sleep 5
-          # Use docker ps to find postgres container by name, avoiding env-var interpolation issues
-          PG_CTR=\$(docker ps --filter "name=postgres-prod" --format "{{.ID}}" | head -1)
-          if [ -z "\$PG_CTR" ]; then
-            echo "  ! WARNING: postgres container not found, skipping migrations"
-          else
+          PG_CTR=$(docker ps --filter "name=koola-postgres-prod" --format "{{.ID}}" | head -1)
+          if [ -n "$PG_CTR" ]; then
             for f in migrations/0*.sql; do
-              echo "  -> \$f"
-              docker exec -i "\$PG_CTR" psql -U koola_user -d koola_db < "\$f" 2>&1 | grep -v '^\$' || true
+              echo "  -> $f"
+              docker exec -i "$PG_CTR" psql -U koola_user -d koola_db < "$f" 2>&1 | grep -v '^$' || true
             done
             echo "  v Migrations done"
+          else
+            echo "  ! WARNING: postgres container not found, skipping migrations"
           fi
 
-          echo "Step 7: Pruning old images..."
+          echo "Step 7: Prune old images..."
           docker image prune -f
 
-          echo "Deployment complete!"
+          echo "=== Deployment complete! ==="
           df -h /
           docker ps --format 'table {{.Names}}\t{{.Status}}'
           ENDSSH
