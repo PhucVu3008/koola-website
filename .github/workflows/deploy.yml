@@ -114,6 +114,10 @@ jobs:
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
             "echo '=== Disk before cleanup ===' && df -h / && \
              docker system prune -af 2>/dev/null || true && \
+             rm -rf ${{ secrets.VPS_PROJECT_PATH }}/apps/web/.next 2>/dev/null || true && \
+             rm -rf ${{ secrets.VPS_PROJECT_PATH }}/apps/api/dist 2>/dev/null || true && \
+             rm -rf ${{ secrets.VPS_PROJECT_PATH }}/node_modules 2>/dev/null || true && \
+             rm -f ${{ secrets.VPS_PROJECT_PATH }}/build-artifacts.tar.gz 2>/dev/null || true && \
              echo '=== Disk after cleanup ===' && df -h /"
 
       - name: Rsync source to VPS
@@ -136,6 +140,8 @@ jobs:
       - name: Rsync seed images to VPS
         # Copy blog cover images (seeded in DB) to a staging dir on VPS.
         # These will be injected into the Docker uploads volume after containers start.
+        # Non-fatal: seed images are optional, site works without them.
+        continue-on-error: true
         run: |
           rsync -az \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=30 -o ServerAliveInterval=15" \
