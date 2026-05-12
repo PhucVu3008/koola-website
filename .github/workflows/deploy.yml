@@ -113,7 +113,7 @@ jobs:
             -o ServerAliveInterval=15 \
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
             "echo '=== Disk before cleanup ===' && df -h / && \
-             docker system prune -af --volumes 2>/dev/null || true && \
+             docker system prune -af 2>/dev/null || true && \
              echo '=== Disk after cleanup ===' && df -h /"
 
       - name: Rsync source to VPS
@@ -178,10 +178,11 @@ jobs:
           rm -f build-artifacts.tar.gz
 
           echo "Step 3: Building Docker images..."
-          docker compose -f docker-compose.production.yml --env-file .env.production.local build api web 2>&1 | grep -v 'no space left on device' || true
+          DOCKER_BUILDKIT=0 docker compose -f docker-compose.production.yml --env-file .env.production.local build api web 2>&1 | grep -v 'no space left on device' || true
           docker image inspect koola-website-web > /dev/null 2>&1 || (echo 'ERROR: web image not built' && exit 1)
 
           echo "Step 4: Restarting containers..."
+          docker compose -f docker-compose.production.yml --env-file .env.production.local down --remove-orphans || true
           docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --remove-orphans
 
           echo "Step 5: Injecting seed images into uploads volume..."
