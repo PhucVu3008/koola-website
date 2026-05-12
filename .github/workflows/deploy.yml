@@ -183,6 +183,8 @@ jobs:
 
           echo "Step 4: Restarting containers..."
           docker compose -f docker-compose.production.yml --env-file .env.production.local down --remove-orphans || true
+          docker stop koola-postgres-prod koola-api-prod koola-web-prod koola-nginx-prod koola-cloudflared 2>/dev/null || true
+          docker rm koola-postgres-prod koola-api-prod koola-web-prod koola-nginx-prod koola-cloudflared 2>/dev/null || true
           docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --remove-orphans
 
           echo "Step 5: Injecting seed images into uploads volume..."
