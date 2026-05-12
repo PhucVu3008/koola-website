@@ -15,8 +15,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_API: ghcr.io/${{ github.repository_owner }}/koola-website-api
-  IMAGE_WEB: ghcr.io/${{ github.repository_owner }}/koola-website-web
+  IMAGE_API: ghcr.io/phucvu3008/koola-website-api
+  IMAGE_WEB: ghcr.io/phucvu3008/koola-website-web
 
 jobs:
   build:
