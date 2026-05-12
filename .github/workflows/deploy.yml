@@ -142,12 +142,6 @@ jobs:
             ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PROJECT_PATH }}/seed-images/
 
       - name: Deploy on VPS
-        env:
-          VPS_PROJECT_PATH: ${{ secrets.VPS_PROJECT_PATH }}
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GHCR_USER: ${{ github.actor }}
-          IMAGE_API: ${{ env.IMAGE_API }}:${{ github.sha }}
-          IMAGE_WEB: ${{ env.IMAGE_WEB }}:${{ github.sha }}
         run: |
           ssh \
             -i ~/.ssh/deploy_key \
@@ -155,50 +149,50 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o ConnectTimeout=30 \
             -o ServerAliveInterval=15 \
-            -o SendEnv=VPS_PROJECT_PATH,GHCR_TOKEN,GHCR_USER,IMAGE_API,IMAGE_WEB \
-            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << ENDSSH
           set -e
-          cd "$VPS_PROJECT_PATH"
+          cd "${{ secrets.VPS_PROJECT_PATH }}"
 
           echo "Step 1: Login to GHCR..."
-          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
           echo "Step 2: Pull new images..."
-          docker pull "$IMAGE_API"
-          docker pull "$IMAGE_WEB"
+          docker pull "${{ env.IMAGE_API }}:${{ github.sha }}"
+          docker pull "${{ env.IMAGE_WEB }}:${{ github.sha }}"
 
           echo "Step 3: Stop and remove old containers..."
           docker rm -f koola-postgres-prod koola-api-prod koola-web-prod koola-nginx-prod koola-cloudflared 2>/dev/null || true
           docker network rm koola-production-network 2>/dev/null || true
 
           echo "Step 4: Start containers..."
-          KOOLA_API_IMAGE="$IMAGE_API" KOOLA_WEB_IMAGE="$IMAGE_WEB" \
+          KOOLA_API_IMAGE="${{ env.IMAGE_API }}:${{ github.sha }}" \
+          KOOLA_WEB_IMAGE="${{ env.IMAGE_WEB }}:${{ github.sha }}" \
             docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --remove-orphans
 
           echo "Step 5: Injecting seed images into uploads volume..."
           SEED_DIR=seed-images
-          API_CTR=$(docker ps --filter "name=koola-api-prod" --format "{{.ID}}" | head -1)
-          if [ -n "$API_CTR" ] && [ -d "$SEED_DIR" ]; then
-            docker exec "$API_CTR" mkdir -p /app/uploads/media
-            for img in "$SEED_DIR"/*; do
-              fname=$(basename "$img")
-              docker cp "$img" "$API_CTR:/app/uploads/media/$fname" && echo "  cp $fname OK" || echo "  cp $fname FAILED"
+          API_CTR=\$(docker ps --filter "name=koola-api-prod" --format "{{.ID}}" | head -1)
+          if [ -n "\$API_CTR" ] && [ -d "\$SEED_DIR" ]; then
+            docker exec "\$API_CTR" mkdir -p /app/uploads/media
+            for img in "\$SEED_DIR"/*; do
+              fname=\$(basename "\$img")
+              docker cp "\$img" "\$API_CTR:/app/uploads/media/\$fname" && echo "  cp \$fname OK" || echo "  cp \$fname FAILED"
             done
           else
-            echo "  ! Skipped: container '$API_CTR' not found or seed-images/ missing"
+            echo "  ! Skipped: container not found or seed-images/ missing"
           fi
 
           echo "Step 6: Running DB migrations..."
           sleep 5
-          PG_CTR=$(docker ps --filter "name=koola-postgres-prod" --format "{{.ID}}" | head -1)
-          if [ -n "$PG_CTR" ]; then
+          PG_CTR=\$(docker ps --filter "name=koola-postgres-prod" --format "{{.ID}}" | head -1)
+          if [ -n "\$PG_CTR" ]; then
             for f in migrations/0*.sql; do
-              echo "  -> $f"
-              docker exec -i "$PG_CTR" psql -U koola_user -d koola_db < "$f" 2>&1 | grep -v '^$' || true
+              echo "  -> \$f"
+              docker exec -i "\$PG_CTR" psql -U koola_user -d koola_db < "\$f" 2>&1 | grep -v '^\$' || true
             done
             echo "  v Migrations done"
           else
-            echo "  ! WARNING: postgres container not found, skipping migrations"
+            echo "  ! WARNING: postgres not found, skipping migrations"
           fi
 
           echo "Step 7: Prune old images..."
@@ -208,6 +202,7 @@ jobs:
           df -h /
           docker ps --format 'table {{.Names}}\t{{.Status}}'
           ENDSSH
+
 
       - name: Report result
         if: always()
