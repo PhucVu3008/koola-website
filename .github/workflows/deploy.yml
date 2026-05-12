@@ -153,23 +153,29 @@ jobs:
           set -e
           cd "${{ secrets.VPS_PROJECT_PATH }}"
 
-          echo "Step 1: Login to GHCR..."
+          echo "Step 1: Stop old containers to free image references..."
+          docker rm -f koola-api-prod koola-web-prod koola-nginx-prod koola-cloudflared 2>/dev/null || true
+          # Keep postgres running to preserve data volume
+          docker network rm koola-production-network 2>/dev/null || true
+
+          echo "Step 2: Free disk space (remove unused images)..."
+          docker image prune -af
+          df -h /
+
+          echo "Step 3: Login to GHCR..."
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-          echo "Step 2: Pull new images..."
+          echo "Step 4: Pull new images..."
           docker pull "${{ env.IMAGE_API }}:${{ github.sha }}"
           docker pull "${{ env.IMAGE_WEB }}:${{ github.sha }}"
 
-          echo "Step 3: Stop and remove old containers..."
-          docker rm -f koola-postgres-prod koola-api-prod koola-web-prod koola-nginx-prod koola-cloudflared 2>/dev/null || true
-          docker network rm koola-production-network 2>/dev/null || true
-
-          echo "Step 4: Start containers..."
+          echo "Step 5: Stop postgres and start full stack..."
+          docker rm -f koola-postgres-prod 2>/dev/null || true
           KOOLA_API_IMAGE="${{ env.IMAGE_API }}:${{ github.sha }}" \
           KOOLA_WEB_IMAGE="${{ env.IMAGE_WEB }}:${{ github.sha }}" \
             docker compose -f docker-compose.production.yml --env-file .env.production.local up -d --remove-orphans
 
-          echo "Step 5: Injecting seed images into uploads volume..."
+          echo "Step 6: Injecting seed images into uploads volume..."
           SEED_DIR=seed-images
           API_CTR=\$(docker ps --filter "name=koola-api-prod" --format "{{.ID}}" | head -1)
           if [ -n "\$API_CTR" ] && [ -d "\$SEED_DIR" ]; then
@@ -182,7 +188,7 @@ jobs:
             echo "  ! Skipped: container not found or seed-images/ missing"
           fi
 
-          echo "Step 6: Running DB migrations..."
+          echo "Step 7: Running DB migrations..."
           sleep 5
           PG_CTR=\$(docker ps --filter "name=koola-postgres-prod" --format "{{.ID}}" | head -1)
           if [ -n "\$PG_CTR" ]; then
@@ -194,9 +200,6 @@ jobs:
           else
             echo "  ! WARNING: postgres not found, skipping migrations"
           fi
-
-          echo "Step 7: Prune old images..."
-          docker image prune -f
 
           echo "=== Deployment complete! ==="
           df -h /
